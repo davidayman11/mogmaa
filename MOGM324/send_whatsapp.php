@@ -12,7 +12,7 @@ $phone = $_SESSION['phone'];
 $serialNumber = $_SESSION['serialNumber'];
 $qrCodeImageUrl = $_SESSION['qrCodeImageUrl'];
 
-// Create the WhatsApp message
+// Create the WhatsApp message with a link to the QR code image
 $whatsappMessage = "Hi $name, your SN is: $serialNumber. Here is your QR code: $qrCodeImageUrl";
 $whatsappUrl = "https://api.whatsapp.com/send?phone=" . urlencode($phone) . "&text=" . urlencode($whatsappMessage);
 
