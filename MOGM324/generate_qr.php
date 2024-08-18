@@ -1,4 +1,7 @@
 <?php
+// Start session to store QR code URL
+session_start();
+
 // Retrieve parameters
 $id = $_GET['id'];
 $name = $_GET['name'];
@@ -30,11 +33,10 @@ file_put_contents($qrCodeFileName, $qrCodeImageData);
 $qrCodeImageUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $qrCodeFileName;
 
 // Store the image URL in the session for later use
-session_start();
 $_SESSION['qrCodeImageUrl'] = $qrCodeImageUrl;
 $_SESSION['name'] = $name;
 $_SESSION['phone'] = $phone;
-$_SESSION['serialNumber'] = $id; // assuming serialNumber is stored as 'id'
+$_SESSION['serialNumber'] = $id;
 ?>
 
 <!-- Display QR Code -->
