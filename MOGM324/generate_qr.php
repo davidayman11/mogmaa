@@ -1,5 +1,4 @@
 <?php
-// Start session to store QR code URL
 session_start();
 
 // Retrieve parameters
@@ -21,16 +20,26 @@ $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=" . 
 
 // Get the QR code image data
 $qrCodeImageData = file_get_contents($qrCodeUrl);
+if ($qrCodeImageData === FALSE) {
+    die("Error retrieving QR code image.");
+}
 
 // Define the directory to save the QR code image
 $uploadDir = 'qrcodes/';
-$qrCodeFileName = $uploadDir . uniqid() . '.png';
+if (!is_dir($uploadDir)) {
+    mkdir($uploadDir, 0755, true);
+}
+
+// Use the serial number as the file name
+$qrCodeFileName = $uploadDir . $id . '.png';
 
 // Save the QR code image to the server
-file_put_contents($qrCodeFileName, $qrCodeImageData);
+if (file_put_contents($qrCodeFileName, $qrCodeImageData) === FALSE) {
+    die("Error saving QR code image.");
+}
 
 // Create the URL to access the QR code image
-$qrCodeImageUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $qrCodeFileName;
+$qrCodeImageUrl = 'http://shamandorascout.com/' . $qrCodeFileName;
 
 // Store the image URL in the session for later use
 $_SESSION['qrCodeImageUrl'] = $qrCodeImageUrl;
