@@ -1,12 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generate QR Code</title>
-</head>
-<body>
-
 <?php
 // Retrieve parameters
 $id = $_GET['id'];
@@ -25,22 +16,33 @@ $encodedData = urlencode($data);
 // Generate the QR code URL
 $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=" . $encodedData;
 
-// Get the QR code image data as a base64 encoded string
-$qrCodeImageData = base64_encode(file_get_contents($qrCodeUrl));
+// Get the QR code image data
+$qrCodeImageData = file_get_contents($qrCodeUrl);
 
-// Create the data URL for the image
-$qrCodeDataUrl = "data:image/png;base64," . $qrCodeImageData;
+// Define the directory to save the QR code image
+$uploadDir = 'qrcodes/';
+$qrCodeFileName = $uploadDir . uniqid() . '.png';
+
+// Save the QR code image to the server
+file_put_contents($qrCodeFileName, $qrCodeImageData);
+
+// Create the URL to access the QR code image
+$qrCodeImageUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $qrCodeFileName;
+
+// Store the image URL in the session for later use
+session_start();
+$_SESSION['qrCodeImageUrl'] = $qrCodeImageUrl;
+$_SESSION['name'] = $name;
+$_SESSION['phone'] = $phone;
+$_SESSION['serialNumber'] = $id; // assuming serialNumber is stored as 'id'
 ?>
 
 <!-- Display QR Code -->
 <h2>QR Code</h2>
-<img src="<?php echo $qrCodeDataUrl; ?>" alt="QR Code" style="max-width: 100%; height: auto;">
+<img src="<?php echo $qrCodeImageUrl; ?>" alt="QR Code" style="max-width: 100%; height: auto;">
 
 <!-- Link to share the QR code image via WhatsApp -->
 <p>Share this QR code via WhatsApp:</p>
-<a href="whatsapp://send?phone=<?php echo $phone; ?>&text=Here%20is%20your%20QR%20code%20image:" target="_blank">
+<a href="send_whatsapp.php" target="_blank">
     <button>Send QR Code via WhatsApp</button>
 </a>
-
-</body>
-</html>
