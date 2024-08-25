@@ -8,7 +8,6 @@ $phone = $_GET['phone'];
 $team = $_GET['team'];
 $grade = $_GET['grade'];
 $payment = $_GET['payment'];
-$photo = urldecode($_GET['photo']);  // Retrieve the photo path
 
 // Prepare the data string for the QR code
 $data = "Name: $name\nPhone Number: $phone\nTeam: $team\nGrade: $grade\nPayment Amount: $payment";
@@ -42,7 +41,6 @@ if (file_put_contents($qrCodeFileName, $qrCodeImageData)) {
     $_SESSION['name'] = $name;
     $_SESSION['phone'] = $phone;
     $_SESSION['serialNumber'] = $id;
-    $_SESSION['photo'] = $photo; // Store the photo URL
 
     // Redirect to the page to send the WhatsApp message
     header("Location: send_whatsapp.php");
