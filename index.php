@@ -32,7 +32,7 @@
   </div>
   <main class="demo-page-content">
     <section>
-      <h1>Enter frd Details</h1>
+      <h1>Enter Employee Details</h1>
       <form action="submit.php" method="post">
         <div class="nice-form-group">
           <label>Name:</label>
