@@ -33,13 +33,13 @@
   <main class="demo-page-content">
     <section>
       <h1>Enter Employee Details</h1>
-      <form action="submit.php" method="post" enctype="multipart/form-data">
+      <form action="submit.php" method="post">
         <div class="nice-form-group">
           <label>Name:</label>
           <input type="text" name="name" placeholder="Your name" required />
         </div>
         <div class="nice-form-group">
-          <label>Phone:</label>
+          <label>Phone</label>
           <input type="tel" name="phone" placeholder="Your Phone" required />
         </div>
         <div class="nice-form-group">
@@ -53,10 +53,6 @@
         <div class="nice-form-group">
           <label>Payment:</label>
           <input type="text" name="payment" placeholder="Payment" required />
-        </div>
-        <div class="nice-form-group">
-          <label>Upload Photo:</label>
-          <input type="file" name="photo" accept="image/*" />
         </div>
         <input type="submit" value="Submit">
       </form>

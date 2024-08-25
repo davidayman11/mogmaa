@@ -11,11 +11,10 @@ $name = $_SESSION['name'];
 $phone = $_SESSION['phone'];
 $serialNumber = $_SESSION['serialNumber'];
 $qrCodeImageUrl = $_SESSION['qrCodeImageUrl'];
-$photoUrl = $_SESSION['photo'];
+$photoUrl = $_SESSION['photo']; // Retrieve the photo URL
 
-// Create the WhatsApp message with a link to the QR code image
-$whatsappMessage = "Hi $name, your Serial Number is: $serialNumber. Here is your QR code: $qrCodeImageUrl. To view your details and photo, click here: http://shamandorascout.com/display_details.php?id=$serialNumber&name=" . urlencode($name) . "&phone=" . urlencode($phone) . "&team=" . urlencode($team) . "&grade=" . urlencode($grade) . "&payment=" . urlencode($payment) . "&photo=" . urlencode($photoUrl);
-
+// Create the WhatsApp message with a link to the QR code image and photo
+$whatsappMessage = "Hi $name, your Serial Number is: $serialNumber.\nHere is your QR code: $qrCodeImageUrl\nAnd your uploaded photo: $photoUrl";
 $whatsappUrl = "https://api.whatsapp.com/send?phone=" . urlencode($phone) . "&text=" . urlencode($whatsappMessage);
 
 // Clear session data

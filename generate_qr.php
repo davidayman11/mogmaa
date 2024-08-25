@@ -8,10 +8,10 @@ $phone = $_GET['phone'];
 $team = $_GET['team'];
 $grade = $_GET['grade'];
 $payment = $_GET['payment'];
-$photoUrl = $_GET['photo']; // Retrieve the photo URL
+$photo = urldecode($_GET['photo']);  // Retrieve the photo path
 
-// Prepare the URL for the QR code to display details
-$data = "http://shamandorascout.com/display_details.php?id=$id&name=" . urlencode($name) . "&phone=" . urlencode($phone) . "&team=" . urlencode($team) . "&grade=" . urlencode($grade) . "&payment=" . urlencode($payment) . "&photo=" . urlencode($photoUrl);
+// Prepare the data string for the QR code
+$data = "Name: $name\nPhone Number: $phone\nTeam: $team\nGrade: $grade\nPayment Amount: $payment";
 
 // Encode the data for the QR code URL
 $encodedData = urlencode($data);
@@ -42,7 +42,7 @@ if (file_put_contents($qrCodeFileName, $qrCodeImageData)) {
     $_SESSION['name'] = $name;
     $_SESSION['phone'] = $phone;
     $_SESSION['serialNumber'] = $id;
-    $_SESSION['photo'] = $photoUrl; // Store the photo URL
+    $_SESSION['photo'] = $photo; // Store the photo URL
 
     // Redirect to the page to send the WhatsApp message
     header("Location: send_whatsapp.php");
