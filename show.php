@@ -2,7 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-$servername = "shamandorascout.com";
+$servername = "localhost";
 $username = "u968010081_mogamaa";
 $password = "Mogamaa_2000";
 $dbname = "u968010081_mogamaa";
