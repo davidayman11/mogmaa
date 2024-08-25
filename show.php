@@ -3,6 +3,10 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+// Increase connection timeout settings
+ini_set('mysqli.connect_timeout', 300);
+ini_set('default_socket_timeout', 300);
+
 // Database connection
 $servername = "shamandorascout.com";
 $username = "u968010081_mogamaa";
@@ -30,24 +34,23 @@ $result = $conn->query($sql);
     <style>
         /* Add your existing styles here */
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-table, th, td {
-    border: 1px solid black;
-}
+        table, th, td {
+            border: 1px solid black;
+        }
 
-th, td {
-    padding: 8px;
-    text-align: left;
-}
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
 
-th {
-    background-color: #f2f2f2;
-}
-
+        th {
+            background-color: #f2f2f2;
+        }
     </style>
 </head>
 <body>
