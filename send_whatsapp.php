@@ -2,7 +2,7 @@
 session_start();
 
 // Check if session variables are set
-if (!isset($_SESSION['name']) || !isset($_SESSION['phone']) || !isset($_SESSION['serialNumber']) || !isset($_SESSION['qrCodeImageUrl'])) {
+if (!isset($_SESSION['name']) || !isset($_SESSION['phone']) || !isset($_SESSION['serialNumber']) || !isset($_SESSION['qrCodeImageUrl']) || !isset($_SESSION['photo'])) {
     echo "No data available to send.";
     exit();
 }
@@ -11,9 +11,11 @@ $name = $_SESSION['name'];
 $phone = $_SESSION['phone'];
 $serialNumber = $_SESSION['serialNumber'];
 $qrCodeImageUrl = $_SESSION['qrCodeImageUrl'];
+$photoUrl = $_SESSION['photo'];
 
 // Create the WhatsApp message with a link to the QR code image
-$whatsappMessage = "Hi $name, your Serial Number is: $serialNumber. Here is your QR code: $qrCodeImageUrl";
+$whatsappMessage = "Hi $name, your Serial Number is: $serialNumber. Here is your QR code: $qrCodeImageUrl. To view your details and photo, click here: http://shamandorascout.com/display_details.php?id=$serialNumber&name=" . urlencode($name) . "&phone=" . urlencode($phone) . "&team=" . urlencode($team) . "&grade=" . urlencode($grade) . "&payment=" . urlencode($payment) . "&photo=" . urlencode($photoUrl);
+
 $whatsappUrl = "https://api.whatsapp.com/send?phone=" . urlencode($phone) . "&text=" . urlencode($whatsappMessage);
 
 // Clear session data
@@ -21,6 +23,7 @@ unset($_SESSION['name']);
 unset($_SESSION['phone']);
 unset($_SESSION['serialNumber']);
 unset($_SESSION['qrCodeImageUrl']);
+unset($_SESSION['photo']);
 ?>
 
 <!DOCTYPE html>
