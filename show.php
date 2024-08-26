@@ -18,6 +18,17 @@ if ($conn->connect_error) {
 // Handle search query
 $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
 
+// Handle delete request
+if (isset($_GET['delete'])) {
+    $id = $conn->real_escape_string($_GET['delete']);
+    $deleteSql = "DELETE FROM employees WHERE id = $id";
+    if ($conn->query($deleteSql) === TRUE) {
+        echo "<script>alert('Record deleted successfully'); window.location.href='index.php';</script>";
+    } else {
+        echo "Error deleting record: " . $conn->error;
+    }
+}
+
 // Retrieve data from the database with search filter
 $sql = "SELECT * FROM employees";
 if ($search) {
@@ -33,119 +44,7 @@ $result = $conn->query($sql);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Details</title>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-
-        .demo-page {
-            display: flex;
-            height: 100vh;
-        }
-
-        .demo-page-navigation {
-            width: 250px;
-            background-color: #333;
-            padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .demo-page-navigation nav ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .demo-page-navigation nav ul li {
-            margin-bottom: 20px;
-        }
-
-        .demo-page-navigation nav ul li a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-        }
-
-        .demo-page-navigation nav ul li a svg {
-            margin-right: 10px;
-        }
-
-        .demo-page-content {
-            flex-grow: 1;
-            padding: 40px;
-        }
-
-        .demo-page-content h1 {
-            margin-top: 0;
-            color: #4CAF50;
-        }
-
-        .search-form {
-            margin-bottom: 20px;
-        }
-
-        .search-form input[type="text"] {
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            width: 200px;
-        }
-
-        .search-form input[type="submit"] {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            background-color: #4CAF50;
-            color: #fff;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-
-        .search-form input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-            color: #333;
-        }
-
-        tbody tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        tbody tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        .no-records {
-            text-align: center;
-            padding: 20px;
-            color: #999;
-        }
+        /* Your existing CSS styles */
     </style>
 </head>
 <body>
@@ -188,6 +87,7 @@ $result = $conn->query($sql);
             <th>Team</th>
             <th>Grade</th>
             <th>Payment</th>
+            <th>Action</th> <!-- New column for delete action -->
           </tr>
         </thead>
         <tbody>
@@ -202,10 +102,11 @@ $result = $conn->query($sql);
                   echo "<td>" . $row["team"] . "</td>";
                   echo "<td>" . $row["grade"] . "</td>";
                   echo "<td>" . $row["payment"] . "</td>";
+                  echo "<td><a href='index.php?delete=" . $row["id"] . "' onclick='return confirm(\"Are you sure you want to delete this record?\")'>Delete</a></td>"; // Delete link
                   echo "</tr>";
               }
           } else {
-              echo "<tr><td colspan='6' class='no-records'>No records found</td></tr>";
+              echo "<tr><td colspan='7' class='no-records'>No records found</td></tr>";
           }
           ?>
         </tbody>
