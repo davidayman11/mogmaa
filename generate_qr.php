@@ -21,8 +21,13 @@ $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=" . 
 // Get the QR code image data
 $qrCodeImageData = file_get_contents($qrCodeUrl);
 
+// Check if QR code data was successfully retrieved
+if (!$qrCodeImageData) {
+    die("Failed to retrieve QR code from URL: $qrCodeUrl");
+}
+
 // Define the directory to save the QR code image
-$uploadDir = 'qrcodes/';
+$uploadDir = __DIR__ . '/qrcodes/';
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0755, true); // Create the directory if it doesn't exist
 }
@@ -33,7 +38,7 @@ $qrCodeFileName = $uploadDir . $id . '.png';
 // Save the QR code image to the server
 if (file_put_contents($qrCodeFileName, $qrCodeImageData)) {
     // Create the URL to access the QR code image
-    $qrCodeImageUrl = 'http://shamandorascout.com/' . $qrCodeFileName;
+    $qrCodeImageUrl = 'http://shamandorascout.com/qrcodes/' . $id . '.png';
 
     // Store the image URL in the session for later use
     session_start();
@@ -46,6 +51,6 @@ if (file_put_contents($qrCodeFileName, $qrCodeImageData)) {
     header("Location: send_whatsapp.php");
     exit();
 } else {
-    echo "Failed to save QR code image.";
+    die("Failed to save QR code image.");
 }
 ?>
