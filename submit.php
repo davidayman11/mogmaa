@@ -4,8 +4,6 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Database connection
-
-
 $servername = "193.203.168.53";
 $username = "u968010081_mogamaa";
 $password = "Mogamaa_2000";
@@ -13,7 +11,7 @@ $dbname = "u968010081_mogamaa";
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    die("<div style='padding: 20px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 5px; margin: 20px; font-family: Arial, sans-serif;'>Connection failed: " . $conn->connect_error . "</div>");
 }
 
 // Generate a 4-character unique ID
@@ -35,7 +33,7 @@ if ($conn->query($sql) === TRUE) {
     header("Location: generate_qr.php?id=$id&name=" . urlencode($name) . "&phone=" . urlencode($phone) . "&team=" . urlencode($team) . "&grade=" . urlencode($grade) . "&payment=" . urlencode($payment));
     exit;
 } else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
+    echo "<div style='padding: 20px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 5px; margin: 20px; font-family: Arial, sans-serif;'>Error: " . $sql . "<br>" . $conn->error . "</div>";
 }
 
 $conn->close();
