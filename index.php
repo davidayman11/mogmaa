@@ -130,9 +130,16 @@
         <label>Team:</label>
         <select name="team" required>
           <option value="" disabled selected>Select your team</option>
-          <option value="team1">Team 1</option>
-          <option value="team2">Team 2</option>
-          <option value="team3">Team 3</option>
+          <option value="team1">bra3em</option>
+          <option value="team2">ashbal</option>
+          <option value="team3">zahrat</option>
+          <option value="team3">kshafa</option>
+          <option value="team3">morshdat</option>
+          <option value="team3">motkadem</option>
+          <option value="team3">ra2edat</option>
+          <option value="team3">gwala</option>
+          <option value="team3">kada</option>
+
           <!-- Add more options as needed -->
         </select>
       </div>
