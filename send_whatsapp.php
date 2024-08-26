@@ -41,7 +41,7 @@ unset($_SESSION['qrCodeImageUrl']);
             height: 100vh;
         }
 
-        .container {
+        .demo-page {
             background-color: #fff;
             padding: 20px 40px;
             border-radius: 10px;
@@ -49,17 +49,21 @@ unset($_SESSION['qrCodeImageUrl']);
             text-align: center;
         }
 
-        h2 {
+        .demo-page h2 {
             color: #4CAF50;
             margin-bottom: 20px;
         }
 
-        p {
+        .demo-page p {
             margin-bottom: 30px;
             color: #555;
         }
 
-        a.button {
+        .button-container {
+            margin-top: 20px;
+        }
+
+        .demo-page a.button {
             background-color: #4CAF50;
             color: #fff;
             padding: 10px 20px;
@@ -67,18 +71,30 @@ unset($_SESSION['qrCodeImageUrl']);
             text-decoration: none;
             font-size: 16px;
             transition: background-color 0.3s ease;
+            margin: 0 10px;
         }
 
-        a.button:hover {
+        .demo-page a.button:hover {
             background-color: #45a049;
+        }
+
+        .demo-page a.back-button {
+            background-color: #f44336;
+        }
+
+        .demo-page a.back-button:hover {
+            background-color: #e53935;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="demo-page">
         <h2>Message Ready to Send</h2>
         <p>Your message is ready to be sent via WhatsApp.</p>
-        <a href="<?php echo $whatsappUrl; ?>" class="button" target="_blank">Send WhatsApp Message</a>
+        <div class="button-container">
+            <a href="<?php echo $whatsappUrl; ?>" class="button" target="_blank">Send WhatsApp Message</a>
+            <a href="index.php" class="button back-button">Back</a>
+        </div>
     </div>
 </body>
 </html>
