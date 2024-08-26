@@ -1,40 +1,55 @@
 <?php
-// Enable error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Database connection
+    $mysqli = new mysqli("localhost", "username", "password", "database");
 
-// Database connection
-$servername = "193.203.168.53";
-$username = "u968010081_mogamaa";
-$password = "Mogamaa_2000";
-$dbname = "u968010081_mogamaa";
-$conn = new mysqli($servername, $username, $password, $dbname);
+    // Check connection
+    if ($mysqli->connect_error) {
+        die("Connection failed: " . $mysqli->connect_error);
+    }
 
-if ($conn->connect_error) {
-    die("<div style='padding: 20px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 5px; margin: 20px; font-family: Arial, sans-serif;'>Connection failed: " . $conn->connect_error . "</div>");
+    $name = $_POST['name'];
+    $phone = $_POST['phone'];
+    $team = $_POST['team'];
+    $grade = $_POST['grade'];
+    $payment = $_POST['payment'];
+    $serial_number = uniqid(); // Generate a unique serial number
+
+    // Handle file upload
+    if (isset($_FILES['photo'])) {
+        $file_name = $_FILES['photo']['name'];
+        $file_tmp = $_FILES['photo']['tmp_name'];
+        $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+
+        // Define allowed file extensions
+        $allowed_ext = ['jpg', 'jpeg', 'png', 'gif'];
+
+        if (in_array($file_ext, $allowed_ext)) {
+            $new_file_name = $serial_number . '.' . $file_ext;
+            $upload_dir = 'uploads/';
+            move_uploaded_file($file_tmp, $upload_dir . $new_file_name);
+        } else {
+            echo "Invalid file type.";
+            exit;
+        }
+    }
+
+    $photo_path = isset($new_file_name) ? $upload_dir . $new_file_name : '';
+
+    // Insert data into the database
+    $stmt = $mysqli->prepare("INSERT INTO attendees (name, phone, team, grade, payment, photo, serial_number) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssss", $name, $phone, $team, $grade, $payment, $photo_path, $serial_number);
+
+    if ($stmt->execute()) {
+        echo "Data saved successfully.";
+        // Generate QR code URL
+        $qr_url = "http://yourdomain.com/view.php?serial_number=" . $serial_number;
+        echo "<br><a href='$qr_url'>View Details</a>";
+    } else {
+        echo "Error: " . $stmt->error;
+    }
+
+    $stmt->close();
+    $mysqli->close();
 }
-
-// Generate a 4-character unique ID
-$id = substr(str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 4);
-
-// Capture form data
-$name = $_POST['name'];
-$phone = $_POST['phone'];
-$team = $_POST['team'];
-$grade = $_POST['grade'];
-$payment = $_POST['payment'];
-
-// Insert data into MySQL database
-$sql = "INSERT INTO employees (id, name, phone, team, grade, payment)
-VALUES ('$id', '$name', '$phone', '$team', '$grade', '$payment')";
-
-if ($conn->query($sql) === TRUE) {
-    // Redirect to the QR code generation page
-    header("Location: generate_qr.php?id=$id&name=" . urlencode($name) . "&phone=" . urlencode($phone) . "&team=" . urlencode($team) . "&grade=" . urlencode($grade) . "&payment=" . urlencode($payment));
-    exit;
-} else {
-    echo "<div style='padding: 20px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 5px; margin: 20px; font-family: Arial, sans-serif;'>Error: " . $sql . "<br>" . $conn->error . "</div>";
-}
-
-$conn->close();
 ?>
