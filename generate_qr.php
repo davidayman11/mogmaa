@@ -38,7 +38,7 @@ $qrCodeFileName = $uploadDir . $id . '.png';
 // Save the QR code image to the server
 if (file_put_contents($qrCodeFileName, $qrCodeImageData)) {
     // Create the URL to access the QR code image
-    $qrCodeImageUrl = 'http://193.203.168.53/qrcodes/' . $id . '.png';
+    $qrCodeImageUrl = 'http://shamandorascout.com/qrcodes/' . $id . '.png';
 
     // Store the image URL in the session for later use
     session_start();
