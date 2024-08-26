@@ -15,8 +15,14 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Retrieve data from the database
+// Handle search query
+$search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
+
+// Retrieve data from the database with search filter
 $sql = "SELECT * FROM employees";
+if ($search) {
+    $sql .= " WHERE name LIKE '%$search%' OR phone LIKE '%$search%' OR team LIKE '%$search%'";
+}
 $result = $conn->query($sql);
 ?>
 
@@ -76,6 +82,33 @@ $result = $conn->query($sql);
         .demo-page-content h1 {
             margin-top: 0;
             color: #4CAF50;
+        }
+
+        .search-form {
+            margin-bottom: 20px;
+        }
+
+        .search-form input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 200px;
+        }
+
+        .search-form input[type="submit"] {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: #fff;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .search-form input[type="submit"]:hover {
+            background-color: #45a049;
         }
 
         table {
@@ -142,6 +175,10 @@ $result = $conn->query($sql);
   <main class="demo-page-content">
     <section>
       <h1>Employee Details</h1>
+      <form class="search-form" method="GET" action="">
+        <input type="text" name="search" placeholder="Search..." value="<?php echo htmlspecialchars($search); ?>">
+        <input type="submit" value="Search">
+      </form>
       <table>
         <thead>
           <tr>
