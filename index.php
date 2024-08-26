@@ -67,8 +67,7 @@
         }
 
         .nice-form-group input[type="text"],
-        .nice-form-group input[type="tel"],
-        .nice-form-group input[type="file"] {
+        .nice-form-group input[type="tel"] {
             width: 100%;
             padding: 10px;
             box-sizing: border-box;
@@ -118,7 +117,7 @@
   <main class="demo-page-content">
   <section>
     <h1>Enter Details</h1>
-    <form action="submit.php" method="post" enctype="multipart/form-data">
+    <form action="submit.php" method="post">
       <div class="nice-form-group">
         <label>Name:</label>
         <input type="text" name="name" placeholder="Your name" required />
@@ -134,12 +133,13 @@
           <option value="team1">bra3em</option>
           <option value="team2">ashbal</option>
           <option value="team3">zahrat</option>
-          <option value="team4">kshafa</option>
-          <option value="team5">morshdat</option>
-          <option value="team6">motkadem</option>
-          <option value="team7">ra2edat</option>
-          <option value="team8">gwala</option>
-          <option value="team9">kada</option>
+          <option value="team3">kshafa</option>
+          <option value="team3">morshdat</option>
+          <option value="team3">motkadem</option>
+          <option value="team3">ra2edat</option>
+          <option value="team3">gwala</option>
+          <option value="team3">kada</option>
+
           <!-- Add more options as needed -->
         </select>
       </div>
@@ -151,14 +151,7 @@
         <label>Payment:</label>
         <input type="text" name="payment" placeholder="Payment" required />
       </div>
-      <div class="nice-form-group">
-        <label>Upload Photo:</label>
-        <input type="file" name="photo" />
-      </div>
       <input type="submit" value="Submit">
     </form>
   </section>
 </main>
-</div>
-</body>
-</html>

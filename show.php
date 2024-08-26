@@ -174,7 +174,7 @@ $result = $conn->query($sql);
   </div>
   <main class="demo-page-content">
     <section>
-      <h1> Details</h1>
+      <h1>Employee Details</h1>
       <form class="search-form" method="GET" action="">
         <input type="text" name="search" placeholder="Search..." value="<?php echo htmlspecialchars($search); ?>">
         <input type="submit" value="Search">
