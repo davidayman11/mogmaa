@@ -4,7 +4,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Database connection
-$servername = "shamandorascout.com";
+$servername = "193.203.168.53";
 $username = "u968010081_mogamaa";
 $password = "Mogamaa_2000";
 $dbname = "u968010081_mogamaa";
