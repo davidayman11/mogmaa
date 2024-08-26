@@ -33,6 +33,7 @@ unset($_SESSION['qrCodeImageUrl']);
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f4;
+            color: #333;
             margin: 0;
             padding: 0;
             display: flex;
@@ -43,10 +44,12 @@ unset($_SESSION['qrCodeImageUrl']);
 
         .demo-page {
             background-color: #fff;
-            padding: 20px 40px;
+            padding: 40px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             text-align: center;
+            max-width: 400px;
+            width: 100%;
         }
 
         .demo-page h2 {
@@ -55,11 +58,14 @@ unset($_SESSION['qrCodeImageUrl']);
         }
 
         .demo-page p {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             color: #555;
         }
 
         .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
             margin-top: 20px;
         }
 
@@ -71,7 +77,6 @@ unset($_SESSION['qrCodeImageUrl']);
             text-decoration: none;
             font-size: 16px;
             transition: background-color 0.3s ease;
-            margin: 0 10px;
         }
 
         .demo-page a.button:hover {
