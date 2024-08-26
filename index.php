@@ -128,7 +128,13 @@
       </div>
       <div class="nice-form-group">
         <label>Team:</label>
-        <input type="text" name="team" placeholder="Team" required />
+        <select name="team" required>
+          <option value="" disabled selected>Select your team</option>
+          <option value="team1">Team 1</option>
+          <option value="team2">Team 2</option>
+          <option value="team3">Team 3</option>
+          <!-- Add more options as needed -->
+        </select>
       </div>
       <div class="nice-form-group">
         <label>Grade:</label>
