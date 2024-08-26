@@ -26,28 +26,93 @@ $result = $conn->query($sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Details</title>
-    <link rel="stylesheet" href="styles.css"> 
     <style>
-        /* Add your existing styles here */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
+        .demo-page {
+            display: flex;
+            height: 100vh;
+        }
 
-table, th, td {
-    border: 1px solid black;
-}
+        .demo-page-navigation {
+            width: 250px;
+            background-color: #333;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
 
-th, td {
-    padding: 8px;
-    text-align: left;
-}
+        .demo-page-navigation nav ul {
+            list-style: none;
+            padding: 0;
+        }
 
-th {
-    background-color: #f2f2f2;
-}
+        .demo-page-navigation nav ul li {
+            margin-bottom: 20px;
+        }
 
+        .demo-page-navigation nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+
+        .demo-page-navigation nav ul li a svg {
+            margin-right: 10px;
+        }
+
+        .demo-page-content {
+            flex-grow: 1;
+            padding: 40px;
+        }
+
+        .demo-page-content h1 {
+            margin-top: 0;
+            color: #4CAF50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .no-records {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+        }
     </style>
 </head>
 <body>
@@ -103,7 +168,7 @@ th {
                   echo "</tr>";
               }
           } else {
-              echo "<tr><td colspan='6'>No records found</td></tr>";
+              echo "<tr><td colspan='6' class='no-records'>No records found</td></tr>";
           }
           ?>
         </tbody>
