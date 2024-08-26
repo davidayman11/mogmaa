@@ -36,6 +36,7 @@ unset($_SESSION['qrCodeImageUrl']);
         <h2>Message Ready to Send</h2>
         <p>Your message is ready to be sent via WhatsApp.</p>
         <a href="<?php echo $whatsappUrl; ?>" class="button" target="_blank">Send WhatsApp Message</a>
+        <a href="javascript:history.back()" class="button back-button">Back</a>
     </div>
 </body>
 </html>
