@@ -1,28 +1,34 @@
 <?php
-// Enable error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Hardcoded credentials for admin
+$admin_username = "admin";
+$admin_password = "password";
 
-// Database connection
-$servername = "193.203.168.53";
-$username = "u968010081_mogamaa";
-$password = "Mogamaa_2000";
-$dbname = "u968010081_mogamaa";
+// Simulate login (for demonstration purposes)
+session_start();
+if (!isset($_SESSION['logged_in'])) {
+    $_SESSION['logged_in'] = false;
+}
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Handle login form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($_POST['username'] === $admin_username && $_POST['password'] === $admin_password) {
+        $_SESSION['logged_in'] = true;
+    }
+}
 
+// Logout action
+if (isset($_GET['action']) && $_GET['action'] === 'logout') {
+    $_SESSION['logged_in'] = false;
+    header("Location: show.php");
+    exit;
+}
+
+// Fetch data from the database
+$conn = new mysqli('localhost', 'username', 'password', 'mogmaa');
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-
-// Handle search query
-$search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
-
-// Retrieve data from the database with search filter
-$sql = "SELECT * FROM employees";
-if ($search) {
-    $sql .= " WHERE name LIKE '%$search%' OR phone LIKE '%$search%' OR team LIKE '%$search%'";
-}
+$sql = "SELECT * FROM attendees";
 $result = $conn->query($sql);
 ?>
 
@@ -31,188 +37,60 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Details</title>
+    <title>Show Data</title>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-
-        .demo-page {
-            display: flex;
-            height: 100vh;
-        }
-
-        .demo-page-navigation {
-            width: 250px;
-            background-color: #333;
-            padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .demo-page-navigation nav ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .demo-page-navigation nav ul li {
-            margin-bottom: 20px;
-        }
-
-        .demo-page-navigation nav ul li a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-        }
-
-        .demo-page-navigation nav ul li a svg {
-            margin-right: 10px;
-        }
-
-        .demo-page-content {
-            flex-grow: 1;
-            padding: 40px;
-        }
-
-        .demo-page-content h1 {
-            margin-top: 0;
-            color: #4CAF50;
-        }
-
-        .search-form {
-            margin-bottom: 20px;
-        }
-
-        .search-form input[type="text"] {
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            width: 200px;
-        }
-
-        .search-form input[type="submit"] {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            background-color: #4CAF50;
-            color: #fff;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-
-        .search-form input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-            color: #333;
-        }
-
-        tbody tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        tbody tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        .no-records {
-            text-align: center;
-            padding: 20px;
-            color: #999;
-        }
+        /* Add your styles here */
     </style>
 </head>
 <body>
-<div class="demo-page">
-  <div class="demo-page-navigation">
-    <nav>
-      <ul>
-        <li>
-        <a href="./index.php">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tool">
-              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-            </svg>
-            MOGAM3'24</a>
-        </li>
-        <li>
-        <a href="./index.php">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers">
-              <polygon points="12 2 2 7 12 12 22 7 12 2" />
-              <polyline points="2 17 12 22 22 17" />
-              <polyline points="2 12 12 17 22 12" />
-            </svg>
-             Details</a>
-        </li>
-      </ul>
-    </nav>
-  </div>
-  <main class="demo-page-content">
-    <section>
-      <h1>Employee Details</h1>
-      <form class="search-form" method="GET" action="">
-        <input type="text" name="search" placeholder="Search..." value="<?php echo htmlspecialchars($search); ?>">
-        <input type="submit" value="Search">
-      </form>
-      <table>
-        <thead>
-          <tr>
+
+<?php if ($_SESSION['logged_in']): ?>
+    <h1>Attendee Details</h1>
+    <table border="1">
+        <tr>
             <th>ID</th>
             <th>Name</th>
             <th>Phone</th>
             <th>Team</th>
             <th>Grade</th>
             <th>Payment</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php
-          if ($result->num_rows > 0) {
-              // Output data of each row
-              while($row = $result->fetch_assoc()) {
-                  echo "<tr>";
-                  echo "<td>" . $row["id"] . "</td>";
-                  echo "<td>" . $row["name"] . "</td>";
-                  echo "<td>" . $row["phone"] . "</td>";
-                  echo "<td>" . $row["team"] . "</td>";
-                  echo "<td>" . $row["grade"] . "</td>";
-                  echo "<td>" . $row["payment"] . "</td>";
-                  echo "</tr>";
-              }
-          } else {
-              echo "<tr><td colspan='6' class='no-records'>No records found</td></tr>";
-          }
-          ?>
-        </tbody>
-      </table>
-    </section>
-  </main>
-</div>
+            <th>Serial Number</th>
+            <?php if ($_SESSION['logged_in']): ?>
+            <th>Actions</th>
+            <?php endif; ?>
+        </tr>
+        <?php while($row = $result->fetch_assoc()): ?>
+        <tr>
+            <td><?php echo $row['id']; ?></td>
+            <td><?php echo $row['name']; ?></td>
+            <td><?php echo $row['phone']; ?></td>
+            <td><?php echo $row['team']; ?></td>
+            <td><?php echo $row['grade']; ?></td>
+            <td><?php echo $row['payment']; ?></td>
+            <td><?php echo $row['serial_number']; ?></td>
+            <?php if ($_SESSION['logged_in']): ?>
+            <td>
+                <a href="edit.php?id=<?php echo $row['id']; ?>">Edit</a>
+                <a href="delete.php?id=<?php echo $row['id']; ?>" onclick="return confirm('Are you sure?')">Delete</a>
+            </td>
+            <?php endif; ?>
+        </tr>
+        <?php endwhile; ?>
+    </table>
+    <br>
+    <a href="show.php?action=logout">Logout</a>
+<?php else: ?>
+    <h2>Login as Admin</h2>
+    <form method="POST" action="show.php">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <button type="submit">Login</button>
+    </form>
+<?php endif; ?>
 
 </body>
 </html>
