@@ -1,100 +1,42 @@
 <?php
-// Hardcoded credentials for admin
-$admin_username = "admin";
-$admin_password = "password";
-
-// Simulate login (for demonstration purposes)
 session_start();
-if (!isset($_SESSION['logged_in'])) {
-    $_SESSION['logged_in'] = false;
+include 'db_connection.php';
+
+// Check if the user is logged in and display the Logout button
+if(isset($_SESSION['username'])) {
+    echo "<a href='logout.php'>Logout</a><br><br>";
 }
 
-// Handle login form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if ($_POST['username'] === $admin_username && $_POST['password'] === $admin_password) {
-        $_SESSION['logged_in'] = true;
+$query = "SELECT * FROM attendees";
+$result = mysqli_query($conn, $query);
+
+echo "<table border='1'>
+<tr>
+<th>Name</th>
+<th>Phone</th>
+<th>Team</th>
+<th>Grade</th>
+<th>Payment</th>";
+
+if(isset($_SESSION['username'])) {
+    echo "<th>Actions</th>";
+}
+
+echo "</tr>";
+
+while($row = mysqli_fetch_assoc($result)) {
+    echo "<tr>";
+    echo "<td>" . $row['name'] . "</td>";
+    echo "<td>" . $row['phone'] . "</td>";
+    echo "<td>" . $row['team'] . "</td>";
+    echo "<td>" . $row['grade'] . "</td>";
+    echo "<td>" . $row['payment'] . "</td>";
+
+    if(isset($_SESSION['username'])) {
+        echo "<td><a href='edit.php?id=" . $row['id'] . "'>Edit</a> | <a href='delete.php?id=" . $row['id'] . "'>Delete</a></td>";
     }
+
+    echo "</tr>";
 }
-
-// Logout action
-if (isset($_GET['action']) && $_GET['action'] === 'logout') {
-    $_SESSION['logged_in'] = false;
-    header("Location: show.php");
-    exit;
-}
-
-// Fetch data from the database
-$conn = new mysqli('localhost', 'username', 'password', 'mogmaa');
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-$sql = "SELECT * FROM attendees";
-$result = $conn->query($sql);
-?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Show Data</title>
-    <style>
-        /* Add your styles here */
-    </style>
-</head>
-<body>
-
-<?php if ($_SESSION['logged_in']): ?>
-    <h1>Attendee Details</h1>
-    <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Team</th>
-            <th>Grade</th>
-            <th>Payment</th>
-            <th>Serial Number</th>
-            <?php if ($_SESSION['logged_in']): ?>
-            <th>Actions</th>
-            <?php endif; ?>
-        </tr>
-        <?php while($row = $result->fetch_assoc()): ?>
-        <tr>
-            <td><?php echo $row['id']; ?></td>
-            <td><?php echo $row['name']; ?></td>
-            <td><?php echo $row['phone']; ?></td>
-            <td><?php echo $row['team']; ?></td>
-            <td><?php echo $row['grade']; ?></td>
-            <td><?php echo $row['payment']; ?></td>
-            <td><?php echo $row['serial_number']; ?></td>
-            <?php if ($_SESSION['logged_in']): ?>
-            <td>
-                <a href="edit.php?id=<?php echo $row['id']; ?>">Edit</a>
-                <a href="delete.php?id=<?php echo $row['id']; ?>" onclick="return confirm('Are you sure?')">Delete</a>
-            </td>
-            <?php endif; ?>
-        </tr>
-        <?php endwhile; ?>
-    </table>
-    <br>
-    <a href="show.php?action=logout">Logout</a>
-<?php else: ?>
-    <h2>Login as Admin</h2>
-    <form method="POST" action="show.php">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <br>
-        <button type="submit">Login</button>
-    </form>
-<?php endif; ?>
-
-</body>
-</html>
-
-<?php
-$conn->close();
+echo "</table>";
 ?>
