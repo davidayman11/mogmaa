@@ -1,4 +1,6 @@
 <?php
+session_start(); // Start the session
+
 // Enable error reporting for debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -24,6 +26,9 @@ if ($search) {
     $sql .= " WHERE name LIKE '%$search%' OR phone LIKE '%$search%' OR team LIKE '%$search%'";
 }
 $result = $conn->query($sql);
+
+// Check if the user is logged in
+$is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
 ?>
 
 <!DOCTYPE html>
@@ -31,7 +36,7 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Details</title>
+    <title>Employee Details</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -188,32 +193,36 @@ $result = $conn->query($sql);
             <th>Team</th>
             <th>Grade</th>
             <th>Payment</th>
+            <?php if ($is_logged_in): ?>
+            <th>Actions</th>
+            <?php endif; ?>
           </tr>
         </thead>
-       <tbody>
-  <?php
-  if ($result->num_rows > 0) {
-      // Output data of each row
-      while($row = $result->fetch_assoc()) {
-          echo "<tr>";
-          echo "<td>" . $row["id"] . "</td>";
-          echo "<td>" . $row["name"] . "</td>";
-          echo "<td>" . $row["phone"] . "</td>";
-          echo "<td>" . $row["team"] . "</td>";
-          echo "<td>" . $row["grade"] . "</td>";
-          echo "<td>" . $row["payment"] . "</td>";
-          echo "<td>";
-          echo "<a href='edit.php?id=" . $row["id"] . "' style='padding: 5px 10px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;'>Edit</a> ";
-          echo "<a href='delete.php?id=" . $row["id"] . "' style='padding: 5px 10px; background-color: #f44336; color: white; text-decoration: none; border-radius: 5px;'>Delete</a>";
-          echo "</td>";
-          echo "</tr>";
-      }
-  } else {
-      echo "<tr><td colspan='7' class='no-records'>No records found</td></tr>";
-  }
-  ?>
-</tbody>
-
+        <tbody>
+        <?php
+        if ($result->num_rows > 0) {
+            // Output data of each row
+            while ($row = $result->fetch_assoc()) {
+                echo "<tr>";
+                echo "<td>" . $row["id"] . "</td>";
+                echo "<td>" . $row["name"] . "</td>";
+                echo "<td>" . $row["phone"] . "</td>";
+                echo "<td>" . $row["team"] . "</td>";
+                echo "<td>" . $row["grade"] . "</td>";
+                echo "<td>" . $row["payment"] . "</td>";
+                if ($is_logged_in) {
+                    echo "<td>";
+                    echo "<a href='edit.php?id=" . $row["id"] . "' style='padding: 5px 10px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;'>Edit</a> ";
+                    echo "<a href='delete.php?id=" . $row["id"] . "' style='padding: 5px 10px; background-color: #f44336; color: white; text-decoration: none; border-radius: 5px;'>Delete</a>";
+                    echo "</td>";
+                }
+                echo "</tr>";
+            }
+        } else {
+            echo "<tr><td colspan='7' class='no-records'>No records found</td></tr>";
+        }
+        ?>
+        </tbody>
       </table>
     </section>
   </main>
