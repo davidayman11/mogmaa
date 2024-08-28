@@ -1,13 +1,16 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     header("Location: login.php");
     exit();
 }
 
-require 'db_connection.php'; // Include your database connection file
+require 'db_connection.php'; // Include the database connection
 
-// Check if id is set in the URL
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     echo "Invalid ID.";
     exit();
@@ -15,7 +18,6 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 
 $id = intval($_GET['id']);
 
-// Fetch the record from the database
 $query = "SELECT * FROM attendees WHERE id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $id);
@@ -29,7 +31,6 @@ if (!$record) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Handle form submission
     $name = $_POST['name'];
     $phone = $_POST['phone'];
     $team = $_POST['team'];
