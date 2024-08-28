@@ -1,6 +1,4 @@
 <?php
-session_start(); // Start the session
-
 // Enable error reporting for debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -26,9 +24,6 @@ if ($search) {
     $sql .= " WHERE name LIKE '%$search%' OR phone LIKE '%$search%' OR team LIKE '%$search%'";
 }
 $result = $conn->query($sql);
-
-// Check if the user is logged in
-$is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
 ?>
 
 <!DOCTYPE html>
@@ -163,33 +158,16 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tool">
               <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
             </svg>
-            MOGAM3'24</a>
+            Enter Employee Details</a>
         </li>
         <li>
-        <a href="./show.php">
+        <a href="./index.php">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers">
               <polygon points="12 2 2 7 12 12 22 7 12 2" />
               <polyline points="2 17 12 22 22 17" />
               <polyline points="2 12 12 17 22 12" />
             </svg>
-             Details</a>
-        </li>
-        <!-- Admin link -->
-        <li>
-        <a href="./login.php">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-            Admin</a>
-        </li>
-        <!-- Logout link -->
-        <li>
-        <a href="./logout.php">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out">
-              <path d="M9 12l-4-4m0 0l4-4m-4 4h12M5 17v2h14v-2" />
-            </svg>
-            Logout</a>
+            Employee Details</a>
         </li>
       </ul>
     </nav>
@@ -210,35 +188,26 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             <th>Team</th>
             <th>Grade</th>
             <th>Payment</th>
-            <?php if ($is_logged_in): ?>
-            <th>Actions</th>
-            <?php endif; ?>
           </tr>
         </thead>
         <tbody>
-        <?php
-        if ($result->num_rows > 0) {
-            // Output data of each row
-            while ($row = $result->fetch_assoc()) {
-                echo "<tr>";
-                echo "<td>" . $row["id"] . "</td>";
-                echo "<td>" . $row["name"] . "</td>";
-                echo "<td>" . $row["phone"] . "</td>";
-                echo "<td>" . $row["team"] . "</td>";
-                echo "<td>" . $row["grade"] . "</td>";
-                echo "<td>" . $row["payment"] . "</td>";
-                if ($is_logged_in) {
-                    echo "<td>";
-                    echo "<a href='edit.php?id=" . $row["id"] . "' style='padding: 5px 10px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;'>Edit</a> ";
-                    echo "<a href='delete.php?id=" . $row["id"] . "' style='padding: 5px 10px; background-color: #f44336; color: white; text-decoration: none; border-radius: 5px;'>Delete</a>";
-                    echo "</td>";
-                }
-                echo "</tr>";
-            }
-        } else {
-            echo "<tr><td colspan='7' class='no-records'>No records found</td></tr>";
-        }
-        ?>
+          <?php
+          if ($result->num_rows > 0) {
+              // Output data of each row
+              while($row = $result->fetch_assoc()) {
+                  echo "<tr>";
+                  echo "<td>" . $row["id"] . "</td>";
+                  echo "<td>" . $row["name"] . "</td>";
+                  echo "<td>" . $row["phone"] . "</td>";
+                  echo "<td>" . $row["team"] . "</td>";
+                  echo "<td>" . $row["grade"] . "</td>";
+                  echo "<td>" . $row["payment"] . "</td>";
+                  echo "</tr>";
+              }
+          } else {
+              echo "<tr><td colspan='6' class='no-records'>No records found</td></tr>";
+          }
+          ?>
         </tbody>
       </table>
     </section>
