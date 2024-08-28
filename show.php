@@ -1,4 +1,3 @@
-<?php
 // Enable error reporting for debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -146,6 +145,34 @@ $result = $conn->query($sql);
             padding: 20px;
             color: #999;
         }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-buttons a {
+            text-decoration: none;
+            padding: 8px 12px;
+            color: #fff;
+            border-radius: 5px;
+        }
+
+        .action-buttons .edit {
+            background-color: #4CAF50;
+        }
+
+        .action-buttons .delete {
+            background-color: #f44336;
+        }
+
+        .action-buttons .edit:hover {
+            background-color: #45a049;
+        }
+
+        .action-buttons .delete:hover {
+            background-color: #d32f2f;
+        }
     </style>
 </head>
 <body>
@@ -188,6 +215,7 @@ $result = $conn->query($sql);
             <th>Team</th>
             <th>Grade</th>
             <th>Payment</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -202,10 +230,14 @@ $result = $conn->query($sql);
                   echo "<td>" . $row["team"] . "</td>";
                   echo "<td>" . $row["grade"] . "</td>";
                   echo "<td>" . $row["payment"] . "</td>";
+                  echo "<td class='action-buttons'>";
+                  echo "<a href='edit.php?id=" . $row['id'] . "' class='edit'>Edit</a>";
+                  echo "<a href='delete.php?id=" . $row['id'] . "' class='delete' onclick='return confirm(\"Are you sure you want to delete this record?\");'>Delete</a>";
+                  echo "</td>";
                   echo "</tr>";
               }
           } else {
-              echo "<tr><td colspan='6' class='no-records'>No records found</td></tr>";
+              echo "<tr><td colspan='7' class='no-records'>No records found</td></tr>";
           }
           ?>
         </tbody>
