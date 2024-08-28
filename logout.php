@@ -10,7 +10,7 @@ if (isset($_SESSION['user_id'])) {
     // Destroy the session
     session_destroy();
     
-    // Optionally, you can also delete the session cookie if it exists
+    // Delete the session cookie if it exists
     if (ini_get("session.use_cookies")) {
         $params = session_get_cookie_params();
         setcookie(session_name(), '', time() - 42000,
@@ -18,9 +18,12 @@ if (isset($_SESSION['user_id'])) {
             $params["secure"], $params["httponly"]
         );
     }
+
+    // Set a logout message
+    $_SESSION['message'] = "User logged out successfully";
 }
 
-// Redirect to the login page
-header("Location: login.php");
+// Redirect to the index page
+header("Location: index.php");
 exit();
 ?>
