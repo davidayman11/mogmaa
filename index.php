@@ -1,3 +1,13 @@
+<?php
+// Start the session
+session_start();
+
+// Check if the user is logged in
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    header("Location: login.php"); // Redirect to login page if not logged in
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -111,7 +121,7 @@
             </svg>
              Details</a>
         </li>
-        <!-- New Admin link -->
+        <!-- Admin link -->
         <li>
         <a href="./login.php">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user">
@@ -119,6 +129,14 @@
               <circle cx="12" cy="7" r="4" />
             </svg>
             Admin</a>
+        </li>
+        <!-- Logout link -->
+        <li>
+        <a href="./logout.php">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out">
+              <path d="M9 12l-4-4m0 0l4-4m-4 4h12M5 17v2h14v-2" />
+            </svg>
+            Logout</a>
         </li>
       </ul>
     </nav>
