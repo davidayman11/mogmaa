@@ -31,7 +31,7 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Details</title>
+    <title>Details</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -158,7 +158,7 @@ $result = $conn->query($sql);
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tool">
               <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
             </svg>
-            Enter Employee Details</a>
+            MOGAM3'24</a>
         </li>
         <li>
         <a href="./index.php">
@@ -167,7 +167,7 @@ $result = $conn->query($sql);
               <polyline points="2 17 12 22 22 17" />
               <polyline points="2 12 12 17 22 12" />
             </svg>
-            Employee Details</a>
+             Details</a>
         </li>
       </ul>
     </nav>
@@ -191,29 +191,24 @@ $result = $conn->query($sql);
           </tr>
         </thead>
         <tbody>
-  <?php
-  if ($result->num_rows > 0) {
-      // Output data of each row
-      while($row = $result->fetch_assoc()) {
-          echo "<tr>";
-          echo "<td>" . $row["id"] . "</td>";
-          echo "<td>" . $row["name"] . "</td>";
-          echo "<td>" . $row["phone"] . "</td>";
-          echo "<td>" . $row["team"] . "</td>";
-          echo "<td>" . $row["grade"] . "</td>";
-          echo "<td>" . $row["payment"] . "</td>";
-          echo "<td>";
-          echo "<a href='edit.php?id=" . $row["id"] . "' style='padding: 5px 10px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;'>Edit</a> ";
-          echo "<a href='delete.php?id=" . $row["id"] . "' style='padding: 5px 10px; background-color: #f44336; color: white; text-decoration: none; border-radius: 5px;'>Delete</a>";
-          echo "</td>";
-          echo "</tr>";
-      }
-  } else {
-      echo "<tr><td colspan='7' class='no-records'>No records found</td></tr>";
-  }
-  ?>
-</tbody>
-
+          <?php
+          if ($result->num_rows > 0) {
+              // Output data of each row
+              while($row = $result->fetch_assoc()) {
+                  echo "<tr>";
+                  echo "<td>" . $row["id"] . "</td>";
+                  echo "<td>" . $row["name"] . "</td>";
+                  echo "<td>" . $row["phone"] . "</td>";
+                  echo "<td>" . $row["team"] . "</td>";
+                  echo "<td>" . $row["grade"] . "</td>";
+                  echo "<td>" . $row["payment"] . "</td>";
+                  echo "</tr>";
+              }
+          } else {
+              echo "<tr><td colspan='6' class='no-records'>No records found</td></tr>";
+          }
+          ?>
+        </tbody>
       </table>
     </section>
   </main>
