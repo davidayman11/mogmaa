@@ -191,24 +191,29 @@ $result = $conn->query($sql);
           </tr>
         </thead>
         <tbody>
-          <?php
-          if ($result->num_rows > 0) {
-              // Output data of each row
-              while($row = $result->fetch_assoc()) {
-                  echo "<tr>";
-                  echo "<td>" . $row["id"] . "</td>";
-                  echo "<td>" . $row["name"] . "</td>";
-                  echo "<td>" . $row["phone"] . "</td>";
-                  echo "<td>" . $row["team"] . "</td>";
-                  echo "<td>" . $row["grade"] . "</td>";
-                  echo "<td>" . $row["payment"] . "</td>";
-                  echo "</tr>";
-              }
-          } else {
-              echo "<tr><td colspan='6' class='no-records'>No records found</td></tr>";
-          }
-          ?>
-        </tbody>
+  <?php
+  if ($result->num_rows > 0) {
+      // Output data of each row
+      while($row = $result->fetch_assoc()) {
+          echo "<tr>";
+          echo "<td>" . $row["id"] . "</td>";
+          echo "<td>" . $row["name"] . "</td>";
+          echo "<td>" . $row["phone"] . "</td>";
+          echo "<td>" . $row["team"] . "</td>";
+          echo "<td>" . $row["grade"] . "</td>";
+          echo "<td>" . $row["payment"] . "</td>";
+          echo "<td>";
+          echo "<a href='edit.php?id=" . $row["id"] . "' style='padding: 5px 10px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;'>Edit</a> ";
+          echo "<a href='delete.php?id=" . $row["id"] . "' style='padding: 5px 10px; background-color: #f44336; color: white; text-decoration: none; border-radius: 5px;'>Delete</a>";
+          echo "</td>";
+          echo "</tr>";
+      }
+  } else {
+      echo "<tr><td colspan='7' class='no-records'>No records found</td></tr>";
+  }
+  ?>
+</tbody>
+
       </table>
     </section>
   </main>
