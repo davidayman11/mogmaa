@@ -1,88 +1,87 @@
-<?php
-session_start();
-
-// Check if the user is already logged in
-if (isset($_SESSION['user_id'])) {
-    header("Location: index.php");
-    exit();
-}
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-
-    // Hardcoded username and password
-    $valid_username = 'admin';
-    $valid_password = 'password123'; // Use a hashed password in a real application
-
-    if ($username === $valid_username && $password === $valid_password) {
-        $_SESSION['user_id'] = $username; // Store username or any identifier
-        header("Location: index.php");
-        exit();
-    } else {
-        $error_message = "Invalid username or password.";
-    }
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login Page</title>
     <style>
-        /* Basic styles */
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            margin: 0;
-            padding: 0;
+            background-color: #f0f0f0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            margin: 0;
         }
-        .login-form {
-            background: white;
+        .login-container {
+            background: #fff;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
             width: 300px;
         }
-        .login-form input {
+        .login-container h2 {
+            margin: 0 0 15px;
+            font-size: 24px;
+            text-align: center;
+        }
+        .login-container input[type="text"],
+        .login-container input[type="password"] {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
             border: 1px solid #ccc;
-            border-radius: 4px;
+            border-radius: 3px;
+            box-sizing: border-box;
         }
-        .login-form input[type="submit"] {
+        .login-container input[type="submit"] {
             background-color: #4CAF50;
             color: white;
             border: none;
+            padding: 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 3px;
             cursor: pointer;
         }
-        .login-form input[type="submit"]:hover {
+        .login-container input[type="submit"]:hover {
             background-color: #45a049;
-        }
-        .error {
-            color: red;
         }
     </style>
 </head>
 <body>
-    <div class="login-form">
+
+    <div class="login-container">
         <h2>Login</h2>
-        <?php if (isset($error_message)): ?>
-            <div class="error"><?php echo $error_message; ?></div>
-        <?php endif; ?>
-        <form action="login.php" method="post">
-            <input type="text" name="username" placeholder="Username" required />
-            <input type="password" name="password" placeholder="Password" required />
-            <input type="submit" value="Login" />
+        <form method="post" action="">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <input type="submit" value="Submit">
         </form>
     </div>
+
+    <?php
+    // Handling form submission
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $username = htmlspecialchars($_POST['username']);
+        $password = htmlspecialchars($_POST['password']);
+
+        // For demonstration purposes: Hardcoded username and password
+        $validUsername = 'admin';
+        $validPassword = 'password123';
+
+        if ($username === $validUsername && $password === $validPassword) {
+            echo "<p style='color: green; text-align: center;'>Login successful!</p>";
+        } else {
+            echo "<p style='color: red; text-align: center;'>Invalid username or password.</p>";
+        }
+    }
+    ?>
+
 </body>
 </html>
