@@ -18,6 +18,11 @@ if ($conn->connect_error) {
 // Get employee ID from the URL
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
+if ($id == 0) {
+    echo "Invalid ID";
+    exit();
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Handle form submission
     $name = $conn->real_escape_string($_POST['name']);

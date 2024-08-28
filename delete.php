@@ -18,19 +18,20 @@ if ($conn->connect_error) {
 // Get employee ID from the URL
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-if ($id) {
-    // Prepare the delete statement
-    $sql = "DELETE FROM employees WHERE id=$id";
-
-    if ($conn->query($sql) === TRUE) {
-        echo "Record deleted successfully";
-        header("Location: show.php"); // Redirect to the table view after deletion
-        exit();
-    } else {
-        echo "Error deleting record: " . $conn->error;
-    }
-} else {
+if ($id == 0) {
     echo "Invalid ID";
+    exit();
+}
+
+// Prepare the delete statement
+$sql = "DELETE FROM employees WHERE id=$id";
+
+if ($conn->query($sql) === TRUE) {
+    echo "Record deleted successfully";
+    header("Location: show.php"); // Redirect to the table view after deletion
+    exit();
+} else {
+    echo "Error deleting record: " . $conn->error;
 }
 
 $conn->close();
