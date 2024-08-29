@@ -16,7 +16,11 @@ if (ini_get("session.use_cookies")) {
 // Destroy the session
 session_destroy();
 
-// Redirect to the login page
+// Start a new session to store the logout message
+session_start();
+$_SESSION['logout_msg'] = "You have logged out successfully.";
+
+// Redirect back to the main page or any page you want
 header("Location: index.php");
 exit();
 ?>
