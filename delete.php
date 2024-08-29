@@ -1,11 +1,9 @@
 <?php
 session_start(); // Start the session
 
-// Check if the user is logged in
-if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    header("Location: login.php"); // Redirect to login page if not logged in
-    exit;
-}
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 // Database connection
 $servername = "193.203.168.53";
@@ -19,18 +17,20 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Get the employee ID from the URL
-$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-
-// Delete the employee record from the database
-$sql = "DELETE FROM employees WHERE id=$id";
-
-if ($conn->query($sql) === TRUE) {
-    echo "Record deleted successfully";
-    header("Location: show.php"); // Redirect to the details page
-    exit;
+// Check if an ID is provided
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $id = $conn->real_escape_string($_GET['id']);
+    
+    // Delete the record from the database
+    $deleteSql = "DELETE FROM employees WHERE id = '$id'";
+    if ($conn->query($deleteSql) === TRUE) {
+        header("Location: show.php"); // Redirect to the show page after deletion
+        exit;
+    } else {
+        echo "Error deleting record: " . $conn->error;
+    }
 } else {
-    echo "Error deleting record: " . $conn->error;
+    die("Invalid ID.");
 }
 
 $conn->close();
