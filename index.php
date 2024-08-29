@@ -1,6 +1,7 @@
 <?php
-
+session_start(); // Start the session
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -91,90 +92,108 @@
         input[type="submit"]:hover {
             background-color: #45a049;
         }
+
+        .logout-message {
+            background-color: #dff0d8;
+            color: #3c763d;
+            padding: 10px;
+            border: 1px solid #d6e9c6;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
 <div class="demo-page">
-  <div class="demo-page-navigation">
-    <nav>
-      <ul>
-        <li>
-        <a href="./index.php">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tool">
-              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-            </svg>
-            MOGAM3'24</a>
-        </li>
-        <li>
-        <a href="./show.php">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers">
-              <polygon points="12 2 2 7 12 12 22 7 12 2" />
-              <polyline points="2 17 12 22 22 17" />
-              <polyline points="2 12 12 17 22 12" />
-            </svg>
-             Details</a>
-        </li>
-        <!-- Admin link -->
-        <li>
-        <a href="./login.php">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-            Admin</a>
-        </li>
-        <!-- Logout link -->
-        <li>
-        <a href="./logout.php">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out">
-              <path d="M9 12l-4-4m0 0l4-4m-4 4h12M5 17v2h14v-2" />
-            </svg>
-            Logout</a>
-        </li>
-      </ul>
-    </nav>
-  </div>
-  <main class="demo-page-content">
-  <section>
-    <h1>Enter Details</h1>
-    <form action="submit.php" method="post">
-      <div class="nice-form-group">
-        <label>Name:</label>
-        <input type="text" name="name" placeholder="Your name" required />
-      </div>
-      <div class="nice-form-group">
-        <label>Phone:</label>
-        <input type="tel" name="phone" placeholder="Your Phone" value="+2" required />
-      </div>
-      <div class="nice-form-group">
-        <label>Team:</label>
-        <select name="team" required>
-          <option value="" disabled selected>Select your team</option>
-          <option value="bra3em">bra3em</option>
-          <option value="ashbal">ashbal</option>
-          <option value="zahrat">zahrat</option>
-          <option value="kshafa">kshafa</option>
-          <option value="morshdat">morshdat</option>
-          <option value="motkadem">motkadem</option>
-          <option value="ra2edat">ra2edat</option>
-          <option value="gwala">gwala</option>
-          <option value="kada">kada</option>
+    <div class="demo-page-navigation">
+        <nav>
+            <ul>
+                <li>
+                    <a href="./index.php">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tool">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                        </svg>
+                        MOGAM3'24</a>
+                </li>
+                <li>
+                    <a href="./show.php">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                            <polyline points="2 17 12 22 22 17"/>
+                            <polyline points="2 12 12 17 22 12"/>
+                        </svg>
+                        Details</a>
+                </li>
+                <!-- Admin link -->
+                <li>
+                    <a href="./login.php">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        Admin</a>
+                </li>
+                <!-- Logout link -->
+                <li>
+                    <a href="./logout.php">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out">
+                            <path d="M9 12l-4-4m0 0l4-4m-4 4h12M5 17v2h14v-2"/>
+                        </svg>
+                        Logout</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <main class="demo-page-content">
 
-          <!-- Add more options as needed -->
-        </select>
-      </div>
-      <div class="nice-form-group">
-        <label>Grade:</label>
-        <input type="text" name="grade" placeholder="Grade" required />
-      </div>
-      <div class="nice-form-group">
-        <label>Payment:</label>
-        <input type="text" name="payment" placeholder="Payment" required />
-      </div>
-      <input type="submit" value="Submit">
-    </form>
-  </section>
-</main>
+        <!-- Display logout message if it exists -->
+        <?php if (isset($_SESSION['logout_msg'])): ?>
+            <div class="logout-message">
+                <?php 
+                echo $_SESSION['logout_msg']; 
+                unset($_SESSION['logout_msg']); // Remove the message after displaying it
+                ?>
+            </div>
+        <?php endif; ?>
+
+        <section>
+            <h1>Enter Details</h1>
+            <form action="submit.php" method="post">
+                <div class="nice-form-group">
+                    <label>Name:</label>
+                    <input type="text" name="name" placeholder="Your name" required/>
+                </div>
+                <div class="nice-form-group">
+                    <label>Phone:</label>
+                    <input type="tel" name="phone" placeholder="Your Phone" value="+2" required/>
+                </div>
+                <div class="nice-form-group">
+                    <label>Team:</label>
+                    <select name="team" required>
+                        <option value="" disabled selected>Select your team</option>
+                        <option value="bra3em">bra3em</option>
+                        <option value="ashbal">ashbal</option>
+                        <option value="zahrat">zahrat</option>
+                        <option value="kshafa">kshafa</option>
+                        <option value="morshdat">morshdat</option>
+                        <option value="motkadem">motkadem</option>
+                        <option value="ra2edat">ra2edat</option>
+                        <option value="gwala">gwala</option>
+                        <option value="kada">kada</option>
+                    </select>
+                </div>
+                <div class="nice-form-group">
+                    <label>Grade:</label>
+                    <input type="text" name="grade" placeholder="Grade" required/>
+                </div>
+                <div class="nice-form-group">
+                    <label>Payment:</label>
+                    <input type="text" name="payment" placeholder="Payment" required/>
+                </div>
+                <input type="submit" value="Submit">
+            </form>
+        </section>
+    </main>
 </div>
 </body>
 </html>
