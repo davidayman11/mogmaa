@@ -151,7 +151,6 @@ session_start(); // Start the session
             <div class="logout-message">
                 <?php 
                 echo $_SESSION['logout_msg']; 
-                unset($_SESSION['logout_msg']); // Remove the message after displaying it
                 ?>
             </div>
         <?php endif; ?>
