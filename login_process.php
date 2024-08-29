@@ -18,7 +18,7 @@ $user = $_POST['username'];
 $pass = $_POST['password'];
 
 // Simple authentication logic (replace with your own)
-if ($user === 'admin' && $pass === 'password') { // Replace with real authentication
+if ($user === 'admin' && $pass === 'shamandora') { // Replace with real authentication
     $_SESSION['logged_in'] = true;
     header("Location: index.php"); // Redirect to the main page or dashboard
     exit();
