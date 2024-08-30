@@ -4,7 +4,9 @@
 // Retrieve parameters
 $id = $_GET['id'];
 $name = $_GET['name'];
+$phone = $_GET['phone'];
 $team = $_GET['team'];
+$grade = $_GET['grade'];
 $payment = $_GET['payment'];
 
 // Prepare the data string for the QR code with only name and payment
