@@ -251,7 +251,10 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
                 echo "<td>" . $row["phone"] . "</td>";
                 echo "<td>" . $row["team"] . "</td>";
                 echo "<td>" . $row["grade"] . "</td>";
-                
+                // Convert payment to a numeric value
+                $payment = floatval($row["payment"]);
+                echo "<td>" . number_format($payment, 2) . "</td>";
+                if ($is_logged_in) {
                     echo "<td>";
                     echo "<a href='edit.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: #4CAF50;'>Edit</a>";
                     echo "<a href='delete.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: #f44336;'>Delete</a>";
@@ -260,11 +263,13 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
                 echo "</tr>";
                 $row_number++; // Increment row number
             }
+        } else {
+            echo "<tr><td colspan='" . ($is_logged_in ? '8' : '7') . "' class='no-records'>No records found</td></tr>"; // Adjust colspan to include new column
+        }
         ?>
         </tbody>
         <tfoot>
           <tr>
-            <td colspan="<?php echo $is_logged_in ? '8' : '7'; ?>">Total Payment: <?php echo number_format($total_payment, 2); ?></td>
           </tr>
         </tfoot>
       </table>
