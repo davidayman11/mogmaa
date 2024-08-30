@@ -21,13 +21,10 @@ if ($conn->connect_error) {
 $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
 
 // Retrieve data from the database with search filter
-// Retrieve data from the database with search filter, sorted by last added
 $sql = "SELECT * FROM employees";
 if ($search) {
     $sql .= " WHERE name LIKE '%$search%' OR phone LIKE '%$search%' OR team LIKE '%$search%'";
 }
-$sql .= " ORDER BY id DESC"; // Sort by the last added name (newest entries first)
-
 $result = $conn->query($sql);
 
 // Check if the user is logged in
