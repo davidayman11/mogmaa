@@ -31,7 +31,9 @@ $result = $conn->query($sql);
 $total_payment = 0;
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        $total_payment += $row["payment"];
+        // Convert payment to a numeric value
+        $payment = floatval($row["payment"]);
+        $total_payment += $payment;
     }
 }
 
@@ -229,18 +231,20 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
                 echo "<td>" . $row["phone"] . "</td>";
                 echo "<td>" . $row["team"] . "</td>";
                 echo "<td>" . $row["grade"] . "</td>";
-                echo "<td>" . $row["payment"] . "</td>";
+                // Convert payment to a numeric value
+                $payment = floatval($row["payment"]);
+                echo "<td>" . number_format($payment, 2) . "</td>";
                 if ($is_logged_in) {
                     echo "<td>";
-                    echo "<a href='edit.php?id=" . $row["id"] . "' style='padding: 5px 10px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;'>Edit</a> ";
-                    echo "<a href='delete.php?id=" . $row["id"] . "' style='padding: 5px 10px; background-color: #f44336; color: white; text-decoration: none; border-radius: 5px;'>Delete</a>";
+                    echo "<a href='edit.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: #4CAF50;'>Edit</a>";
+                    echo "<a href='delete.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: #f44336;'>Delete</a>";
                     echo "</td>";
                 }
                 echo "</tr>";
                 $row_number++; // Increment row number
             }
         } else {
-            echo "<tr><td colspan='8' class='no-records'>No records found</td></tr>"; // Adjust colspan to include new column
+            echo "<tr><td colspan='" . ($is_logged_in ? '8' : '7') . "' class='no-records'>No records found</td></tr>"; // Adjust colspan to include new column
         }
         ?>
         </tbody>
