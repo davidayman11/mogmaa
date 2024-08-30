@@ -103,8 +103,15 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             color: #4CAF50;
         }
 
-        .search-form {
+        .search-container {
+            display: flex;
+            align-items: center;
             margin-bottom: 20px;
+        }
+
+        .search-form {
+            display: flex;
+            align-items: center;
         }
 
         .search-form input[type="text"] {
@@ -128,6 +135,12 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
 
         .search-form input[type="submit"]:hover {
             background-color: #45a049;
+        }
+
+        .total-payment {
+            margin-left: 20px;
+            font-size: 16px;
+            color: #333;
         }
 
         table {
@@ -199,10 +212,17 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
   <main class="demo-page-content">
     <section>
       <h1>Details</h1>
-      <form class="search-form" method="GET" action="">
-        <input type="text" name="search" placeholder="Search..." value="<?php echo htmlspecialchars($search); ?>">
-        <input type="submit" value="Search">
-      </form>
+      <div class="search-container">
+        <form class="search-form" method="GET" action="">
+          <input type="text" name="search" placeholder="Search..." value="<?php echo htmlspecialchars($search); ?>">
+          <input type="submit" value="Search">
+        </form>
+        <?php if ($is_logged_in): ?>
+        <div class="total-payment">
+          Total Payment: <?php echo number_format($total_payment, 2); ?>
+        </div>
+        <?php endif; ?>
+      </div>
       <table>
         <thead>
           <tr>
