@@ -21,7 +21,7 @@ if ($conn->connect_error) {
 $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
 
 // Retrieve data from the database with search filter
-$sql = "SELECT * FROM employees";
+$sql = "SELECT * FROM employees ORDER BY Timestamp ASC";
 if ($search) {
     $sql .= " WHERE name LIKE '%$search%' OR phone LIKE '%$search%' OR team LIKE '%$search%'";
 }
