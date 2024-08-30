@@ -27,6 +27,17 @@ if ($search) {
 }
 $result = $conn->query($sql);
 
+// Calculate total payment
+$total_payment = 0;
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $total_payment += $row["payment"];
+    }
+}
+
+// Reset result pointer
+$result->data_seek(0);
+
 // Check if the user is logged in
 $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
 ?>
@@ -38,6 +49,7 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Details</title>
     <style>
+        /* Existing CSS styles */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f4;
@@ -151,6 +163,11 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             padding: 20px;
             color: #999;
         }
+
+        tfoot tr {
+            font-weight: bold;
+            background-color: #f2f2f2;
+        }
     </style>
 </head>
 <body>
@@ -227,6 +244,11 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
         }
         ?>
         </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="<?php echo $is_logged_in ? '8' : '7'; ?>">Total Payment: <?php echo number_format($total_payment, 2); ?></td>
+          </tr>
+        </tfoot>
       </table>
     </section>
   </main>
