@@ -10,7 +10,7 @@ $grade = $_GET['grade'];
 $payment = $_GET['payment'];
 
 // Prepare the data string for the QR code with only name and payment
-$data = "Name: $name\nPayment Amount: $payment";
+$data = "Name: $name\nPayment Amount: $payment\nTeam: $team ";
 
 // Encode the data for the QR code URL
 $encodedData = urlencode($data);
