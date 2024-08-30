@@ -36,7 +36,7 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Details</title>
+    <title>Details</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -179,7 +179,7 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
   </div>
   <main class="demo-page-content">
     <section>
-      <h1> Details</h1>
+      <h1>Details</h1>
       <form class="search-form" method="GET" action="">
         <input type="text" name="search" placeholder="Search..." value="<?php echo htmlspecialchars($search); ?>">
         <input type="submit" value="Search">
@@ -187,6 +187,7 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
       <table>
         <thead>
           <tr>
+            <th>#</th> <!-- Row number header -->
             <th>ID</th>
             <th>Name</th>
             <th>Phone</th>
@@ -200,10 +201,12 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
         </thead>
         <tbody>
         <?php
+        $row_number = 1; // Initialize row number
         if ($result->num_rows > 0) {
             // Output data of each row
             while ($row = $result->fetch_assoc()) {
                 echo "<tr>";
+                echo "<td>" . $row_number . "</td>"; // Display row number
                 echo "<td>" . $row["id"] . "</td>";
                 echo "<td>" . $row["name"] . "</td>";
                 echo "<td>" . $row["phone"] . "</td>";
@@ -217,9 +220,10 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
                     echo "</td>";
                 }
                 echo "</tr>";
+                $row_number++; // Increment row number
             }
         } else {
-            echo "<tr><td colspan='7' class='no-records'>No records found</td></tr>";
+            echo "<tr><td colspan='8' class='no-records'>No records found</td></tr>"; // Adjust colspan to include new column
         }
         ?>
         </tbody>
