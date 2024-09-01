@@ -233,6 +233,7 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             <th>Team</th>
             <th>Grade</th>
             <th>Payment</th>
+            <th>Timestamp</th> <!-- Timestamp column header -->
             <?php if ($is_logged_in): ?>
             <th>Actions</th>
             <?php endif; ?>
@@ -251,32 +252,36 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
                 echo "<td>" . $row["phone"] . "</td>";
                 echo "<td>" . $row["team"] . "</td>";
                 echo "<td>" . $row["grade"] . "</td>";
-                // Convert payment to a numeric value
-                $payment = floatval($row["payment"]);
-                echo "<td>" . number_format($payment, 2) . "</td>";
+                echo "<td>" . number_format((float)$row["payment"], 2) . "</td>"; // Convert to float before formatting
+                echo "<td>" . $row["Timestamp"] . "</td>"; // Display Timestamp
                 if ($is_logged_in) {
                     echo "<td>";
                     echo "<a href='edit.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: #4CAF50;'>Edit</a>";
-                    echo "<a href='delete.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: #f44336;'>Delete</a>";
+                    echo " | ";
+                    echo "<a href='delete.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: #f44336;' onclick='return confirm(\"Are you sure you want to delete this record?\");'>Delete</a>";
                     echo "</td>";
                 }
                 echo "</tr>";
                 $row_number++; // Increment row number
             }
         } else {
-            echo "<tr><td colspan='" . ($is_logged_in ? '8' : '7') . "' class='no-records'>No records found</td></tr>"; // Adjust colspan to include new column
+            echo "<tr><td colspan='9' class='no-records'>No records found</td></tr>";
         }
         ?>
         </tbody>
+        <?php if ($is_logged_in): ?>
         <tfoot>
           <tr>
+            <td colspan="6">Total Payment:</td>
+            <td><?php echo number_format($total_payment, 2); ?></td>
+            <td></td> <!-- Empty cell for the Timestamp column -->
           </tr>
         </tfoot>
+        <?php endif; ?>
       </table>
     </section>
   </main>
 </div>
-
 </body>
 </html>
 
