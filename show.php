@@ -20,14 +20,16 @@ if ($conn->connect_error) {
 // Handle search and payment filter query
 $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
 $payment_filter = isset($_GET['payment_filter']) ? $conn->real_escape_string($_GET['payment_filter']) : '';
-$payment_value = isset($_GET['payment_value']) ? (float)$_GET['payment_value'] : '';
+$payment_value = isset($_GET['payment_value']) ? (float)$_GET['payment_value'] : null;
 
 // Build the SQL query
 $sql = "SELECT * FROM employees WHERE 1=1";
 if ($search) {
     $sql .= " AND (name LIKE '%$search%' OR phone LIKE '%$search%' OR team LIKE '%$search%')";
 }
-if ($payment_filter && $payment_value) {
+if ($payment_filter === '0') {
+    $sql .= " AND payment = 0";
+} elseif ($payment_filter && $payment_value !== null) {
     $sql .= " AND payment $payment_filter $payment_value";
 }
 $sql .= " ORDER BY Timestamp ASC";
@@ -73,11 +75,12 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
                     <input type="text" name="search" placeholder="Search..." value="<?php echo htmlspecialchars($search); ?>">
                     <select name="payment_filter">
                         <option value="">Filter by Payment</option>
+                        <option value="0" <?php echo $payment_filter === '0' ? 'selected' : ''; ?>>Payment is 0</option>
                         <option value="=" <?php echo $payment_filter == '=' ? 'selected' : ''; ?>>Equal to</option>
                         <option value=">" <?php echo $payment_filter == '>' ? 'selected' : ''; ?>>Greater than</option>
                         <option value="<" <?php echo $payment_filter == '<' ? 'selected' : ''; ?>>Less than</option>
                     </select>
-                    <input type="number" step="0.01" name="payment_value" placeholder="Payment value" value="<?php echo htmlspecialchars($payment_value); ?>">
+                    <input type="number" step="0.01" name="payment_value" placeholder="Payment value" value="<?php echo htmlspecialchars($payment_value); ?>" <?php echo $payment_filter === '0' ? 'disabled' : ''; ?>>
                     <input type="submit" value="Filter">
                 </form>
                 <?php if ($is_logged_in): ?>
