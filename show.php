@@ -21,7 +21,7 @@ if ($conn->connect_error) {
 $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
 
 // Retrieve data from the database with search filter
-$sql = "SELECT * FROM employees ORDER BY Timestamp ASC";
+$sql = "SELECT id, name, phone, team, grade, payment, Timestamp FROM employees ORDER BY Timestamp ASC";
 if ($search) {
     $sql .= " WHERE name LIKE '%$search%' OR phone LIKE '%$search%' OR team LIKE '%$search%'";
 }
@@ -233,6 +233,7 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             <th>Team</th>
             <th>Grade</th>
             <th>Payment</th>
+            <th>Timestamp</th>
             <?php if ($is_logged_in): ?>
             <th>Actions</th>
             <?php endif; ?>
@@ -251,32 +252,29 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
                 echo "<td>" . $row["phone"] . "</td>";
                 echo "<td>" . $row["team"] . "</td>";
                 echo "<td>" . $row["grade"] . "</td>";
-                // Convert payment to a numeric value
-                $payment = floatval($row["payment"]);
-                echo "<td>" . number_format($payment, 2) . "</td>";
+                echo "<td>" . number_format($row["payment"], 2) . "</td>";
+                echo "<td>" . $row["Timestamp"] . "</td>";
                 if ($is_logged_in) {
-                    echo "<td>";
-                    echo "<a href='edit.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: #4CAF50;'>Edit</a>";
-                    echo "<a href='delete.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: #f44336;'>Delete</a>";
-                    echo "</td>";
+                    echo "<td><a href='edit.php?id=" . $row["id"] . "'>Edit</a> | <a href='delete.php?id=" . $row["id"] . "'>Delete</a></td>";
                 }
                 echo "</tr>";
                 $row_number++; // Increment row number
             }
         } else {
-            echo "<tr><td colspan='" . ($is_logged_in ? '8' : '7') . "' class='no-records'>No records found</td></tr>"; // Adjust colspan to include new column
+            echo "<tr><td colspan='9' class='no-records'>No records found.</td></tr>";
         }
         ?>
         </tbody>
         <tfoot>
           <tr>
+            <td colspan="8">Total Payment</td>
+            <td><?php echo number_format($total_payment, 2); ?></td>
           </tr>
         </tfoot>
       </table>
     </section>
   </main>
 </div>
-
 </body>
 </html>
 
