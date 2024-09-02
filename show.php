@@ -21,10 +21,12 @@ if ($conn->connect_error) {
 $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
 
 // Retrieve data from the database with search filter
-$sql = "SELECT * FROM employees ORDER BY Timestamp ASC";
+$sql = "SELECT * FROM employees";
 if ($search) {
     $sql .= " WHERE name LIKE '%$search%' OR phone LIKE '%$search%' OR team LIKE '%$search%'";
 }
+$sql .= " ORDER BY Timestamp ASC"; // Move ORDER BY after WHERE
+
 $result = $conn->query($sql);
 
 // Calculate total payment
@@ -256,9 +258,8 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
                 echo "<td>" . $row["Timestamp"] . "</td>"; // Display Timestamp
                 if ($is_logged_in) {
                     echo "<td>";
-                    echo "<a href='edit.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: #4CAF50;'>Edit</a>";
-                    echo " | ";
-                    echo "<a href='delete.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: #f44336;' onclick='return confirm(\"Are you sure you want to delete this record?\");'>Delete</a>";
+                    echo "<a href='edit.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: #4CAF50;'>Edit</a> | ";
+                    echo "<a href='delete.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: red;'>Delete</a>";
                     echo "</td>";
                 }
                 echo "</tr>";
@@ -269,15 +270,6 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
         }
         ?>
         </tbody>
-        <?php if ($is_logged_in): ?>
-        <tfoot>
-          <tr>
-            <td colspan="6">Total Payment:</td>
-            <td><?php echo number_format($total_payment, 2); ?></td>
-            <td></td> <!-- Empty cell for the Timestamp column -->
-          </tr>
-        </tfoot>
-        <?php endif; ?>
       </table>
     </section>
   </main>
