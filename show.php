@@ -23,10 +23,9 @@ $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : 
 // Retrieve data from the database with search filter
 $sql = "SELECT * FROM employees";
 if ($search) {
-    $sql .= " WHERE name LIKE '%$search%' OR phone LIKE '%$search%' OR team LIKE '%$search%'";
+    $sql .= " WHERE name LIKE '%$search%' OR phone LIKE '%$search%' OR team LIKE '%$search%' OR Timestamp LIKE '%$search%'";
 }
-$sql .= " ORDER BY Timestamp ASC"; // Move ORDER BY after WHERE
-
+$sql .= " ORDER BY Timestamp ASC";
 $result = $conn->query($sql);
 
 // Calculate total payment
@@ -245,7 +244,6 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
         <?php
         $row_number = 1; // Initialize row number
         if ($result->num_rows > 0) {
-            // Output data of each row
             while ($row = $result->fetch_assoc()) {
                 echo "<tr>";
                 echo "<td>" . $row_number . "</td>"; // Display row number
