@@ -22,11 +22,11 @@ if (isset($_GET['id'])) {
         $row = $result->fetch_assoc();
 
         // Generate QR code image URL based on the serial number
-        $serialNumber = $row['serialNumber'];
-        $qrCodeImageUrl = "http://mogamaa.shamandorascout.com/qrcodes/" . $serialNumber . ".png";
+        $serialNumber = $row['id'];
+        $qrCodeImageUrl = "http://mogamaa.shamandorascout.com/qrcodes/" . $id . ".png";
 
         // Create the WhatsApp message with the Arabic name and serial number
-        $whatsappMessage = "Hi " . $row['name'] . ", your Serial Number is: " . $serialNumber . ". Here is your QR code: " . $qrCodeImageUrl;
+        $whatsappMessage = "Hi " . $row['name'] . ", your Serial Number is: " . $id . ". Here is your QR code: " . $qrCodeImageUrl;
         $whatsappUrl = "https://api.whatsapp.com/send?phone=" . urlencode($row['phone']) . "&text=" . urlencode($whatsappMessage);
 
         // Redirect to WhatsApp
