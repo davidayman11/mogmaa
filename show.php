@@ -25,11 +25,8 @@ $sql = "SELECT * FROM employees";
 if ($search) {
     $sql .= " WHERE name LIKE '%$search%' OR phone LIKE '%$search%' OR team LIKE '%$search%' OR Timestamp LIKE '%$search%'";
 }
-$sql .= " ORDER BY Timestamp ASC"; // Ensure ordering is correct
+$sql .= " ORDER BY Timestamp ASC";
 $result = $conn->query($sql);
-
-// Debugging: Print SQL query to check correctness
-// echo "<pre>$sql</pre>";
 
 // Calculate total payment
 $total_payment = 0;
@@ -246,37 +243,33 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
         <tbody>
         <?php
         $row_number = 1; // Initialize row number
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                echo "<tr>";
-                echo "<td>" . $row_number++ . "</td>"; // Output row number
-                echo "<td>" . $row["id"] . "</td>";
-                echo "<td>" . $row["name"] . "</td>";
-                echo "<td>" . $row["phone"] . "</td>";
-                echo "<td>" . $row["team"] . "</td>";
-                echo "<td>" . $row["grade"] . "</td>";
-                echo "<td>" . $row["payment"] . "</td>";
-                echo "<td>" . $row["Timestamp"] . "</td>"; // Display Timestamp
-                if ($is_logged_in) {
-                    echo "<td>
-                            <a href='edit.php?id=" . $row["id"] . "'>Edit</a> |
-                            <a href='delete.php?id=" . $row["id"] . "'>Delete</a>
-                          </td>";
-                }
-                echo "</tr>";
-            }
-        } else {
-            echo "<tr><td colspan='" . ($is_logged_in ? "9" : "8") . "' class='no-records'>No records found</td></tr>";
+        
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        echo "<tr>";
+        echo "<td>" . $row_number . "</td>"; // Display row number
+        echo "<td>" . $row["id"] . "</td>";
+        echo "<td>" . $row["name"] . "</td>";
+        echo "<td>" . $row["phone"] . "</td>";
+        echo "<td>" . $row["team"] . "</td>";
+        echo "<td>" . $row["grade"] . "</td>";
+        echo "<td>" . number_format((float)$row["payment"], 2) . "</td>"; // Convert to float before formatting
+        echo "<td>" . $row["Timestamp"] . "</td>"; // Display Timestamp
+        if ($is_logged_in) {
+            echo "<td>";
+            echo "<a href='edit.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: #4CAF50;'>Edit</a> | ";
+            echo "<a href='delete.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: red;'>Delete</a> | ";
+            echo "<a href='resend.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: blue;'>Resend Code</a>"; // Resend Code button
+            echo "</td>";
         }
+        echo "</tr>";
+        $row_number++; // Increment row number
+    }
+} else {
+    echo "<tr><td colspan='9' class='no-records'>No records found</td></tr>";
+}
         ?>
         </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="<?php echo $is_logged_in ? '9' : '8'; ?>"> <!-- Adjust colspan based on login status -->
-              <?php if ($result->num_rows > 0) { echo "Total records: " . $result->num_rows; } ?>
-            </td>
-          </tr>
-        </tfoot>
       </table>
     </section>
   </main>
@@ -285,6 +278,5 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
 </html>
 
 <?php
-// Close database connection
 $conn->close();
 ?>
