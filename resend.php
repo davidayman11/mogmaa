@@ -26,7 +26,7 @@ if (isset($_GET['id'])) {
         $qrCodeImageUrl = "http://mogamaa.shamandorascout.com/qrcodes/" . $id . ".png";
 
         // Create the WhatsApp message with the Arabic name and serial number
-        $whatsappMessage = "Hi " . $row['name'] . "we are shamandora scouts" . ", your Serial Number is: " . $id . ". Here is your QR code: " . $qrCodeImageUrl;
+        $whatsappMessage = "Hi " . $row['name'] . ", your Serial Number is: " . $id . ". Here is your QR code: " . $qrCodeImageUrl;
         $whatsappUrl = "https://api.whatsapp.com/send?phone=" . urlencode($row['phone']) . "&text=" . urlencode($whatsappMessage);
 
         // Redirect to WhatsApp
