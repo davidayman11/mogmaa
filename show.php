@@ -20,12 +20,19 @@ if ($conn->connect_error) {
 // Handle search query
 $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
 
-// Retrieve data from the database with search filter
+// Handle sorting
+$sort_column = isset($_GET['sort']) ? $_GET['sort'] : 'Timestamp'; // Default sort column
+$sort_order = isset($_GET['order']) && $_GET['order'] === 'desc' ? 'DESC' : 'ASC'; // Default sort order
+
+// Reverse the sort order for the next click
+$new_sort_order = $sort_order === 'ASC' ? 'desc' : 'asc';
+
+// Retrieve data from the database with search and sort filters
 $sql = "SELECT * FROM employees";
 if ($search) {
     $sql .= " WHERE name LIKE '%$search%' OR phone LIKE '%$search%' OR team LIKE '%$search%' OR Timestamp LIKE '%$search%'";
 }
-$sql .= " ORDER BY Timestamp ASC";
+$sql .= " ORDER BY $sort_column $sort_order";
 $result = $conn->query($sql);
 
 // Calculate total payment
@@ -184,7 +191,7 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             font-weight: bold;
             background-color: #f2f2f2;
         }
-    </style>
+        </style>
 </head>
 <body>
 <div class="demo-page">
@@ -227,14 +234,14 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
       <table>
         <thead>
           <tr>
-            <th>#</th> <!-- Row number header -->
-            <th>ID</th>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Team</th>
-            <th>Grade</th>
-            <th>Payment</th>
-            <th>Timestamp</th> <!-- Timestamp column header -->
+            <th>#</th>
+            <th><a href="?search=<?php echo urlencode($search); ?>&sort=id&order=<?php echo $new_sort_order; ?>">ID</a></th>
+            <th><a href="?search=<?php echo urlencode($search); ?>&sort=name&order=<?php echo $new_sort_order; ?>">Name</a></th>
+            <th><a href="?search=<?php echo urlencode($search); ?>&sort=phone&order=<?php echo $new_sort_order; ?>">Phone</a></th>
+            <th><a href="?search=<?php echo urlencode($search); ?>&sort=team&order=<?php echo $new_sort_order; ?>">Team</a></th>
+            <th><a href="?search=<?php echo urlencode($search); ?>&sort=grade&order=<?php echo $new_sort_order; ?>">Grade</a></th>
+            <th><a href="?search=<?php echo urlencode($search); ?>&sort=payment&order=<?php echo $new_sort_order; ?>">Payment</a></th>
+            <th><a href="?search=<?php echo urlencode($search); ?>&sort=Timestamp&order=<?php echo $new_sort_order; ?>">Timestamp</a></th>
             <?php if ($is_logged_in): ?>
             <th>Actions</th>
             <?php endif; ?>
