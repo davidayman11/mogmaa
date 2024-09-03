@@ -12,21 +12,6 @@ $phone = $_SESSION['phone'];
 $serialNumber = $_SESSION['serialNumber'];
 $qrCodeImageUrl = $_SESSION['qrCodeImageUrl'];
 
-// Store user data in the database before clearing the session
-$servername = "193.203.168.53";
-$username = "u968010081_mogamaa";
-$password = "Mogamaa_2000";
-$dbname = "u968010081_mogamaa";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Insert data into database
-$sql = "INSERT INTO employees (name, phone, serialNumber, qrCodeImageUrl) VALUES ('$name', '$phone', '$serialNumber', '$qrCodeImageUrl')";
-$conn->query($sql);
-
 // Create the WhatsApp message with a link to the QR code image
 $whatsappMessage = "Hi $name, your Serial Number is: $serialNumber. Here is your QR code: $qrCodeImageUrl";
 $whatsappUrl = "https://api.whatsapp.com/send?phone=" . urlencode($phone) . "&text=" . urlencode($whatsappMessage);
