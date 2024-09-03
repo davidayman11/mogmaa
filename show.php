@@ -243,29 +243,31 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
         <tbody>
         <?php
         $row_number = 1; // Initialize row number
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                echo "<tr>";
-                echo "<td>" . $row_number . "</td>"; // Display row number
-                echo "<td>" . $row["id"] . "</td>";
-                echo "<td>" . $row["name"] . "</td>";
-                echo "<td>" . $row["phone"] . "</td>";
-                echo "<td>" . $row["team"] . "</td>";
-                echo "<td>" . $row["grade"] . "</td>";
-                echo "<td>" . number_format((float)$row["payment"], 2) . "</td>"; // Convert to float before formatting
-                echo "<td>" . $row["Timestamp"] . "</td>"; // Display Timestamp
-                if ($is_logged_in) {
-                    echo "<td>";
-                    echo "<a href='edit.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: #4CAF50;'>Edit</a> | ";
-                    echo "<a href='delete.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: red;'>Delete</a>";
-                    echo "</td>";
-                }
-                echo "</tr>";
-                $row_number++; // Increment row number
-            }
-        } else {
-            echo "<tr><td colspan='9' class='no-records'>No records found</td></tr>";
+        
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        echo "<tr>";
+        echo "<td>" . $row_number . "</td>"; // Display row number
+        echo "<td>" . $row["id"] . "</td>";
+        echo "<td>" . $row["name"] . "</td>";
+        echo "<td>" . $row["phone"] . "</td>";
+        echo "<td>" . $row["team"] . "</td>";
+        echo "<td>" . $row["grade"] . "</td>";
+        echo "<td>" . number_format((float)$row["payment"], 2) . "</td>"; // Convert to float before formatting
+        echo "<td>" . $row["Timestamp"] . "</td>"; // Display Timestamp
+        if ($is_logged_in) {
+            echo "<td>";
+            echo "<a href='edit.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: #4CAF50;'>Edit</a> | ";
+            echo "<a href='delete.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: red;'>Delete</a> | ";
+            echo "<a href='resend.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: blue;'>Resend Code</a>"; // Resend Code button
+            echo "</td>";
         }
+        echo "</tr>";
+        $row_number++; // Increment row number
+    }
+} else {
+    echo "<tr><td colspan='9' class='no-records'>No records found</td></tr>";
+}
         ?>
         </tbody>
       </table>
