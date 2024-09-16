@@ -11,7 +11,7 @@ $dbname = "u968010081_mogamaa";
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
-    die("<div style='padding: 20px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 5px; margin: 20px; font-family: Arial, sans-serif;'>Connection failed: " . $conn->connect_error . "</div>");
+    die("<div class='notification error'>Connection failed: " . $conn->connect_error . "</div>");
 }
 
 // Capture form data
@@ -37,9 +37,9 @@ if (!preg_match('/^\d+$/', $payment)) {
     $error_messages[] = "The payment must contain only numeric characters.";
 }
 
-// If validation fails, display error messages
+// Display error messages or proceed with database insertion
 if (!$valid) {
-    echo "<div style='padding: 20px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 5px; margin: 20px; font-family: Arial, sans-serif;'>";
+    echo "<div class='notification error'>";
     echo "<ul>";
     foreach ($error_messages as $message) {
         echo "<li>" . htmlspecialchars($message) . "</li>";
@@ -47,8 +47,6 @@ if (!$valid) {
     echo "</ul>";
     echo "</div>";
 } else {
-    // If validation passes, proceed with database insertion
-
     // Generate a 4-character unique ID
     $id = substr(str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 4);
 
@@ -57,13 +55,60 @@ if (!$valid) {
     VALUES ('$id', '$name', '$phone', '$team', '$grade', '$payment')";
 
     if ($conn->query($sql) === TRUE) {
-        // Redirect to the QR code generation page
-        header("Location: generate_qr.php?id=$id&name=" . urlencode($name) . "&phone=" . urlencode($phone) . "&team=" . urlencode($team) . "&grade=" . urlencode($grade) . "&payment=" . urlencode($payment));
+        echo "<div class='notification success'>Form submitted successfully! Redirecting...</div>";
+        // Redirect to the QR code generation page after 2 seconds
+        header("Refresh: 2; URL=generate_qr.php?id=$id&name=" . urlencode($name) . "&phone=" . urlencode($phone) . "&team=" . urlencode($team) . "&grade=" . urlencode($grade) . "&payment=" . urlencode($payment));
         exit;
     } else {
-        echo "<div style='padding: 20px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 5px; margin: 20px; font-family: Arial, sans-serif;'>Error: " . $sql . "<br>" . $conn->error . "</div>";
+        echo "<div class='notification error'>Error: " . $sql . "<br>" . $conn->error . "</div>";
     }
 }
 
 $conn->close();
 ?>
+
+<!-- CSS for better styling -->
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f7f6;
+        padding: 20px;
+        margin: 0;
+    }
+    
+    .notification {
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 5px;
+        font-size: 16px;
+        color: #fff;
+    }
+    
+    .notification.error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+    
+    .notification.success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .notification ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .notification ul li {
+        margin-bottom: 5px;
+    }
+    
+    .notification ul li::before {
+        content: "\2022"; /* Bullet point */
+        color: #721c24;
+        margin-right: 10px;
+    }
+</style>
