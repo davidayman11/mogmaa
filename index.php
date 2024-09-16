@@ -124,6 +124,14 @@ session_start(); // Start the session
                         </svg>
                         Details</a>
                 </li>
+                <li>
+    <a href="./ahaly.php">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2V12H8v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9z"></path>
+        </svg>
+        Ahaly</a>
+</li>
+
                 <!-- Admin link -->
                 <li>
                     <a href="./login.php">
