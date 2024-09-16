@@ -26,9 +26,9 @@ $valid = true;
 $error_messages = [];
 
 // Validate phone number: must start with +20 and be 13 characters long
-if (!preg_match('/^\+20\d{9}$/', $phone)) {
+if (!preg_match('/^\+20\d{10}$/', $phone)) {
     $valid = false;
-    $error_messages[] = "The phone number must start with +20 and be exactly 13 characters long.";
+    $error_messages[] = "The phone number must start with +20 and be exactly 13 characters long (including country code).";
 }
 
 // Validate payment: must contain only numeric characters (English numbers)
