@@ -1,95 +1,40 @@
 <?php
-session_start(); // Start the session
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Database connection
+$servername = "193.203.168.53";
+$username = "u968010081_mogamaa";
+$password = "Mogamaa_2000";
+$dbname = "u968010081_mogamaa";
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("<div style='padding: 20px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 5px; margin: 20px; font-family: Arial, sans-serif;'>Connection failed: " . $conn->connect_error . "</div>");
+}
+
+// Generate a 4-character unique ID
+$id = substr(str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 4);
+
+// Capture form data
+$name = $_POST['name'];
+$phone = $_POST['phone'];
+$team = $_POST['team'];
+$grade = $_POST['grade'];
+$payment = $_POST['payment'];
+
+// Insert data into MySQL database
+$sql = "INSERT INTO employees (id, name, phone, team, grade, payment)
+VALUES ('$id', '$name', '$phone', '$team', '$grade', '$payment')";
+
+if ($conn->query($sql) === TRUE) {
+    // Redirect to the QR code generation page
+    header("Location: generate_qr.php?id=$id&name=" . urlencode($name) . "&phone=" . urlencode($phone) . "&team=" . urlencode($team) . "&grade=" . urlencode($grade) . "&payment=" . urlencode($payment));
+    exit;
+} else {
+    echo "<div style='padding: 20px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 5px; margin: 20px; font-family: Arial, sans-serif;'>Error: " . $sql . "<br>" . $conn->error . "</div>";
+}
+
+$conn->close();
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ahaly</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-
-        .demo-page {
-            display: flex;
-            height: 100vh;
-        }
-
-        .demo-page-navigation {
-            width: 250px;
-            background-color: #333;
-            padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .demo-page-navigation nav ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .demo-page-navigation nav ul li {
-            margin-bottom: 20px;
-        }
-
-        .demo-page-navigation nav ul li a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-        }
-
-        .demo-page-navigation nav ul li a svg {
-            margin-right: 10px;
-        }
-
-        .demo-page-content {
-            flex-grow: 1;
-            padding: 40px;
-        }
-
-        .demo-page-content h1 {
-            margin-top: 0;
-            color: #4CAF50;
-        }
-    </style>
-</head>
-<body>
-<div class="demo-page">
-    <div class="demo-page-navigation">
-        <nav>
-            <ul>
-                <li>
-                    <a href="./index.php">MOGAM3'24</a>
-                </li>
-                <li>
-                    <a href="./show.php">Details</a>
-                </li>
-                <li>
-                    <a href="./login.php">Admin</a>
-                </li>
-                <li>
-                    <a href="./logout.php">Logout</a>
-                </li>
-                <li>
-                    <a href="./ahaly.php">Ahaly</a> <!-- Add this line to navigate to the Ahaly page -->
-                </li>
-            </ul>
-        </nav>
-    </div>
-    <main class="demo-page-content">
-        <section>
-            <h1>Welcome to the Ahaly Page</h1>
-            <p>This page is dedicated to the Ahaly section.</p>
-        </section>
-    </main>
-</div>
-</body>
-</html>
