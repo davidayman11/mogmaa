@@ -17,39 +17,13 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Handle filter parameters
-$name_filter = isset($_GET['name']) ? $conn->real_escape_string($_GET['name']) : '';
-$date_filter = isset($_GET['date']) ? $conn->real_escape_string($_GET['date']) : '';
-$team_filter = isset($_GET['team']) ? $conn->real_escape_string($_GET['team']) : '';
+// Handle search query
+$search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
 
-// Retrieve unique dates for filter options
-$dates_result = $conn->query("SELECT DISTINCT DATE(Timestamp) as date FROM employees ORDER BY date DESC");
-$dates = [];
-if ($dates_result->num_rows > 0) {
-    while ($date_row = $dates_result->fetch_assoc()) {
-        $dates[] = $date_row['date'];
-    }
-}
-
-// Retrieve unique team names for filter options
-$teams_result = $conn->query("SELECT DISTINCT team FROM employees");
-$teams = [];
-if ($teams_result->num_rows > 0) {
-    while ($team_row = $teams_result->fetch_assoc()) {
-        $teams[] = $team_row['team'];
-    }
-}
-
-// Retrieve data from the database with filters
-$sql = "SELECT * FROM employees WHERE 1=1";
-if ($name_filter) {
-    $sql .= " AND name LIKE '%$name_filter%'";
-}
-if ($date_filter) {
-    $sql .= " AND DATE(Timestamp) = '$date_filter'";
-}
-if ($team_filter) {
-    $sql .= " AND team LIKE '%$team_filter%'";
+// Retrieve data from the database with search filter
+$sql = "SELECT * FROM employees";
+if ($search) {
+    $sql .= " WHERE name LIKE '%$search%' OR phone LIKE '%$search%' OR team LIKE '%$search%' OR Timestamp LIKE '%$search%'";
 }
 $sql .= " ORDER BY Timestamp ASC";
 $result = $conn->query($sql);
@@ -58,6 +32,7 @@ $result = $conn->query($sql);
 $total_payment = 0;
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
+        // Convert payment to a numeric value
         $payment = floatval($row["payment"]);
         $total_payment += $payment;
     }
@@ -77,6 +52,7 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Details</title>
     <style>
+        /* Existing CSS styles */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f4;
@@ -88,7 +64,6 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
         .demo-page {
             display: flex;
             height: 100vh;
-            flex-direction: column;
         }
 
         .demo-page-navigation {
@@ -96,7 +71,6 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             background-color: #333;
             padding: 20px;
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-            flex-shrink: 0;
         }
 
         .demo-page-navigation nav ul {
@@ -122,7 +96,7 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
 
         .demo-page-content {
             flex-grow: 1;
-            padding: 20px;
+            padding: 40px;
         }
 
         .demo-page-content h1 {
@@ -130,31 +104,26 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             color: #4CAF50;
         }
 
-        .filter-container {
-            margin-bottom: 20px;
-            padding: 10px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .filter-form {
+        .search-container {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
-        .filter-form select, .filter-form input[type="text"] {
+        .search-form {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-form input[type="text"] {
             padding: 10px;
             font-size: 16px;
             border: 1px solid #ddd;
             border-radius: 5px;
-            flex: 1;
-            min-width: 150px;
-            box-sizing: border-box;
+            width: 200px;
         }
 
-        .filter-form input[type="submit"] {
+        .search-form input[type="submit"] {
             padding: 10px 20px;
             font-size: 16px;
             border: none;
@@ -162,14 +131,15 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             background-color: #4CAF50;
             color: #fff;
             cursor: pointer;
+            margin-left: 10px;
         }
 
-        .filter-form input[type="submit"]:hover {
+        .search-form input[type="submit"]:hover {
             background-color: #45a049;
         }
 
         .total-payment {
-            margin-top: 10px;
+            margin-left: 20px;
             font-size: 16px;
             color: #333;
         }
@@ -179,9 +149,7 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             border-collapse: collapse;
             margin-top: 20px;
             background-color: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         table, th, td {
@@ -224,22 +192,20 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
     <nav>
       <ul>
         <li>
-          <a href="./index.php">
+        <a href="./index.php">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tool">
               <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
             </svg>
-            MOGAM3'24
-          </a>
+            MOGAM3'24</a>
         </li>
         <li>
-          <a href="./index.php">
+        <a href="./index.php">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers">
               <polygon points="12 2 2 7 12 12 22 7 12 2" />
               <polyline points="2 17 12 22 22 17" />
               <polyline points="2 12 12 17 22 12" />
             </svg>
-            Details
-          </a>
+             Details</a>
         </li>
       </ul>
     </nav>
@@ -247,82 +213,70 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
   <main class="demo-page-content">
     <section>
       <h1>Details</h1>
-      <div class="filter-container">
-        <form class="filter-form" method="GET" action="">
-          <input type="text" name="name" placeholder="Filter by Name" value="<?php echo htmlspecialchars($name_filter); ?>">
-          <select name="date">
-            <option value="">Filter by Date</option>
-            <?php foreach ($dates as $date): ?>
-            <option value="<?php echo htmlspecialchars($date); ?>" <?php echo ($date_filter == $date) ? 'selected' : ''; ?>>
-              <?php echo htmlspecialchars(date('Y-m-d', strtotime($date))); ?>
-            </option>
-            <?php endforeach; ?>
-          </select>
-          <select name="team">
-            <option value="">Filter by Team</option>
-            <?php foreach ($teams as $team): ?>
-            <option value="<?php echo htmlspecialchars($team); ?>" <?php echo ($team_filter == $team) ? 'selected' : ''; ?>>
-              <?php echo htmlspecialchars($team); ?>
-            </option>
-            <?php endforeach; ?>
-          </select>
-          <input type="submit" value="Apply Filters">
+      <div class="search-container">
+        <form class="search-form" method="GET" action="">
+          <input type="text" name="search" placeholder="Search..." value="<?php echo htmlspecialchars($search); ?>">
+          <input type="submit" value="Search">
         </form>
+        <?php if ($is_logged_in): ?>
+        <div class="total-payment">
+          Total Payment: <?php echo number_format($total_payment, 2); ?>
+        </div>
+        <?php endif; ?>
       </div>
-
       <table>
         <thead>
           <tr>
-            <th>#</th>
+            <th>#</th> <!-- Row number header -->
             <th>ID</th>
             <th>Name</th>
             <th>Phone</th>
             <th>Team</th>
             <th>Grade</th>
             <th>Payment</th>
-            <th>Day</th>
+            <th>Timestamp</th> <!-- Timestamp column header -->
+            <?php if ($is_logged_in): ?>
+            <th>Actions</th>
+            <?php endif; ?>
           </tr>
         </thead>
         <tbody>
-          <?php if ($result->num_rows > 0): ?>
-            <?php $row_number = 1; ?>
-            <?php while ($row = $result->fetch_assoc()): ?>
-            <tr>
-              <td><?php echo $row_number++; ?></td>
-              <td><?php echo htmlspecialchars($row["id"]); ?></td>
-              <td><?php echo htmlspecialchars($row["name"]); ?></td>
-              <td><?php echo htmlspecialchars($row["phone"]); ?></td>
-              <td><?php echo htmlspecialchars($row["team"]); ?></td>
-              <td><?php echo htmlspecialchars($row["grade"]); ?></td>
-              <td><?php echo htmlspecialchars(number_format($row["payment"], 2)); ?></td>
-              <td><?php echo date('l', strtotime($row["Timestamp"])); ?></td> <!-- Show day of the week -->
-            </tr>
-            <?php endwhile; ?>
-          <?php else: ?>
-            <tr>
-              <td colspan="8" class="no-records">No records found</td>
-            </tr>
-          <?php endif; ?>
+        <?php
+        $row_number = 1; // Initialize row number
+        
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        echo "<tr>";
+        echo "<td>" . $row_number . "</td>"; // Display row number
+        echo "<td>" . $row["id"] . "</td>";
+        echo "<td>" . $row["name"] . "</td>";
+        echo "<td>" . $row["phone"] . "</td>";
+        echo "<td>" . $row["team"] . "</td>";
+        echo "<td>" . $row["grade"] . "</td>";
+        echo "<td>" . number_format((float)$row["payment"], 2) . "</td>"; // Convert to float before formatting
+        echo "<td>" . $row["Timestamp"] . "</td>"; // Display Timestamp
+        if ($is_logged_in) {
+            echo "<td>";
+            echo "<a href='edit.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: #4CAF50;'>Edit</a> | ";
+            echo "<a href='delete.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: red;'>Delete</a> | ";
+            echo "<a href='resend.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: blue;'>Resend Code</a>"; // Resend Code button
+            echo "</td>";
+        }
+        echo "</tr>";
+        $row_number++; // Increment row number
+    }
+} else {
+    echo "<tr><td colspan='9' class='no-records'>No records found</td></tr>";
+}
+        ?>
         </tbody>
-        <?php if ($result->num_rows > 0): ?>
-        <tfoot>
-          <tr>
-            <td colspan="8">
-              <div class="total-payment">
-                Total Payment: <?php echo number_format($total_payment, 2); ?>
-              </div>
-            </td>
-          </tr>
-        </tfoot>
-        <?php endif; ?>
       </table>
     </section>
   </main>
 </div>
-
 </body>
 </html>
 
 <?php
-$conn->close(); // Close the database connection
+$conn->close();
 ?>
