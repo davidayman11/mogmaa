@@ -295,7 +295,7 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
               <td><?php echo htmlspecialchars($row["team"]); ?></td>
               <td><?php echo htmlspecialchars($row["grade"]); ?></td>
               <td><?php echo htmlspecialchars(number_format($row["payment"], 2)); ?></td>
-              <td><?php echo htmlspecialchars($row["timestamp"]); ?></td>
+              echo "<td>" . $row["Timestamp"] . "</td>"; // Display Timestamp
 
             </tr>
             <?php endwhile; ?>
