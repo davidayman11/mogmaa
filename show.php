@@ -261,6 +261,8 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
                         <?php endforeach; ?>
                     </select>
                     <input type="submit" value="Filter">
+                    <td colspan="<?php echo $is_logged_in ? '9' : '8'; ?>">Total Payment: <?php echo number_format($total_payment, 2); ?></td>
+
                 </form>
             </div>
             <?php if ($result->num_rows > 0): ?>
