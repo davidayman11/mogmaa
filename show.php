@@ -87,8 +87,8 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
 
         .demo-page {
             display: flex;
-            height: 100vh;
             flex-direction: column;
+            height: 100vh;
         }
 
         .demo-page-navigation {
@@ -182,6 +182,7 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-size: 14px; /* Adjusted font size */
         }
 
         table, th, td {
@@ -189,7 +190,7 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
         }
 
         th, td {
-            padding: 12px;
+            padding: 8px; /* Reduced padding for a more compact table */
             text-align: left;
         }
 
@@ -220,109 +221,111 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
 </head>
 <body>
 <div class="demo-page">
-  <div class="demo-page-navigation">
-    <nav>
-      <ul>
-        <li>
-          <a href="./index.php">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tool">
-              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-            </svg>
-            MOGAM3'24
-          </a>
-        </li>
-        <li>
-          <a href="./index.php">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers">
-              <polygon points="12 2 2 7 12 12 22 7 12 2" />
-              <polyline points="2 17 12 22 22 17" />
-              <polyline points="2 12 12 17 22 12" />
-            </svg>
-            Details
-          </a>
-        </li>
-      </ul>
-    </nav>
-  </div>
-  <main class="demo-page-content">
-    <section>
-      <h1>Details</h1>
-      <div class="filter-container">
-        <form class="filter-form" method="GET" action="">
-          <input type="text" name="name" placeholder="Filter by Name" value="<?php echo htmlspecialchars($name_filter); ?>">
-          <select name="date">
-            <option value="">Filter by Date</option>
-            <?php foreach ($dates as $date): ?>
-            <option value="<?php echo htmlspecialchars($date); ?>" <?php echo ($date_filter == $date) ? 'selected' : ''; ?>>
-              <?php echo htmlspecialchars(date('Y-m-d', strtotime($date))); ?>
-            </option>
-            <?php endforeach; ?>
-          </select>
-          <select name="team">
-            <option value="">Filter by Team</option>
-            <?php foreach ($teams as $team): ?>
-            <option value="<?php echo htmlspecialchars($team); ?>" <?php echo ($team_filter == $team) ? 'selected' : ''; ?>>
-              <?php echo htmlspecialchars($team); ?>
-            </option>
-            <?php endforeach; ?>
-          </select>
-          <input type="submit" value="Apply Filters">
-        </form>
-      </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Team</th>
-            <th>Grade</th>
-            <th>Payment</th>
-            <th>Day</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php if ($result->num_rows > 0): ?>
-            <?php $row_number = 1; ?>
-            <?php while ($row = $result->fetch_assoc()): ?>
-            <tr>
-              <td><?php echo $row_number++; ?></td>
-              <td><?php echo htmlspecialchars($row["id"]); ?></td>
-              <td><?php echo htmlspecialchars($row["name"]); ?></td>
-              <td><?php echo htmlspecialchars($row["phone"]); ?></td>
-              <td><?php echo htmlspecialchars($row["team"]); ?></td>
-              <td><?php echo htmlspecialchars($row["grade"]); ?></td>
-              <td><?php echo htmlspecialchars(number_format($row["payment"], 2)); ?></td>
-              <td><?php echo date('l', strtotime($row["Timestamp"])); ?></td> <!-- Show day of the week -->
-            </tr>
-            <?php endwhile; ?>
-          <?php else: ?>
-            <tr>
-              <td colspan="8" class="no-records">No records found</td>
-            </tr>
-          <?php endif; ?>
-        </tbody>
-        <?php if ($result->num_rows > 0): ?>
-        <tfoot>
-          <tr>
-            <td colspan="8">
-              <div class="total-payment">
-                Total Payment: <?php echo number_format($total_payment, 2); ?>
-              </div>
-            </td>
-          </tr>
-        </tfoot>
-        <?php endif; ?>
-      </table>
-    </section>
-  </main>
+    <div class="demo-page-navigation">
+        <nav>
+            <ul>
+                <li>
+                    <a href="./index.php">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tool">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                        </svg>
+                        MOGAM3'24
+                    </a>
+                </li>
+                <li>
+                    <a href="./index.php">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                            <polyline points="2 17 12 22 22 17" />
+                            <polyline points="2 12 12 17 22 12" />
+                        </svg>
+                        Details
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <main class="demo-page-content">
+        <section>
+            <h1>Details</h1>
+            <div class="filter-container">
+                <form class="filter-form" method="GET" action="">
+                    <input type="text" name="name" placeholder="Filter by Name" value="<?php echo htmlspecialchars($name_filter); ?>">
+                    <select name="date">
+                        <option value="">Filter by Date</option>
+                        <?php foreach ($dates as $date): ?>
+                        <option value="<?php echo htmlspecialchars($date); ?>" <?php echo ($date_filter == $date) ? 'selected' : ''; ?>>
+                            <?php echo date("Y-m-d", strtotime($date)); ?>
+                        </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <select name="team">
+                        <option value="">Filter by Team</option>
+                        <?php foreach ($teams as $team): ?>
+                        <option value="<?php echo htmlspecialchars($team); ?>" <?php echo ($team_filter == $team) ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($team); ?>
+                        </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <input type="submit" value="Filter">
+                </form>
+                <div class="total-payment">Total Payment: <?php echo number_format($total_payment, 2); ?></div>
+            </div>
+            <?php if ($result->num_rows > 0): ?>
+            <table>
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Team</th>
+                    <th>Grade</th>
+                    <th>Payment</th>
+                    <th>Date</th>
+                    <?php if ($is_logged_in): ?>
+                    <th>Actions</th>
+                    <?php endif; ?>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                $row_number = 1; // Initialize row number
+                while ($row = $result->fetch_assoc()): ?>
+                <tr>
+                    <td><?php echo $row_number++; ?></td> <!-- Display row number -->
+                    <td><?php echo htmlspecialchars($row["id"]); ?></td>
+                    <td><?php echo htmlspecialchars($row["name"]); ?></td>
+                    <td><?php echo htmlspecialchars($row["phone"]); ?></td>
+                    <td><?php echo htmlspecialchars($row["team"]); ?></td>
+                    <td><?php echo htmlspecialchars($row["grade"]); ?></td>
+                    <td><?php echo number_format((float)$row["payment"], 2); ?></td> <!-- Convert to float before formatting -->
+                    <td><?php echo date("Y-m-d", strtotime($row["Timestamp"])); ?></td> <!-- Display Timestamp -->
+                    <?php if ($is_logged_in): ?>
+                    <td>
+                        <a href="edit.php?id=<?php echo htmlspecialchars($row["id"]); ?>" style="padding: 5px; text-decoration: none; color: #4CAF50;">Edit</a> | 
+                        <a href="delete.php?id=<?php echo htmlspecialchars($row["id"]); ?>" style="padding: 5px; text-decoration: none; color: red;">Delete</a> | 
+                        <a href="resend.php?id=<?php echo htmlspecialchars($row["id"]); ?>" style="padding: 5px; text-decoration: none; color: blue;">Resend Code</a> <!-- Resend Code button -->
+                    </td>
+                    <?php endif; ?>
+                </tr>
+                <?php endwhile; ?>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="<?php echo $is_logged_in ? '9' : '8'; ?>">Total Payment: <?php echo number_format($total_payment, 2); ?></td>
+                </tr>
+                </tfoot>
+            </table>
+            <?php else: ?>
+            <div class="no-records">No records found</div>
+            <?php endif; ?>
+        </section>
+    </main>
 </div>
-
 </body>
 </html>
 
 <?php
-$conn->close(); // Close the database connection
+$conn->close();
 ?>
