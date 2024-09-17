@@ -77,6 +77,7 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Details</title>
     <style>
+        /* Existing CSS styles */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f4;
@@ -87,7 +88,6 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
 
         .demo-page {
             display: flex;
-            flex-direction: column;
             height: 100vh;
         }
 
@@ -96,7 +96,6 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             background-color: #333;
             padding: 20px;
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-            flex-shrink: 0;
         }
 
         .demo-page-navigation nav ul {
@@ -122,7 +121,7 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
 
         .demo-page-content {
             flex-grow: 1;
-            padding: 20px;
+            padding: 40px;
         }
 
         .demo-page-content h1 {
@@ -130,31 +129,26 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             color: #4CAF50;
         }
 
-        .filter-container {
-            margin-bottom: 20px;
-            padding: 10px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .filter-form {
+        .search-container {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
-        .filter-form select, .filter-form input[type="text"] {
+        .search-form {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-form input[type="text"] {
             padding: 10px;
             font-size: 16px;
             border: 1px solid #ddd;
             border-radius: 5px;
-            flex: 1;
-            min-width: 150px;
-            box-sizing: border-box;
+            width: 200px;
         }
 
-        .filter-form input[type="submit"] {
+        .search-form input[type="submit"] {
             padding: 10px 20px;
             font-size: 16px;
             border: none;
@@ -162,14 +156,15 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             background-color: #4CAF50;
             color: #fff;
             cursor: pointer;
+            margin-left: 10px;
         }
 
-        .filter-form input[type="submit"]:hover {
+        .search-form input[type="submit"]:hover {
             background-color: #45a049;
         }
 
         .total-payment {
-            margin-top: 10px;
+            margin-left: 20px;
             font-size: 16px;
             color: #333;
         }
@@ -179,10 +174,7 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             border-collapse: collapse;
             margin-top: 20px;
             background-color: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            font-size: 14px; /* Adjusted font size */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         table, th, td {
@@ -190,7 +182,7 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
         }
 
         th, td {
-            padding: 8px; /* Reduced padding for a more compact table */
+            padding: 12px;
             text-align: left;
         }
 
