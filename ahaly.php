@@ -173,6 +173,10 @@ session_start(); // Start the session
                     <input type="tel" name="phone" placeholder="Your Phone" value="+2" required/>
                 </div>
                 <div class="nice-form-group">
+                    <label>team:</label>
+                    <input type="text" name="team" placeholder="ahaly" value="ahaly" required/>
+                </div>
+                <div class="nice-form-group">
                     <label>Payment:</label>
                     <input type="text" name="payment" placeholder="Payment" required/>
                 </div>
