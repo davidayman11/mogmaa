@@ -22,6 +22,7 @@ $name_filter = isset($_GET['name']) ? $conn->real_escape_string($_GET['name']) :
 $date_filter = isset($_GET['date']) ? $conn->real_escape_string($_GET['date']) : '';
 $team_filter = isset($_GET['team']) ? $conn->real_escape_string($_GET['team']) : '';
 
+
 // Retrieve unique dates for filter options
 $dates_result = $conn->query("SELECT DISTINCT DATE(Timestamp) as date FROM employees ORDER BY date DESC");
 $dates = [];
@@ -164,9 +165,9 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
         }
 
         .total-payment {
+            margin-left: 20px;
             font-size: 16px;
             color: #333;
-            margin-bottom: 20px;
         }
 
         table {
@@ -259,61 +260,64 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
                         </option>
                         <?php endforeach; ?>
                     </select>
-                    <input type="submit" value="Apply Filters">
+                    <input type="submit" value="Filter">
                 </form>
             </div>
-            <div class="total-payment">
-                <strong>Total Payment: </strong>$<?php echo number_format($total_payment, 2); ?>
-            </div>
             <?php if ($result->num_rows > 0): ?>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Phone</th>
-                            <th>Team</th>
-                            <th>Grade</th>
-                            <th>Payment</th>
-                            <th>Timestamp</th>
-                            <?php if ($is_logged_in): ?>
-                                <th>Actions</th>
-                            <?php endif; ?>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php while ($row = $result->fetch_assoc()): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($row["id"]); ?></td>
-                                <td><?php echo htmlspecialchars($row["name"]); ?></td>
-                                <td><?php echo htmlspecialchars($row["phone"]); ?></td>
-                                <td><?php echo htmlspecialchars($row["team"]); ?></td>
-                                <td><?php echo htmlspecialchars($row["grade"]); ?></td>
-                                <td>$<?php echo number_format($row["payment"], 2); ?></td>
-                                <td><?php echo htmlspecialchars($row["Timestamp"]); ?></td>
-                                <?php if ($is_logged_in): ?>
-                                    <td>
-                                        <a href="edit.php?id=<?php echo urlencode($row['id']); ?>">Edit</a> | 
-                                        <a href="delete.php?id=<?php echo urlencode($row['id']); ?>" onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
-                                    </td>
-                                <?php endif; ?>
-                            </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="<?php echo $is_logged_in ? '8' : '7'; ?>">Total Payment: $<?php echo number_format($total_payment, 2); ?></td>
-                        </tr>
-                    </tfoot>
-                </table>
+            <table>
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Team</th>
+                    <th>Grade</th>
+                    <th>Payment</th>
+                    <th>Date</th>
+                    <?php if ($is_logged_in): ?>
+                    <th>Actions</th>
+                    <?php endif; ?>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                $row_number = 1; // Initialize row number
+                while ($row = $result->fetch_assoc()): ?>
+                <tr>
+                    <td><?php echo $row_number++; ?></td> <!-- Display row number -->
+                    <td><?php echo htmlspecialchars($row["id"]); ?></td>
+                    <td><?php echo htmlspecialchars($row["name"]); ?></td>
+                    <td><?php echo htmlspecialchars($row["phone"]); ?></td>
+                    <td><?php echo htmlspecialchars($row["team"]); ?></td>
+                    <td><?php echo htmlspecialchars($row["grade"]); ?></td>
+                    <td><?php echo number_format((float)$row["payment"], 2); ?></td> <!-- Convert to float before formatting -->
+                    <td><?php echo date("Y-m-d", strtotime($row["Timestamp"])); ?></td> <!-- Display Timestamp -->
+                    <?php if ($is_logged_in): ?>
+                    <td>
+                        <a href="edit.php?id=<?php echo htmlspecialchars($row["id"]); ?>" style="padding: 5px; text-decoration: none; color: #4CAF50;">Edit</a> | 
+                        <a href="delete.php?id=<?php echo htmlspecialchars($row["id"]); ?>" style="padding: 5px; text-decoration: none; color: red;">Delete</a> | 
+                        <a href="resend.php?id=<?php echo htmlspecialchars($row["id"]); ?>" style="padding: 5px; text-decoration: none; color: blue;">Resend Code</a> <!-- Resend Code button -->
+                    </td>
+                    <?php endif; ?>
+                </tr>
+                <?php endwhile; ?>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="<?php echo $is_logged_in ? '9' : '8'; ?>">Total Payment: <?php echo number_format($total_payment, 2); ?></td>
+                </tr>
+                </tfoot>
+            </table>
             <?php else: ?>
-                <p class="no-records">No records found.</p>
+            <div class="no-records">No records found</div>
             <?php endif; ?>
         </section>
     </main>
 </div>
 </body>
 </html>
+
 <?php
 $conn->close();
 ?>
