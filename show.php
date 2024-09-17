@@ -1,5 +1,5 @@
 <?php
-session_start();
+session_start(); // Start the session
 
 // Enable error reporting for debugging
 error_reporting(E_ALL);
@@ -20,25 +20,19 @@ if ($conn->connect_error) {
 // Handle search query
 $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
 
-// Handle sorting
-$sort_column = isset($_GET['sort']) ? $_GET['sort'] : 'Timestamp'; // Default sorting by Timestamp
-$sort_order = isset($_GET['order']) && $_GET['order'] == 'asc' ? 'asc' : 'desc'; // Default sorting order is descending
-
-// Retrieve data from the database with search filter and sorting
+// Retrieve data from the database with search filter
 $sql = "SELECT * FROM employees";
 if ($search) {
     $sql .= " WHERE name LIKE '%$search%' OR phone LIKE '%$search%' OR team LIKE '%$search%' OR Timestamp LIKE '%$search%'";
 }
-$sql .= " ORDER BY $sort_column $sort_order";
+$sql .= " ORDER BY Timestamp ASC";
 $result = $conn->query($sql);
-
-// Toggle sort order
-$next_order = ($sort_order == 'asc') ? 'desc' : 'asc';
 
 // Calculate total payment
 $total_payment = 0;
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
+        // Convert payment to a numeric value
         $payment = floatval($row["payment"]);
         $total_payment += $payment;
     }
@@ -190,35 +184,6 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             font-weight: bold;
             background-color: #f2f2f2;
         }
-
-        .action-btn {
-            padding: 5px;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-
-        .edit-btn {
-            color: #fff;
-            background-color: #4CAF50;
-        }
-
-        .delete-btn {
-            color: #fff;
-            background-color: red;
-        }
-
-        .resend-btn {
-            color: #fff;
-            background-color: blue;
-        }
-
-        .filter-input {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
     </style>
 </head>
 <body>
@@ -263,67 +228,55 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
         <thead>
           <tr>
             <th>#</th> <!-- Row number header -->
-            <th><a href="?sort=id&order=<?php echo $next_order; ?>">ID</a></th>
-            <th><a href="?sort=name&order=<?php echo $next_order; ?>">Name</a></th>
-            <th><a href="?sort=phone&order=<?php echo $next_order; ?>">Phone</a></th>
-            <th><a href="?sort=team&order=<?php echo $next_order; ?>">Team</a></th>
-            <th><a href="?sort=grade&order=<?php echo $next_order; ?>">Grade</a></th>
-            <th><a href="?sort=payment&order=<?php echo $next_order; ?>">Payment</a></th>
-            <th><a href="?sort=Timestamp&order=<?php echo $next_order; ?>">Timestamp</a></th>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Team</th>
+            <th>Grade</th>
+            <th>Payment</th>
+            <th>Timestamp</th> <!-- Timestamp column header -->
             <?php if ($is_logged_in): ?>
             <th>Actions</th>
             <?php endif; ?>
           </tr>
-          <tr>
-            <!-- Filter inputs for each column -->
-            <td></td> <!-- Empty cell for row number -->
-            <td><input type="text" class="filter-input" placeholder="Filter ID"></td>
-            <td><input type="text" class="filter-input" placeholder="Filter Name"></td>
-            <td><input type="text" class="filter-input" placeholder="Filter Phone"></td>
-            <td><input type="text" class="filter-input" placeholder="Filter Team"></td>
-            <td><input type="text" class="filter-input" placeholder="Filter Grade"></td>
-            <td><input type="text" class="filter-input" placeholder="Filter Payment"></td>
-            <td><input type="text" class="filter-input" placeholder="Filter Timestamp"></td>
-            <td></td> <!-- Empty cell for actions -->
-          </tr>
         </thead>
         <tbody>
-          <?php if ($result->num_rows > 0): ?>
-          <?php $row_number = 1; ?>
-          <?php while ($row = $result->fetch_assoc()): ?>
-          <tr>
-            <td><?php echo $row_number++; ?></td>
-            <td><?php echo $row["id"]; ?></td>
-            <td><?php echo htmlspecialchars($row["name"]); ?></td>
-            <td><?php echo htmlspecialchars($row["phone"]); ?></td>
-            <td><?php echo htmlspecialchars($row["team"]); ?></td>
-            <td><?php echo htmlspecialchars($row["grade"]); ?></td>
-            <td><?php echo number_format($row["payment"], 2); ?></td>
-            <td><?php echo htmlspecialchars($row["Timestamp"]); ?></td>
-            <?php if ($is_logged_in): ?>
-            <td>
-              <a href="edit.php?id=<?php echo $row['id']; ?>" class="action-btn edit-btn">Edit</a>
-              <a href="delete.php?id=<?php echo $row['id']; ?>" class="action-btn delete-btn">Delete</a>
-              <a href="resend.php?id=<?php echo $row['id']; ?>" class="action-btn resend-btn">Resend</a>
-            </td>
-            <?php endif; ?>
-          </tr>
-          <?php endwhile; ?>
-          <?php else: ?>
-          <tr>
-            <td colspan="9" class="no-records">No records found</td>
-          </tr>
-          <?php endif; ?>
+        <?php
+        $row_number = 1; // Initialize row number
+        
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        echo "<tr>";
+        echo "<td>" . $row_number . "</td>"; // Display row number
+        echo "<td>" . $row["id"] . "</td>";
+        echo "<td>" . $row["name"] . "</td>";
+        echo "<td>" . $row["phone"] . "</td>";
+        echo "<td>" . $row["team"] . "</td>";
+        echo "<td>" . $row["grade"] . "</td>";
+        echo "<td>" . number_format((float)$row["payment"], 2) . "</td>"; // Convert to float before formatting
+        echo "<td>" . $row["Timestamp"] . "</td>"; // Display Timestamp
+        if ($is_logged_in) {
+            echo "<td>";
+            echo "<a href='edit.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: #4CAF50;'>Edit</a> | ";
+            echo "<a href='delete.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: red;'>Delete</a> | ";
+            echo "<a href='resend.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: blue;'>Resend Code</a>"; // Resend Code button
+            echo "</td>";
+        }
+        echo "</tr>";
+        $row_number++; // Increment row number
+    }
+} else {
+    echo "<tr><td colspan='9' class='no-records'>No records found</td></tr>";
+}
+        ?>
         </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="6">Total Payment</td>
-            <td colspan="3"><?php echo number_format($total_payment, 2); ?></td>
-          </tr>
-        </tfoot>
       </table>
     </section>
   </main>
 </div>
 </body>
 </html>
+
+<?php
+$conn->close();
+?>
