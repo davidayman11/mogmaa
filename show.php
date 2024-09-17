@@ -17,13 +17,21 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Handle search query
-$search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
+// Handle filter parameters
+$name_filter = isset($_GET['name']) ? $conn->real_escape_string($_GET['name']) : '';
+$date_filter = isset($_GET['date']) ? $conn->real_escape_string($_GET['date']) : '';
+$team_filter = isset($_GET['team']) ? $conn->real_escape_string($_GET['team']) : '';
 
-// Retrieve data from the database with search filter
-$sql = "SELECT * FROM employees";
-if ($search) {
-    $sql .= " WHERE name LIKE '%$search%' OR phone LIKE '%$search%' OR team LIKE '%$search%' OR Timestamp LIKE '%$search%'";
+// Retrieve data from the database with filters
+$sql = "SELECT * FROM employees WHERE 1=1";
+if ($name_filter) {
+    $sql .= " AND name LIKE '%$name_filter%'";
+}
+if ($date_filter) {
+    $sql .= " AND DATE(Timestamp) = '$date_filter'";
+}
+if ($team_filter) {
+    $sql .= " AND team LIKE '%$team_filter%'";
 }
 $sql .= " ORDER BY Timestamp ASC";
 $result = $conn->query($sql);
@@ -43,6 +51,15 @@ $result->data_seek(0);
 
 // Check if the user is logged in
 $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
+
+// Retrieve unique team names for filter options
+$teams_result = $conn->query("SELECT DISTINCT team FROM employees");
+$teams = [];
+if ($teams_result->num_rows > 0) {
+    while ($team_row = $teams_result->fetch_assoc()) {
+        $teams[] = $team_row['team'];
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -104,26 +121,24 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             color: #4CAF50;
         }
 
-        .search-container {
-            display: flex;
-            align-items: center;
+        .filter-container {
             margin-bottom: 20px;
         }
 
-        .search-form {
+        .filter-form {
             display: flex;
             align-items: center;
         }
 
-        .search-form input[type="text"] {
+        .filter-form select, .filter-form input[type="date"], .filter-form input[type="text"] {
             padding: 10px;
             font-size: 16px;
             border: 1px solid #ddd;
             border-radius: 5px;
-            width: 200px;
+            margin-right: 10px;
         }
 
-        .search-form input[type="submit"] {
+        .filter-form input[type="submit"] {
             padding: 10px 20px;
             font-size: 16px;
             border: none;
@@ -131,10 +146,9 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             background-color: #4CAF50;
             color: #fff;
             cursor: pointer;
-            margin-left: 10px;
         }
 
-        .search-form input[type="submit"]:hover {
+        .filter-form input[type="submit"]:hover {
             background-color: #45a049;
         }
 
@@ -213,10 +227,19 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
   <main class="demo-page-content">
     <section>
       <h1>Details</h1>
-      <div class="search-container">
-        <form class="search-form" method="GET" action="">
-          <input type="text" name="search" placeholder="Search..." value="<?php echo htmlspecialchars($search); ?>">
-          <input type="submit" value="Search">
+      <div class="filter-container">
+        <form class="filter-form" method="GET" action="">
+          <input type="text" name="name" placeholder="Filter by Name" value="<?php echo htmlspecialchars($name_filter); ?>">
+          <input type="date" name="date" placeholder="Filter by Date" value="<?php echo htmlspecialchars($date_filter); ?>">
+          <select name="team">
+            <option value="">Filter by Team</option>
+            <?php foreach ($teams as $team): ?>
+            <option value="<?php echo htmlspecialchars($team); ?>" <?php echo ($team_filter == $team) ? 'selected' : ''; ?>>
+              <?php echo htmlspecialchars($team); ?>
+            </option>
+            <?php endforeach; ?>
+          </select>
+          <input type="submit" value="Filter">
         </form>
         <?php if ($is_logged_in): ?>
         <div class="total-payment">
@@ -234,49 +257,49 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             <th>Team</th>
             <th>Grade</th>
             <th>Payment</th>
-            <th>Timestamp</th> <!-- Timestamp column header -->
-            <?php if ($is_logged_in): ?>
-            <th>Actions</th>
-            <?php endif; ?>
+            <th>Timestamp</th>
           </tr>
         </thead>
         <tbody>
-        <?php
-        $row_number = 1; // Initialize row number
-        
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        echo "<tr>";
-        echo "<td>" . $row_number . "</td>"; // Display row number
-        echo "<td>" . $row["id"] . "</td>";
-        echo "<td>" . $row["name"] . "</td>";
-        echo "<td>" . $row["phone"] . "</td>";
-        echo "<td>" . $row["team"] . "</td>";
-        echo "<td>" . $row["grade"] . "</td>";
-        echo "<td>" . number_format((float)$row["payment"], 2) . "</td>"; // Convert to float before formatting
-        echo "<td>" . $row["Timestamp"] . "</td>"; // Display Timestamp
-        if ($is_logged_in) {
-            echo "<td>";
-            echo "<a href='edit.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: #4CAF50;'>Edit</a> | ";
-            echo "<a href='delete.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: red;'>Delete</a> | ";
-            echo "<a href='resend.php?id=" . $row["id"] . "' style='padding: 5px; text-decoration: none; color: blue;'>Resend Code</a>"; // Resend Code button
-            echo "</td>";
-        }
-        echo "</tr>";
-        $row_number++; // Increment row number
-    }
-} else {
-    echo "<tr><td colspan='9' class='no-records'>No records found</td></tr>";
-}
-        ?>
+          <?php if ($result->num_rows > 0): ?>
+            <?php $row_number = 1; ?>
+            <?php while ($row = $result->fetch_assoc()): ?>
+            <tr>
+              <td><?php echo $row_number++; ?></td>
+              <td><?php echo htmlspecialchars($row["id"]); ?></td>
+              <td><?php echo htmlspecialchars($row["name"]); ?></td>
+              <td><?php echo htmlspecialchars($row["phone"]); ?></td>
+              <td><?php echo htmlspecialchars($row["team"]); ?></td>
+              <td><?php echo htmlspecialchars($row["grade"]); ?></td>
+              <td><?php echo htmlspecialchars($row["payment"]); ?></td>
+              <td><?php echo htmlspecialchars($row["Timestamp"]); ?></td>
+            </tr>
+            <?php endwhile; ?>
+          <?php else: ?>
+            <tr>
+              <td colspan="8" class="no-records">No records found</td>
+            </tr>
+          <?php endif; ?>
         </tbody>
+        <?php if ($result->num_rows > 0): ?>
+        <tfoot>
+          <tr>
+            <td colspan="8">
+              <div class="total-payment">
+                Total Payment: <?php echo number_format($total_payment, 2); ?>
+              </div>
+            </td>
+          </tr>
+        </tfoot>
+        <?php endif; ?>
       </table>
     </section>
   </main>
 </div>
+
 </body>
 </html>
 
 <?php
-$conn->close();
+$conn->close(); // Close the database connection
 ?>
