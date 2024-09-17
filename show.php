@@ -77,7 +77,6 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Details</title>
     <style>
-        /* Existing CSS styles */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f4;
@@ -129,43 +128,52 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             color: #4CAF50;
         }
 
-        .search-container {
-            display: flex;
-            align-items: center;
+        .filter-container {
             margin-bottom: 20px;
         }
 
-        .search-form {
+        .filter-form {
             display: flex;
-            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        .search-form input[type="text"] {
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-group input[type="text"],
+        .form-group select {
+            width: 100%;
             padding: 10px;
-            font-size: 16px;
             border: 1px solid #ddd;
-            border-radius: 5px;
-            width: 200px;
+            border-radius: 4px;
         }
 
-        .search-form input[type="submit"] {
+        .filter-form button {
             padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
             background-color: #4CAF50;
             color: #fff;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
-            margin-left: 10px;
         }
 
-        .search-form input[type="submit"]:hover {
+        .filter-form button:hover {
             background-color: #45a049;
         }
 
         .total-payment {
-            margin-left: 20px;
-            font-size: 16px;
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: bold;
             color: #333;
         }
 
@@ -209,6 +217,24 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             font-weight: bold;
             background-color: #f2f2f2;
         }
+
+        .action-links a {
+            padding: 5px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .action-links a.edit {
+            color: #4CAF50;
+        }
+
+        .action-links a.delete {
+            color: red;
+        }
+
+        .action-links a.resend {
+            color: blue;
+        }
     </style>
 </head>
 <body>
@@ -242,76 +268,83 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             <h1>Details</h1>
             <div class="filter-container">
                 <form class="filter-form" method="GET" action="">
-                    <input type="text" name="name" placeholder="Filter by Name" value="<?php echo htmlspecialchars($name_filter); ?>">
-                    <select name="date">
-                        <option value="">Filter by Date</option>
-                        <?php foreach ($dates as $date): ?>
-                        <option value="<?php echo htmlspecialchars($date); ?>" <?php echo ($date_filter == $date) ? 'selected' : ''; ?>>
-                            <?php echo date("Y-m-d", strtotime($date)); ?>
-                        </option>
-                        <?php endforeach; ?>
-                    </select>
-                    <select name="team">
-                        <option value="">Filter by Team</option>
-                        <?php foreach ($teams as $team): ?>
-                        <option value="<?php echo htmlspecialchars($team); ?>" <?php echo ($team_filter == $team) ? 'selected' : ''; ?>>
-                            <?php echo htmlspecialchars($team); ?>
-                        </option>
-                        <?php endforeach; ?>
-                    </select>
-                    <input type="submit" value="Filter">
+                    <div class="form-group">
+                        <label for="name">Filter by Name:</label>
+                        <input id="name" type="text" name="name" placeholder="Enter name" value="<?php echo htmlspecialchars($name_filter, ENT_QUOTES); ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Filter by Date:</label>
+                        <select id="date" name="date">
+                            <option value="">Select Date</option>
+                            <?php foreach ($dates as $date): ?>
+                            <option value="<?php echo htmlspecialchars($date, ENT_QUOTES); ?>" <?php echo ($date_filter == $date) ? 'selected' : ''; ?>>
+                                <?php echo date('F j, Y', strtotime($date)); ?>
+                            </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="team">Filter by Team:</label>
+                        <select id="team" name="team">
+                            <option value="">Select Team</option>
+                            <?php foreach ($teams as $team): ?>
+                            <option value="<?php echo htmlspecialchars($team, ENT_QUOTES); ?>" <?php echo ($team_filter == $team) ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($team, ENT_QUOTES); ?>
+                            </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <button type="submit">Filter</button>
                 </form>
+                <?php if ($is_logged_in): ?>
                 <div class="total-payment">Total Payment: <?php echo number_format($total_payment, 2); ?></div>
+                <?php endif; ?>
             </div>
-            <?php if ($result->num_rows > 0): ?>
             <table>
                 <thead>
-                <tr>
-                    <th>#</th>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Phone</th>
-                    <th>Team</th>
-                    <th>Grade</th>
-                    <th>Payment</th>
-                    <th>Date</th>
-                    <?php if ($is_logged_in): ?>
-                    <th>Actions</th>
-                    <?php endif; ?>
-                </tr>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Team</th>
+                        <th>Grade</th>
+                        <th>Payment</th>
+                        <th>Timestamp</th>
+                        <th>Actions</th>
+                    </tr>
                 </thead>
                 <tbody>
-                <?php
-                $row_number = 1; // Initialize row number
-                while ($row = $result->fetch_assoc()): ?>
-                <tr>
-                    <td><?php echo $row_number++; ?></td> <!-- Display row number -->
-                    <td><?php echo htmlspecialchars($row["id"]); ?></td>
-                    <td><?php echo htmlspecialchars($row["name"]); ?></td>
-                    <td><?php echo htmlspecialchars($row["phone"]); ?></td>
-                    <td><?php echo htmlspecialchars($row["team"]); ?></td>
-                    <td><?php echo htmlspecialchars($row["grade"]); ?></td>
-                    <td><?php echo number_format((float)$row["payment"], 2); ?></td> <!-- Convert to float before formatting -->
-                    <td><?php echo date("Y-m-d", strtotime($row["Timestamp"])); ?></td> <!-- Display Timestamp -->
-                    <?php if ($is_logged_in): ?>
-                    <td>
-                        <a href="edit.php?id=<?php echo htmlspecialchars($row["id"]); ?>" style="padding: 5px; text-decoration: none; color: #4CAF50;">Edit</a> | 
-                        <a href="delete.php?id=<?php echo htmlspecialchars($row["id"]); ?>" style="padding: 5px; text-decoration: none; color: red;">Delete</a> | 
-                        <a href="resend.php?id=<?php echo htmlspecialchars($row["id"]); ?>" style="padding: 5px; text-decoration: none; color: blue;">Resend Code</a> <!-- Resend Code button -->
-                    </td>
+                    <?php if ($result->num_rows > 0): ?>
+                    <?php while ($row = $result->fetch_assoc()): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($row["id"], ENT_QUOTES); ?></td>
+                        <td><?php echo htmlspecialchars($row["name"], ENT_QUOTES); ?></td>
+                        <td><?php echo htmlspecialchars($row["phone"], ENT_QUOTES); ?></td>
+                        <td><?php echo htmlspecialchars($row["team"], ENT_QUOTES); ?></td>
+                        <td><?php echo htmlspecialchars($row["grade"], ENT_QUOTES); ?></td>
+                        <td><?php echo number_format(floatval($row["payment"]), 2); ?></td>
+                        <td><?php echo date('F j, Y, g:i a', strtotime($row["timestamp"])); ?></td>
+                        <td class="action-links">
+                            <a href="edit.php?id=<?php echo urlencode($row['id']); ?>" class="edit">Edit</a> |
+                            <a href="delete.php?id=<?php echo urlencode($row['id']); ?>" class="delete">Delete</a> |
+                            <a href="resend.php?id=<?php echo urlencode($row['id']); ?>" class="resend">Resend</a>
+                        </td>
+                    </tr>
+                    <?php endwhile; ?>
+                    <?php else: ?>
+                    <tr>
+                        <td colspan="8" class="no-records">No records found</td>
+                    </tr>
                     <?php endif; ?>
-                </tr>
-                <?php endwhile; ?>
                 </tbody>
+                <?php if ($result->num_rows > 0): ?>
                 <tfoot>
-                <tr>
-                    <td colspan="<?php echo $is_logged_in ? '9' : '8'; ?>">Total Payment: <?php echo number_format($total_payment, 2); ?></td>
-                </tr>
+                    <tr>
+                        <td colspan="8" class="total-payment">Total Payment: <?php echo number_format($total_payment, 2); ?></td>
+                    </tr>
                 </tfoot>
+                <?php endif; ?>
             </table>
-            <?php else: ?>
-            <div class="no-records">No records found</div>
-            <?php endif; ?>
         </section>
     </main>
 </div>
