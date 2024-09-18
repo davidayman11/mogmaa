@@ -14,12 +14,12 @@ if ($conn->connect_error) {
     die("<div class='notification error'>Connection failed: " . $conn->connect_error . "</div>");
 }
 
-// Capture form data
-$name = $_POST['name'];
-$phone = $_POST['phone'];
-$team = $_POST['team'];
-$grade = $_POST['grade'];
-$payment = $_POST['payment'];
+// Capture form data with default values to avoid undefined index notices
+$name = isset($_POST['name']) ? $_POST['name'] : '';
+$phone = isset($_POST['phone']) ? $_POST['phone'] : '';
+$team = isset($_POST['team']) ? $_POST['team'] : '';
+$grade = isset($_POST['grade']) ? $_POST['grade'] : '';
+$payment = isset($_POST['payment']) ? $_POST['payment'] : '';
 
 // Initialize validation flag and error messages
 $valid = true;
@@ -50,18 +50,20 @@ if (!$valid) {
     // Generate a 4-character unique ID
     $id = substr(str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 4);
 
-    // Insert data into MySQL database
-    $sql = "INSERT INTO employees (id, name, phone, team, grade, payment)
-    VALUES ('$id', '$name', '$phone', '$team', '$grade', '$payment')";
+    // Prepare and bind the SQL statement to avoid SQL injection
+    $stmt = $conn->prepare("INSERT INTO employees (id, name, phone, team, grade, payment) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssssss", $id, $name, $phone, $team, $grade, $payment);
 
-    if ($conn->query($sql) === TRUE) {
+    if ($stmt->execute()) {
         echo "<div class='notification success'>Form submitted successfully! Redirecting...</div>";
         // Redirect to the QR code generation page after 2 seconds
-        header("Refresh: 2; URL=generate_qr.php?id=$id&name=" . urlencode($name) . "&phone=" . urlencode($phone) . "&team=" . urlencode($team) . "&grade=" . urlencode($grade) . "&payment=" . urlencode($payment));
+        header("Refresh: 2; URL=generate_qr.php?id=" . urlencode($id) . "&name=" . urlencode($name) . "&phone=" . urlencode($phone) . "&team=" . urlencode($team) . "&grade=" . urlencode($grade) . "&payment=" . urlencode($payment));
         exit;
     } else {
-        echo "<div class='notification error'>Error: " . $sql . "<br>" . $conn->error . "</div>";
+        echo "<div class='notification error'>Error: " . htmlspecialchars($stmt->error) . "</div>";
     }
+
+    $stmt->close();
 }
 
 $conn->close();
