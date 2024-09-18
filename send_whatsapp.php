@@ -12,8 +12,10 @@ $phone = $_SESSION['phone'];
 $serialNumber = $_SESSION['serialNumber'];
 $qrCodeImageUrl = $_SESSION['qrCodeImageUrl'];
 
-// Create the WhatsApp message with a link to the QR code image
-$whatsappMessage = "Hi $name here is shamandora scout, your Serial Number is: $serialNumber. Here is your Ticket: $qrCodeImageUrl,save my number to show the link and you can access it ";
+// Create the WhatsApp message in both English and Arabic
+$whatsappMessage = "Hello $name,\n\nThank you for registering with Shamandora Scout. Your Serial Number is: $serialNumber. You can access your ticket here: $qrCodeImageUrl. Please save this number to view your ticket.\n\n" .
+                   "مرحباً $name،\n\nشكراً لتسجيلك في Shamandora Scout. رقم التسلسل الخاص بك هو: $serialNumber. يمكنك الوصول إلى تذكرتك هنا: $qrCodeImageUrl. يُرجى حفظ هذا الرقم لعرض تذكرتك.";
+
 $whatsappUrl = "https://api.whatsapp.com/send?phone=" . urlencode($phone) . "&text=" . urlencode($whatsappMessage);
 
 // Clear session data
