@@ -13,7 +13,7 @@ $serialNumber = $_SESSION['serialNumber'];
 $qrCodeImageUrl = $_SESSION['qrCodeImageUrl'];
 
 // Create the WhatsApp message with a link to the QR code image
-$whatsappMessage = "Hi $name, your Serial Number is: $serialNumber. Here is your QR code: $qrCodeImageUrl";
+$whatsappMessage = "Hi $name here is shamandora scout, your Serial Number is: $serialNumber. Here is your Ticket: $qrCodeImageUrl,save my number to show the link and you can access it ";
 $whatsappUrl = "https://api.whatsapp.com/send?phone=" . urlencode($phone) . "&text=" . urlencode($whatsappMessage);
 
 // Clear session data
