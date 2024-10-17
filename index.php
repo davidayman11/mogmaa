@@ -7,7 +7,7 @@ session_start(); // Start the session
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOGAM3'24</title>
+    <title>MOGAM3'kkkkkkkk24</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
