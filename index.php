@@ -2,7 +2,7 @@
 session_start(); // Start the session
 
 // Check if user is logged in
-$loggedIn = isset($_SESSION['user']); // You can replace this with your actual login check
+$loggedIn = isset($_SESSION['user']); // This can be enhanced with proper login check
 ?>
 
 <!DOCTYPE html>
@@ -113,24 +113,19 @@ $loggedIn = isset($_SESSION['user']); // You can replace this with your actual l
         <nav>
             <ul>
                 <li>
-                    <a href="./index.php">
-                        MOGAM3'24</a>
+                    <a href="./index.php">MOGAM3'24</a>
                 </li>
                 <li>
-                    <a href="./show.php">
-                        Details</a>
+                    <a href="./show.php">Details</a>
                 </li>
                 <li>
-                    <a href="./ahaly.php">
-                        Ahaly</a>
+                    <a href="./ahaly.php">Ahaly</a>
                 </li>
                 <li>
-                    <a href="./login.php">
-                        Admin</a>
+                    <a href="./login.php">Admin</a>
                 </li>
                 <li>
-                    <a href="./logout.php">
-                        Logout</a>
+                    <a href="./logout.php">Logout</a>
                 </li>
             </ul>
         </nav>
@@ -158,16 +153,16 @@ $loggedIn = isset($_SESSION['user']); // You can replace this with your actual l
                 <h1>Enter Details</h1>
                 <form action="submit.php" method="post">
                     <div class="nice-form-group">
-                        <label>Name:</label>
-                        <input type="text" name="name" placeholder="Your name" required/>
+                        <label for="name">Name:</label>
+                        <input type="text" name="name" id="name" placeholder="Your name" required>
                     </div>
                     <div class="nice-form-group">
-                        <label>Phone:</label>
-                        <input type="tel" name="phone" placeholder="Your Phone" value="+2" required/>
+                        <label for="phone">Phone:</label>
+                        <input type="tel" name="phone" id="phone" placeholder="Your phone" value="+2" required pattern="\+2[0-9]{10}">
                     </div>
                     <div class="nice-form-group">
-                        <label>Team:</label>
-                        <select name="team" required>
+                        <label for="team">Team:</label>
+                        <select name="team" id="team" required>
                             <option value="" disabled selected>Select your team</option>
                             <option value="bra3em">bra3em</option>
                             <option value="ashbal">ashbal</option>
@@ -181,12 +176,12 @@ $loggedIn = isset($_SESSION['user']); // You can replace this with your actual l
                         </select>
                     </div>
                     <div class="nice-form-group">
-                        <label>Grade:</label>
-                        <input type="text" name="grade" placeholder="Grade" required/>
+                        <label for="grade">Grade:</label>
+                        <input type="text" name="grade" id="grade" placeholder="Grade" required>
                     </div>
                     <div class="nice-form-group">
-                        <label>Payment:</label>
-                        <input type="text" name="payment" placeholder="Payment" required/>
+                        <label for="payment">Payment:</label>
+                        <input type="text" name="payment" id="payment" placeholder="Payment" required>
                     </div>
                     <input type="submit" value="Submit">
                 </form>
