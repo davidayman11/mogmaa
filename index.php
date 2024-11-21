@@ -1,37 +1,8 @@
 <?php
 session_start(); // Start the session
 
-// Check if the user is already logged in
-if (isset($_SESSION['user'])) {
-    // User is logged in, display the content
-    $isLoggedIn = true;
-} else {
-    $isLoggedIn = false;
-}
-
-// Handle the login form submission
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$isLoggedIn) {
-    // Check username and password (you can replace this with actual validation logic)
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-
-    if ($username == 'admin' && $password == 'password') {
-        // Set session variable if login is successful
-        $_SESSION['user'] = $username;
-        header('Location: ' . $_SERVER['PHP_SELF']);
-        exit;
-    } else {
-        $loginError = 'Invalid username or password.';
-    }
-}
-
-// Handle the logout
-if (isset($_GET['logout'])) {
-    unset($_SESSION['user']);
-    $_SESSION['logout_msg'] = "You have successfully logged out.";
-    header('Location: ' . $_SERVER['PHP_SELF']);
-    exit;
-}
+// Check if user is logged in
+$loggedIn = isset($_SESSION['user']); // You can replace this with your actual login check
 ?>
 
 <!DOCTYPE html>
@@ -134,24 +105,6 @@ if (isset($_GET['logout'])) {
             border-radius: 4px;
             margin-bottom: 20px;
         }
-
-        .login-form {
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .login-form input {
-            margin-bottom: 10px;
-        }
-
-        .login-error {
-            color: red;
-            font-size: 14px;
-        }
     </style>
 </head>
 <body>
@@ -159,30 +112,48 @@ if (isset($_GET['logout'])) {
     <div class="demo-page-navigation">
         <nav>
             <ul>
-                <li><a href="./index.php">MOGAM3'24</a></li>
-                <li><a href="./show.php">Details</a></li>
-                <li><a href="./ahaly.php">Ahaly</a></li>
-                <?php if ($isLoggedIn): ?>
-                    <li><a href="./logout.php?logout=true">Logout</a></li>
-                <?php else: ?>
-                    <li><a href="#">Login</a></li>
-                <?php endif; ?>
+                <li>
+                    <a href="./index.php">
+                        MOGAM3'24</a>
+                </li>
+                <li>
+                    <a href="./show.php">
+                        Details</a>
+                </li>
+                <li>
+                    <a href="./ahaly.php">
+                        Ahaly</a>
+                </li>
+                <li>
+                    <a href="./login.php">
+                        Admin</a>
+                </li>
+                <li>
+                    <a href="./logout.php">
+                        Logout</a>
+                </li>
             </ul>
         </nav>
     </div>
-
     <main class="demo-page-content">
-        <?php if (isset($_SESSION['logout_msg'])): ?>
-            <div class="logout-message">
-                <?php 
-                echo $_SESSION['logout_msg']; 
-                unset($_SESSION['logout_msg']);
-                ?>
-            </div>
-        <?php endif; ?>
-
-        <?php if ($isLoggedIn): ?>
-            <!-- Content for logged-in users -->
+        <!-- Check if user is logged in -->
+        <?php if (!$loggedIn): ?>
+            <section>
+                <h1>Login</h1>
+                <form action="login_handler.php" method="post">
+                    <div class="nice-form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" name="username" id="username" placeholder="Enter username" required>
+                    </div>
+                    <div class="nice-form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" name="password" id="password" placeholder="Enter password" required>
+                    </div>
+                    <input type="submit" value="Login">
+                </form>
+            </section>
+        <?php else: ?>
+            <!-- If logged in, show the details form -->
             <section>
                 <h1>Enter Details</h1>
                 <form action="submit.php" method="post">
@@ -219,27 +190,6 @@ if (isset($_GET['logout'])) {
                     </div>
                     <input type="submit" value="Submit">
                 </form>
-            </section>
-        <?php else: ?>
-            <!-- Login form if not logged in -->
-            <section>
-                <h1>Login</h1>
-                <div class="login-form">
-                    <?php if (isset($loginError)): ?>
-                        <p class="login-error"><?php echo $loginError; ?></p>
-                    <?php endif; ?>
-                    <form method="post">
-                        <div class="nice-form-group">
-                            <label>Username:</label>
-                            <input type="text" name="username" placeholder="Enter your username" required/>
-                        </div>
-                        <div class="nice-form-group">
-                            <label>Password:</label>
-                            <input type="password" name="password" placeholder="Enter your password" required/>
-                        </div>
-                        <input type="submit" value="Login">
-                    </form>
-                </div>
             </section>
         <?php endif; ?>
     </main>
