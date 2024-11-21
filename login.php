@@ -1,54 +1,59 @@
+<?php
+session_start();
+
+// Check if the user is already logged in, redirect them to index if true
+if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true) {
+    header("Location: index.php");
+    exit;
+}
+
+// Handle the login form submission
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    // Hardcoded username and password (you can change this to fetch from a database)
+    $valid_username = 'admin';
+    $valid_password = 'password'; // Note: Use secure methods for production
+
+    if ($username == $valid_username && $password == $valid_password) {
+        // Set session to mark user as logged in
+        $_SESSION['user_logged_in'] = true;
+        header("Location: index.php");
+        exit;
+    } else {
+        $error_message = "Invalid username or password.";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login - MOGAM3'24</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .login-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .login-container h1 {
-            margin-top: 0;
-        }
-        .login-container input {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .login-container input[type="submit"] {
-            background-color: #4CAF50;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-        }
-        .login-container input[type="submit"]:hover {
-            background-color: #45a049;
-        }
+        /* Your login form styles */
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h1>Login</h1>
-        <form action="login_process.php" method="POST">
-            <input type="text" name="username" placeholder="Username" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <input type="submit" value="Login">
-        </form>
-    </div>
+    <h2>Login</h2>
+
+    <?php if (isset($error_message)): ?>
+        <div style="color: red;"><?php echo $error_message; ?></div>
+    <?php endif; ?>
+
+    <form action="login.php" method="POST">
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" name="username" id="username" required>
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" required>
+        </div>
+        <button type="submit">Login</button>
+    </form>
 </body>
 </html>
