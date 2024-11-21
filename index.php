@@ -1,8 +1,5 @@
 <?php
 session_start(); // Start the session
-
-// Check if user is logged in
-$loggedIn = isset($_SESSION['user']); // This can be enhanced with proper login check
 ?>
 
 <!DOCTYPE html>
@@ -74,8 +71,7 @@ $loggedIn = isset($_SESSION['user']); // This can be enhanced with proper login 
         }
 
         .nice-form-group input[type="text"],
-        .nice-form-group input[type="tel"],
-        .nice-form-group input[type="password"] {
+        .nice-form-group input[type="tel"] {
             width: 100%;
             padding: 10px;
             box-sizing: border-box;
@@ -113,80 +109,98 @@ $loggedIn = isset($_SESSION['user']); // This can be enhanced with proper login 
         <nav>
             <ul>
                 <li>
-                    <a href="./index.php">MOGAM3'24</a>
+                    <a href="./index.php">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tool">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                        </svg>
+                        MOGAM3'24</a>
                 </li>
                 <li>
-                    <a href="./show.php">Details</a>
+                    <a href="./show.php">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                            <polyline points="2 17 12 22 22 17"/>
+                            <polyline points="2 12 12 17 22 12"/>
+                        </svg>
+                        Details</a>
                 </li>
                 <li>
-                    <a href="./ahaly.php">Ahaly</a>
-                </li>
+    <a href="./ahaly.php">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2V12H8v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9z"></path>
+        </svg>
+        Ahaly</a>
+</li>
+
+                <!-- Admin link -->
                 <li>
-                    <a href="./login.php">Admin</a>
+                    <a href="./login.php">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        Admin</a>
                 </li>
+                <!-- Logout link -->
                 <li>
-                    <a href="./logout.php">Logout</a>
+                    <a href="./logout.php">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out">
+                            <path d="M9 12l-4-4m0 0l4-4m-4 4h12M5 17v2h14v-2"/>
+                        </svg>
+                        Logout</a>
                 </li>
             </ul>
         </nav>
     </div>
     <main class="demo-page-content">
-        <!-- Check if user is logged in -->
-        <?php if (!$loggedIn): ?>
-            <section>
-                <h1>Login</h1>
-                <form action="login_handler.php" method="post">
-                    <div class="nice-form-group">
-                        <label for="username">Username:</label>
-                        <input type="text" name="username" id="username" placeholder="Enter username" required>
-                    </div>
-                    <div class="nice-form-group">
-                        <label for="password">Password:</label>
-                        <input type="password" name="password" id="password" placeholder="Enter password" required>
-                    </div>
-                    <input type="submit" value="Login">
-                </form>
-            </section>
-        <?php else: ?>
-            <!-- If logged in, show the details form -->
-            <section>
-                <h1>Enter Details</h1>
-                <form action="submit.php" method="post">
-                    <div class="nice-form-group">
-                        <label for="name">Name:</label>
-                        <input type="text" name="name" id="name" placeholder="Your name" required>
-                    </div>
-                    <div class="nice-form-group">
-                        <label for="phone">Phone:</label>
-                        <input type="tel" name="phone" id="phone" placeholder="Your phone" value="+2" required pattern="\+2[0-9]{10}">
-                    </div>
-                    <div class="nice-form-group">
-                        <label for="team">Team:</label>
-                        <select name="team" id="team" required>
-                            <option value="" disabled selected>Select your team</option>
-                            <option value="bra3em">bra3em</option>
-                            <option value="ashbal">ashbal</option>
-                            <option value="zahrat">zahrat</option>
-                            <option value="kshafa">kshafa</option>
-                            <option value="morshdat">morshdat</option>
-                            <option value="motkadem">motkadem</option>
-                            <option value="ra2edat">ra2edat</option>
-                            <option value="gwala">gwala</option>
-                            <option value="kada">kada</option>
-                        </select>
-                    </div>
-                    <div class="nice-form-group">
-                        <label for="grade">Grade:</label>
-                        <input type="text" name="grade" id="grade" placeholder="Grade" required>
-                    </div>
-                    <div class="nice-form-group">
-                        <label for="payment">Payment:</label>
-                        <input type="text" name="payment" id="payment" placeholder="Payment" required>
-                    </div>
-                    <input type="submit" value="Submit">
-                </form>
-            </section>
+
+        <!-- Display logout message if it exists -->
+        <?php if (isset($_SESSION['logout_msg'])): ?>
+            <div class="logout-message">
+                <?php 
+                echo $_SESSION['logout_msg']; 
+                unset($_SESSION['logout_msg']); // Remove the message after displaying it
+                ?>
+            </div>
         <?php endif; ?>
+
+        <section>
+            <h1>Enter Details</h1>
+            <form action="submit.php" method="post">
+                <div class="nice-form-group">
+                    <label>Name:</label>
+                    <input type="text" name="name" placeholder="Your name" required/>
+                </div>
+                <div class="nice-form-group">
+                    <label>Phone:</label>
+                    <input type="tel" name="phone" placeholder="Your Phone" value="+2" required/>
+                </div>
+                <div class="nice-form-group">
+                    <label>Team:</label>
+                    <select name="team" required>
+                        <option value="" disabled selected>Select your team</option>
+                        <option value="bra3em">bra3em</option>
+                        <option value="ashbal">ashbal</option>
+                        <option value="zahrat">zahrat</option>
+                        <option value="kshafa">kshafa</option>
+                        <option value="morshdat">morshdat</option>
+                        <option value="motkadem">motkadem</option>
+                        <option value="ra2edat">ra2edat</option>
+                        <option value="gwala">gwala</option>
+                        <option value="kada">kada</option>
+                    </select>
+                </div>
+                <div class="nice-form-group">
+                    <label>Grade:</label>
+                    <input type="text" name="grade" placeholder="Grade" required/>
+                </div>
+                <div class="nice-form-group">
+                    <label>Payment:</label>
+                    <input type="text" name="payment" placeholder="Payment" required/>
+                </div>
+                <input type="submit" value="Submit">
+            </form>
+        </section>
     </main>
 </div>
 </body>
