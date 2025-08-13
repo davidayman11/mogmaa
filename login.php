@@ -1,32 +1,21 @@
 <?php
 session_start();
 
-// If user is already logged in, redirect
-if (isset($_SESSION['username'])) {
-    header("Location: index.php");
-    exit();
-}
-
-$error = '';
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
 
     // Hardcoded credentials
-    $validUsername = 'admin';
-    $validPassword = 'password';
-
-    if ($username === $validUsername && $password === $validPassword) {
+    if ($username === 'admin' && $password === 'password') {
+        $_SESSION['user_logged_in'] = true; // Match index.php's check
         $_SESSION['username'] = $username;
-        header("Location: dashboard.php");
+        header("Location: index.php"); // Redirect to main page
         exit();
     } else {
-        $error = 'Invalid username or password';
+        $error = "Invalid username or password.";
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -42,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="login-box">
         <h2>Login</h2>
-        <?php if ($error) echo "<div class='error'>$error</div>"; ?>
+        <?php if (!empty($error)) echo "<div class='error'>$error</div>"; ?>
         <form method="POST">
             <input type="text" name="username" placeholder="Username" required />
             <input type="password" name="password" placeholder="Password" required />
