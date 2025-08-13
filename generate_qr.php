@@ -1,55 +1,51 @@
 <?php
-session_start();
+// generate_qrcode.php
 
-// Validate required GET parameters
-$requiredFields = ['id', 'name', 'phone', 'team', 'grade', 'payment'];
-foreach ($requiredFields as $field) {
-    if (empty($_GET[$field])) {
-        die("Missing required parameter: " . htmlspecialchars($field));
-    }
-}
+// Retrieve parameters
+$id = $_GET['id'];
+$name = $_GET['name'];
+$phone = $_GET['phone'];
+$team = $_GET['team'];
+$grade = $_GET['grade'];
+$payment = $_GET['payment'];
 
-// Sanitize input
-$id      = intval($_GET['id']);
-$name    = trim($_GET['name']);
-$phone   = trim($_GET['phone']);
-$team    = trim($_GET['team']);
-$grade   = trim($_GET['grade']);
-$payment = trim($_GET['payment']);
+// Prepare the data string for the QR code with only name and payment
+$data = "Name: $name\nPayment Amount: $payment\nTeam: $team ";
 
-// Prepare QR data (only include what’s needed)
-$data = "Name: $name\nPayment Amount: $payment\nTeam: $team";
+// Encode the data for the QR code URL
 $encodedData = urlencode($data);
 
-// Generate QR code
-$qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=600x600&data={$encodedData}";
-$qrCodeImageData = @file_get_contents($qrCodeUrl);
+// Generate the QR code URL
+$qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=" . $encodedData;
 
-if ($qrCodeImageData === false) {
-    die("Failed to generate QR code from API.");
+// Get the QR code image data
+$qrCodeImageData = file_get_contents($qrCodeUrl);
+
+// Define the directory to save the QR code image
+$uploadDir = 'qrcodes/';
+if (!is_dir($uploadDir)) {
+    mkdir($uploadDir, 0755, true); // Create the directory if it doesn't exist
 }
 
-// Create directory for storing QR codes if it doesn’t exist
-$uploadDir = __DIR__ . '/qrcodes/';
-if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true)) {
-    die("Failed to create QR code directory.");
-}
-
-// Save QR code image locally
+// Sanitize and create the file name using the serial number
 $qrCodeFileName = $uploadDir . $id . '.png';
-if (file_put_contents($qrCodeFileName, $qrCodeImageData) === false) {
-    die("Failed to save QR code image.");
+
+// Save the QR code image to the server
+if (file_put_contents($qrCodeFileName, $qrCodeImageData)) {
+    // Create the URL to access the QR code image
+    $qrCodeImageUrl = 'http://mogamaaa.shamandorascout.com/' . $qrCodeFileName;
+
+    // Store the image URL in the session for later use
+    session_start();
+    $_SESSION['qrCodeImageUrl'] = $qrCodeImageUrl;
+    $_SESSION['name'] = $name;
+    $_SESSION['phone'] = $phone;
+    $_SESSION['serialNumber'] = $id;
+
+    // Redirect to the page to send the WhatsApp message
+    header("Location: send_whatsapp.php");
+    exit();
+} else {
+    echo "Failed to save QR code image.";
 }
-
-// Build accessible URL (relative to your domain)
-$qrCodeImageUrl = "https://mogamaaa.shamandorascout.com/qrcodes/{$id}.png";
-
-// Store in session for later use
-$_SESSION['qrCodeImageUrl'] = $qrCodeImageUrl;
-$_SESSION['name']           = $name;
-$_SESSION['phone']          = $phone;
-$_SESSION['serialNumber']   = $id;
-
-// Redirect to WhatsApp sending page
-header("Location: send_whatsapp.php");
-exit;
+?>

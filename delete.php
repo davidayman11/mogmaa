@@ -1,34 +1,45 @@
 <?php
-session_start();
+session_start(); // Start the session
 
 // Check if the user is logged in
-if (empty($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    header("Location: login.php");
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    header("Location: login.php"); // Redirect to login page if not logged in
     exit;
 }
 
-// Include database connection
-require_once "db_connect.php";
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-// Validate `id` parameter
-if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-    $id = intval($_GET['id']); // Ensure it's an integer
+// Database connection
+$servername = "193.203.168.53";
+$username = "u968010081_mogamaa";
+$password = "Mogamaa_2000";
+$dbname = "u968010081_mogamaa";
 
-    // Prepared statement for secure deletion
-    $stmt = $conn->prepare("DELETE FROM employees WHERE id = ?");
-    $stmt->bind_param("i", $id);
+$conn = new mysqli($servername, $username, $password, $dbname);
 
-    if ($stmt->execute()) {
-        header("Location: index.php?message=" . urlencode("Record deleted successfully"));
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Check if the ID parameter is set
+if (isset($_GET['id'])) {
+    $id = $conn->real_escape_string($_GET['id']);
+
+    // SQL query to delete the record
+    $sql = "DELETE FROM employees WHERE id = '$id'";
+
+    if ($conn->query($sql) === TRUE) {
+        // Redirect back to the details page with a success message
+        header("Location: index.php?message=Record deleted successfully");
         exit;
     } else {
-        header("Location: index.php?message=" . urlencode("Error deleting record"));
-        exit;
+        echo "Error deleting record: " . $conn->error;
     }
-
-    $stmt->close();
 } else {
-    header("Location: index.php?message=" . urlencode("Invalid ID provided"));
+    // Redirect back to the details page if no ID is provided
+    header("Location: index.php?message=No ID provided");
     exit;
 }
 
