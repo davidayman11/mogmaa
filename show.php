@@ -22,18 +22,23 @@ $name_filter = isset($_GET['name']) ? $conn->real_escape_string($_GET['name']) :
 $date_filter = isset($_GET['date']) ? $conn->real_escape_string($_GET['date']) : '';
 $team_filter = isset($_GET['team']) ? $conn->real_escape_string($_GET['team']) : '';
 
+
 // Retrieve unique dates for filter options
 $dates_result = $conn->query("SELECT DISTINCT DATE(Timestamp) as date FROM employees ORDER BY date DESC");
 $dates = [];
-while ($date_row = $dates_result->fetch_assoc()) {
-    $dates[] = $date_row['date'];
+if ($dates_result->num_rows > 0) {
+    while ($date_row = $dates_result->fetch_assoc()) {
+        $dates[] = $date_row['date'];
+    }
 }
 
 // Retrieve unique team names for filter options
 $teams_result = $conn->query("SELECT DISTINCT team FROM employees");
 $teams = [];
-while ($team_row = $teams_result->fetch_assoc()) {
-    $teams[] = $team_row['team'];
+if ($teams_result->num_rows > 0) {
+    while ($team_row = $teams_result->fetch_assoc()) {
+        $teams[] = $team_row['team'];
+    }
 }
 
 // Retrieve data from the database with filters
@@ -54,10 +59,13 @@ $result = $conn->query($sql);
 $total_payment = 0;
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        $total_payment += floatval($row["payment"]);
+        $payment = floatval($row["payment"]);
+        $total_payment += $payment;
     }
-    $result->data_seek(0); // Reset result pointer
 }
+
+// Reset result pointer
+$result->data_seek(0);
 
 // Check if the user is logged in
 $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
@@ -70,6 +78,7 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Details</title>
     <style>
+        /* Existing CSS styles */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f4;
@@ -77,161 +86,208 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             margin: 0;
             padding: 0;
         }
+
         .demo-page {
             display: flex;
-            min-height: 100vh;
+            height: 100vh;
         }
+
         .demo-page-navigation {
             width: 250px;
             background-color: #333;
             padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
         }
+
         .demo-page-navigation nav ul {
             list-style: none;
             padding: 0;
         }
+
         .demo-page-navigation nav ul li {
             margin-bottom: 20px;
         }
+
         .demo-page-navigation nav ul li a {
             color: #fff;
             text-decoration: none;
             font-size: 18px;
+            display: flex;
+            align-items: center;
         }
+
+        .demo-page-navigation nav ul li a svg {
+            margin-right: 10px;
+        }
+
         .demo-page-content {
             flex-grow: 1;
             padding: 40px;
         }
-        h1 {
+
+        .demo-page-content h1 {
+            margin-top: 0;
             color: #4CAF50;
         }
-        .filter-form input, .filter-form select {
-            padding: 8px;
-            margin-right: 8px;
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
         }
-        .filter-form input[type="submit"] {
-            background: #4CAF50;
+
+        .search-form {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-form input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 200px;
+        }
+
+        .search-form input[type="submit"] {
+            padding: 10px 20px;
+            font-size: 16px;
             border: none;
-            color: white;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: #fff;
             cursor: pointer;
+            margin-left: 10px;
         }
+
+        .search-form input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        .total-payment {
+            margin-left: 20px;
+            font-size: 16px;
+            color: #333;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            background: #fff;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
+
         table, th, td {
             border: 1px solid #ddd;
         }
+
         th, td {
             padding: 12px;
             text-align: left;
         }
+
         th {
-            background: #f2f2f2;
+            background-color: #f2f2f2;
+            color: #333;
         }
+
         tbody tr:nth-child(even) {
-            background: #f9f9f9;
+            background-color: #f9f9f9;
         }
+
         tbody tr:hover {
-            background: #f1f1f1;
+            background-color: #f1f1f1;
         }
-        .action-btn {
-            padding: 5px 8px;
-            border-radius: 4px;
-            font-size: 14px;
-            text-decoration: none;
+
+        .no-records {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+        }
+
+        tfoot tr {
             font-weight: bold;
+            background-color: #f2f2f2;
         }
-        .btn-edit { background: #4CAF50; color: white; }
-        .btn-delete { background: #f44336; color: white; }
-        .btn-resend { background: #2196F3; color: white; }
     </style>
 </head>
 <body>
 <div class="demo-page">
-    <div class="demo-page-navigation">
-        <nav>
-            <ul>
-                <li><a href="./index.php">MOGAM3'24</a></li>
-                <li><a href="./index.php">Details</a></li>
-            </ul>
-        </nav>
-    </div>
+        <?php include 'sidebar.php'; ?>
     <main class="demo-page-content">
         <section>
             <h1>Details</h1>
-            <form class="filter-form" method="GET" action="">
-                <input type="text" name="name" placeholder="Filter by Name" value="<?php echo htmlspecialchars($name_filter); ?>">
-                <select name="date">
-                    <option value="">Filter by Date</option>
-                    <?php foreach ($dates as $date): ?>
-                        <option value="<?php echo $date; ?>" <?php echo ($date_filter == $date) ? 'selected' : ''; ?>>
+            <div class="filter-container">
+                <form class="filter-form" method="GET" action="">
+                    <input type="text" name="name" placeholder="Filter by Name" value="<?php echo htmlspecialchars($name_filter); ?>">
+                    <select name="date">
+                        <option value="">Filter by Date</option>
+                        <?php foreach ($dates as $date): ?>
+                        <option value="<?php echo htmlspecialchars($date); ?>" <?php echo ($date_filter == $date) ? 'selected' : ''; ?>>
                             <?php echo date("Y-m-d", strtotime($date)); ?>
                         </option>
-                    <?php endforeach; ?>
-                </select>
-                <select name="team">
-                    <option value="">Filter by Team</option>
-                    <?php foreach ($teams as $team): ?>
+                        <?php endforeach; ?>
+                    </select>
+                    <select name="team">
+                        <option value="">Filter by Team</option>
+                        <?php foreach ($teams as $team): ?>
                         <option value="<?php echo htmlspecialchars($team); ?>" <?php echo ($team_filter == $team) ? 'selected' : ''; ?>>
                             <?php echo htmlspecialchars($team); ?>
                         </option>
-                    <?php endforeach; ?>
-                </select>
-                <input type="submit" value="Filter">
-            </form>
-
+                        <?php endforeach; ?>
+                    </select>
+                    <input type="submit" value="Filter">
+                </form>
+            </div>
             <?php if ($result->num_rows > 0): ?>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Phone</th>
-                            <th>Team</th>
-                            <th>Grade</th>
-                            <th>Payment</th>
-                            <th>Date</th>
-                            <?php if ($is_logged_in): ?><th>Actions</th><?php endif; ?>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $row_number = 1;
-                        while ($row = $result->fetch_assoc()):
-                        ?>
-                        <tr>
-                            <td><?php echo $row_number++; ?></td>
-                            <td><?php echo htmlspecialchars($row["id"]); ?></td>
-                            <td><?php echo htmlspecialchars($row["name"]); ?></td>
-                            <td><?php echo htmlspecialchars($row["phone"]); ?></td>
-                            <td><?php echo htmlspecialchars($row["team"]); ?></td>
-                            <td><?php echo htmlspecialchars($row["grade"]); ?></td>
-                            <td><?php echo number_format((float)$row["payment"], 2); ?></td>
-                            <td><?php echo date("Y-m-d", strtotime($row["Timestamp"])); ?></td>
-                            <?php if ($is_logged_in): ?>
-                            <td>
-                                <a href="edit.php?id=<?php echo $row["id"]; ?>" class="action-btn btn-edit">Edit</a>
-                                <a href="delete.php?id=<?php echo $row["id"]; ?>" onclick="return confirm('Are you sure?');" class="action-btn btn-delete">Delete</a>
-                                <a href="resend.php?id=<?php echo $row["id"]; ?>" class="action-btn btn-resend">Resend</a>
-                            </td>
-                            <?php endif; ?>
-                        </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="<?php echo $is_logged_in ? '9' : '8'; ?>">
-                                Total Payment: <?php echo number_format($total_payment, 2); ?>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+            <table>
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Team</th>
+                    <th>Grade</th>
+                    <th>Payment</th>
+                    <th>Date</th>
+                    <?php if ($is_logged_in): ?>
+                    <th>Actions</th>
+                    <?php endif; ?>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                $row_number = 1; // Initialize row number
+                while ($row = $result->fetch_assoc()): ?>
+                <tr>
+                    <td><?php echo $row_number++; ?></td> <!-- Display row number -->
+                    <td><?php echo htmlspecialchars($row["id"]); ?></td>
+                    <td><?php echo htmlspecialchars($row["name"]); ?></td>
+                    <td><?php echo htmlspecialchars($row["phone"]); ?></td>
+                    <td><?php echo htmlspecialchars($row["team"]); ?></td>
+                    <td><?php echo htmlspecialchars($row["grade"]); ?></td>
+                    <td><?php echo number_format((float)$row["payment"], 2); ?></td> <!-- Convert to float before formatting -->
+                    <td><?php echo date("Y-m-d", strtotime($row["Timestamp"])); ?></td> <!-- Display Timestamp -->
+                    <?php if ($is_logged_in): ?>
+                    <td>
+                        <a href="edit.php?id=<?php echo htmlspecialchars($row["id"]); ?>" style="padding: 5px; text-decoration: none; color: #4CAF50;">Edit</a> | 
+                        <a href="delete.php?id=<?php echo htmlspecialchars($row["id"]); ?>" style="padding: 5px; text-decoration: none; color: red;">Delete</a> | 
+                        <a href="resend.php?id=<?php echo htmlspecialchars($row["id"]); ?>" style="padding: 5px; text-decoration: none; color: blue;">Resend Code</a> <!-- Resend Code button -->
+                    </td>
+                    <?php endif; ?>
+                </tr>
+                <?php endwhile; ?>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="<?php echo $is_logged_in ? '9' : '8'; ?>">Total Payment: <?php echo number_format($total_payment, 2); ?></td>
+                </tr>
+                </tfoot>
+            </table>
             <?php else: ?>
-                <div class="no-records">No records found</div>
+            <div class="no-records">No records found</div>
             <?php endif; ?>
         </section>
     </main>

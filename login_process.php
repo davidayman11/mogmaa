@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Database connection (not used here, but kept if needed later)
+// Database connection
 $servername = "193.203.168.53";
 $username = "u968010081_mogamaa";
 $password = "Mogamaa_2000";
@@ -14,14 +14,13 @@ if ($conn->connect_error) {
 }
 
 // Get login credentials from form
-$user = trim($_POST['username'] ?? '');
-$pass = trim($_POST['password'] ?? '');
+$user = $_POST['username'];
+$pass = $_POST['password'];
 
-// Fixed authentication
-if ($user === 'admin' && $pass === 'password') {
+// Simple authentication logic (replace with your own)
+if ($user === 'admin' && $pass === 'shamandora') { // Replace with real authentication
     $_SESSION['logged_in'] = true;
-    $_SESSION['username'] = $user;
-    header("Location: index.php"); // Redirect to dashboard
+    header("Location: index.php"); // Redirect to the main page or dashboard
     exit();
 } else {
     echo "Invalid username or password.";
