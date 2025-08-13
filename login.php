@@ -1,116 +1,79 @@
-
-
-
 <?php
 session_start();
 
-// Check if the user is already logged in, redirect them to index if true
-if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true) {
-    header("Location: index.php");
-    exit;
-}
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = trim($_POST['username'] ?? '');
+    $password = trim($_POST['password'] ?? '');
 
-// Handle the login form submission
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-
-    // Hardcoded username and password (you can change this to fetch from a database)
-    $valid_username = 'admin';
-    $valid_password = 'shamandora'; // Note: Use secure methods for production
-
-    if ($username == $valid_username && $password == $valid_password) {
-        // Set session to mark user as logged in
-        $_SESSION['user_logged_in'] = true;
-        header("Location: index.php");
+    // Fixed credentials
+    if ($username === 'admin' && $password === 'password') {
+        $_SESSION['loggedin'] = true;
+        $_SESSION['username'] = $username;
+        header('Location: index.php');
         exit;
     } else {
-        $error_message = "Invalid username or password.";
+        $error = "Invalid username or password.";
     }
 }
 ?>
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - MOGAM3'24</title>
+    <title>Login</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f4f7fc;
+            background-color: #f5f6fa;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
         }
-        .login-container {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 30px;
+        .login-box {
+            background: #fff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
             width: 300px;
-            text-align: center;
         }
-        h2 {
-            color: #333;
+        .login-box h2 {
+            text-align: center;
             margin-bottom: 20px;
         }
-        .error-message {
-            color: red;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin: 10px 0 5px;
-            text-align: left;
-            font-size: 14px;
-        }
-        input[type="text"],
-        input[type="password"] {
+        input[type=text], input[type=password] {
             width: 100%;
             padding: 10px;
-            margin-bottom: 20px;
+            margin: 8px 0 15px 0;
             border: 1px solid #ccc;
             border-radius: 5px;
-            font-size: 14px;
         }
         button {
             width: 100%;
             padding: 10px;
-            background-color: #4CAF50;
+            background: #3498db;
             color: white;
             border: none;
             border-radius: 5px;
-            font-size: 16px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            font-size: 16px;
         }
         button:hover {
-            background-color: #45a049;
+            background: #2980b9;
+        }
+        .error {
+            color: red;
+            margin-bottom: 10px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h2>Login</h2>
-
-        <?php if (isset($error_message)): ?>
-            <div class="error-message"><?php echo $error_message; ?></div>
-        <?php endif; ?>
-
-        <form action="login.php" method="POST">
-            <div>
-                <label for="username">Username:</label>
-                <input type="text" name="username" id="username" required>
-            </div>
-            <div>
-                <label for="password">Password:</label>
-                <input type="password" name="password" id="password" required>
-            </div>
+    <div class="login-box">
+        <h2>Admin Login</h2>
+        <?php if (!empty($error)) echo "<div class='error'>$error</div>"; ?>
+        <form method="POST">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
             <button type="submit">Login</button>
         </form>
     </div>
