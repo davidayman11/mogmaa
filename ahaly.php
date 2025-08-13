@@ -1,143 +1,59 @@
 <?php
 session_start(); // Start the session
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOGAM3'24</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-
-        .demo-page {
-            display: flex;
-            height: 100vh;
-        }
-
-        .demo-page-navigation {
-            width: 250px;
-            background-color: #333;
-            padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .demo-page-navigation nav ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .demo-page-navigation nav ul li {
-            margin-bottom: 20px;
-        }
-
-        .demo-page-navigation nav ul li a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-        }
-
-        .demo-page-navigation nav ul li a svg {
-            margin-right: 10px;
-        }
-
-        .demo-page-content {
-            flex-grow: 1;
-            padding: 40px;
-        }
-
-        .demo-page-content h1 {
-            margin-top: 0;
-            color: #4CAF50;
-        }
-
-        .nice-form-group {
-            margin-bottom: 15px;
-        }
-
-        .nice-form-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: #333;
-        }
-
-        .nice-form-group input[type="text"],
-        .nice-form-group input[type="tel"] {
-            width: 100%;
-            padding: 10px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        input[type="submit"] {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-
-        .logout-message {
-            background-color: #dff0d8;
-            color: #3c763d;
-            padding: 10px;
-            border: 1px solid #d6e9c6;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-    </style>
+    <title>MOGAM3'24 - Ahaly</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Shared styles -->
 </head>
 <body>
 <div class="demo-page">
-        <?php include 'sidebar.php'; ?>
+    
+    <!-- Sidebar -->
+    <?php include 'sidebar.php'; ?>
+
+    <!-- Main Content -->
     <main class="demo-page-content">
 
-        <!-- Display logout message if it exists -->
-        <?php if (isset($_SESSION['logout_msg'])): ?>
+        <!-- Logout message -->
+        <?php if (!empty($_SESSION['logout_msg'])): ?>
             <div class="logout-message">
                 <?php 
-                echo $_SESSION['logout_msg']; 
-                unset($_SESSION['logout_msg']); // Remove the message after displaying it
+                echo htmlspecialchars($_SESSION['logout_msg'], ENT_QUOTES, 'UTF-8'); 
+                unset($_SESSION['logout_msg']); 
                 ?>
             </div>
         <?php endif; ?>
 
+        <!-- Form Section -->
         <section>
             <h1>Enter Details</h1>
             <form action="submit.php" method="post">
+                
                 <div class="nice-form-group">
-                    <label>Name:</label>
-                    <input type="text" name="name" placeholder="Your name" required/>
+                    <label for="name">Name:</label>
+                    <input id="name" type="text" name="name" placeholder="Your name" required>
                 </div>
+
                 <div class="nice-form-group">
-                    <label>Phone:</label>
-                    <input type="tel" name="phone" placeholder="Your Phone" value="+2" required/>
+                    <label for="phone">Phone:</label>
+                    <input id="phone" type="tel" name="phone" placeholder="Your Phone" value="+2" required>
                 </div>
+
                 <div class="nice-form-group">
-                    <label>team:</label>
-                    <input type="text" name="team" placeholder="ahaly" value="ahaly" required/>
+                    <label for="team">Team:</label>
+                    <input id="team" type="text" name="team" placeholder="ahaly" value="ahaly" required>
                 </div>
+
                 <div class="nice-form-group">
-                    <label>Payment:</label>
-                    <input type="text" name="payment" placeholder="Payment" required/>
+                    <label for="payment">Payment:</label>
+                    <input id="payment" type="text" name="payment" placeholder="Payment" required>
                 </div>
-                <input type="submit" value="Submit">
+
+                <input type="submit" value="Submit" class="btn-submit">
             </form>
         </section>
     </main>
