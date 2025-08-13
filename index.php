@@ -52,7 +52,7 @@ if (!isset($_SESSION['user_logged_in']) || $_SESSION['user_logged_in'] !== true)
                     <select id="team" name="team" required>
                         <option value="" disabled selected>Select your team</option>
                         <option value="bra3em">bra3em</option>
-                        <option value="ashbal">asjjjjjjjjjjhbal</option>
+                        <option value="ashbal">ashbal</option>
                         <option value="zahrat">zahrat</option>
                         <option value="kshafa">kshafa</option>
                         <option value="morshdat">morshdat</option>
