@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Hardcoded username and password (you can change this to fetch from a database)
     $valid_username = 'admin';
-    $valid_password = 'password'; // Note: Use secure methods for production
+    $valid_password = 'shamandora'; // Note: Use secure methods for production
 
     if ($username == $valid_username && $password == $valid_password) {
         // Set session to mark user as logged in
