@@ -12,87 +12,96 @@ $phone = $_SESSION['phone'];
 $serialNumber = $_SESSION['serialNumber'];
 $qrCodeImageUrl = $_SESSION['qrCodeImageUrl'];
 
-// Create the WhatsApp message in both English and Arabic
+// WhatsApp message
 $whatsappMessage = "Hello $name,\n\nThank you for registering with Shamandora Scout. Your Serial Number is: $serialNumber. You can access your ticket here: $qrCodeImageUrl. Please save this number to view your ticket.\n\n" .
                    "مرحباً $name،\n\nشكراً لتسجيلك في Shamandora Scout. رقم التسلسل الخاص بك هو: $serialNumber. يمكنك الوصول إلى تذكرتك هنا: $qrCodeImageUrl. برجاء تسجيل رقم الهاتف المرسل منه الرساله حتي يمكنكم فتح اللينك     .";
 
 $whatsappUrl = "https://api.whatsapp.com/send?phone=" . urlencode($phone) . "&text=" . urlencode($whatsappMessage);
 
 // Clear session data
-unset($_SESSION['name']);
-unset($_SESSION['phone']);
-unset($_SESSION['serialNumber']);
-unset($_SESSION['qrCodeImageUrl']);
+unset($_SESSION['name'], $_SESSION['phone'], $_SESSION['serialNumber'], $_SESSION['qrCodeImageUrl']);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Send WhatsApp Message</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Send WhatsApp Message</title>
+<style>
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
 
-        .demo-page {
-            background-color: #fff;
-            padding: 20px 40px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
+.demo-page {
+    background-color: #fff;
+    padding: 30px 50px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 450px;
+    width: 100%;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.demo-page:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
 
-        .demo-page h2 {
-            color: #4CAF50;
-            margin-bottom: 20px;
-        }
+.demo-page h2 {
+    color: #0f766e;
+    margin-bottom: 20px;
+    font-size: 26px;
+}
 
-        .demo-page p {
-            margin-bottom: 30px;
-            color: #555;
-        }
+.demo-page p {
+    margin-bottom: 30px;
+    color: #555;
+    font-size: 15px;
+    line-height: 1.5;
+}
 
-        .button-container {
-            margin-top: 20px;
-        }
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
 
-        .demo-page a.button {
-            background-color: #4CAF50;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-            margin: 0 10px;
-        }
+.demo-page a.button {
+    background-color: #0f766e;
+    color: #fff;
+    padding: 12px 22px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background 0.3s, transform 0.2s;
+}
+.demo-page a.button:hover {
+    background-color: #115e59;
+    transform: translateY(-2px);
+}
 
-        .demo-page a.button:hover {
-            background-color: #45a049;
-        }
-
-        .demo-page a.back-button {
-            background-color: #f44336;
-        }
-
-        .demo-page a.back-button:hover {
-            background-color: #e53935;
-        }
-    </style>
+.demo-page a.back-button {
+    background-color: #f44336;
+}
+.demo-page a.back-button:hover {
+    background-color: #e53935;
+}
+</style>
 </head>
 <body>
     <div class="demo-page">
         <h2>Message Ready to Send</h2>
-        <p>Your message is ready to be sent via WhatsApp.</p>
+        <p>Your message is ready to be sent via WhatsApp. Click below to proceed.</p>
         <div class="button-container">
             <a href="<?php echo $whatsappUrl; ?>" class="button" target="_blank">Send WhatsApp Message</a>
             <a href="index.php" class="button back-button">Back</a>
