@@ -43,10 +43,10 @@ $row = $res->fetch_assoc();
 $stmt->close();
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<title>Edit - <?php echo htmlspecialchars($row['id']); ?></title>
+<title>تعديل - <?php echo htmlspecialchars($row['id']); ?></title>
 <style>
 body {
     font-family: "Segoe UI", Arial, sans-serif;
@@ -95,7 +95,7 @@ button:hover {
 }
 a.cancel {
     display: inline-block;
-    margin-left: 15px;
+    margin-right: 15px;
     margin-top: 20px;
     text-decoration: none;
     color: #555;
@@ -116,28 +116,28 @@ a.cancel:hover {
 </head>
 <body>
 <div class="form-box">
-  <h3>Edit ID: <?php echo htmlspecialchars($row['id']); ?></h3>
+  <h3>تعديل المعرف: <?php echo htmlspecialchars($row['id']); ?></h3>
   <?php if (!empty($error)): ?>
     <div class="error"><?php echo htmlspecialchars($error); ?></div>
   <?php endif; ?>
   <form method="post">
-    <label>Name</label>
+    <label>الاسم</label>
     <input name="name" value="<?php echo htmlspecialchars($row['name']); ?>" required>
     
-    <label>Phone</label>
+    <label>رقم الهاتف</label>
     <input name="phone" value="<?php echo htmlspecialchars($row['phone']); ?>" required>
     
-    <label>Team</label>
+    <label>الفريق</label>
     <input name="team" value="<?php echo htmlspecialchars($row['team']); ?>" required>
     
-    <label>Grade</label>
+    <label>الصف الدراسي</label>
     <input name="grade" value="<?php echo htmlspecialchars($row['grade']); ?>" required>
     
-    <label>Payment</label>
+    <label>المبلغ المدفوع</label>
     <input name="payment" value="<?php echo htmlspecialchars($row['payment']); ?>" required>
     
-    <button type="submit">Save</button>
-    <a href="detail.php" class="cancel">Cancel</a>
+    <button type="submit">حفظ</button>
+    <a href="detail.php" class="cancel">إلغاء</a>
   </form>
 </div>
 </body>

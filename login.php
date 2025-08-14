@@ -18,15 +18,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: detail.php');
         exit;
     } else {
-        $error = 'Invalid username or password.';
+        $error = 'اسم المستخدم أو كلمة المرور غير صحيحة.';
     }
 }
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<title>Admin Login</title>
+<title>تسجيل دخول المسؤول</title>
 <style>
 body {
     font-family: "Segoe UI", Arial, sans-serif;
@@ -92,14 +92,14 @@ button:hover {
 </head>
 <body>
 <div class="box">
-    <h3>Admin Login</h3>
+    <h3>تسجيل دخول المسؤول</h3>
     <?php if ($error): ?>
         <div class="error"><?php echo htmlspecialchars($error); ?></div>
     <?php endif; ?>
     <form method="post">
-        <input name="username" placeholder="Username" required autofocus>
-        <input type="password" name="password" placeholder="Password" required>
-        <button type="submit">Login</button>
+        <input name="username" placeholder="اسم المستخدم" required autofocus>
+        <input type="password" name="password" placeholder="كلمة المرور" required>
+        <button type="submit">دخول</button>
     </form>
 </div>
 </body>

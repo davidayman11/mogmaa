@@ -28,19 +28,19 @@ $cols = [];
 while($c = $res->fetch_assoc()) $cols[] = $c['Field'];
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Team Members - <?= htmlspecialchars($team) ?></title>
+<title>أعضاء فريق - <?= htmlspecialchars($team) ?></title>
 <style>
-body { font-family:"Segoe UI", Arial, sans-serif; margin:0; background:#f4f4f4; color:#333; display:flex; }
-.main-content { margin-left:220px; padding:30px; width:100%; }
+body { font-family:"Segoe UI", Arial, sans-serif; margin:0; background:#f4f4f4; color:#333; display:flex; direction:rtl; }
+.main-content { margin-right:220px; padding:30px; width:100%; }
 .cards { display:flex; flex-wrap:wrap; gap:20px; margin-bottom:20px; }
 .card { background:#fff; padding:20px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.06); flex:1; min-width:220px; text-align:center; }
 .card h3 { margin-bottom:15px; color:#0f766e; }
 .card p { font-size:18px; font-weight:bold; margin:8px 0; }
-.btn { display:inline-block; padding:10px 20px; background:#0f766e; color:#fff; text-decoration:none; border-radius:6px; margin-right:10px; }
+.btn { display:inline-block; padding:10px 20px; background:#0f766e; color:#fff; text-decoration:none; border-radius:6px; margin-left:10px; }
 .btn:hover { background:#0d665b; }
 table { width:100%; border-collapse:collapse; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 5px 15px rgba(0,0,0,0.05); margin-top:20px; }
 table th, table td { padding:12px; text-align:center; border-bottom:1px solid #eee; }
@@ -51,10 +51,10 @@ tr:hover { background:#f1f1f1; }
 <body>
 <?php include 'sidenav.php'; ?>
 <div class="main-content">
-    <h1>Members of <?= htmlspecialchars($team) ?></h1>
+    <h1>أعضاء فريق <?= htmlspecialchars($team) ?></h1>
     <div class="cards">
-        <a href="dashboard.php" class="btn">⬅ Back to Dashboard</a>
-        <a href="team_members.php?team=<?= urlencode($team) ?>&download_csv=1" class="btn">Download CSV</a>
+        <a href="dashboard.php" class="btn">← العودة للوحة التحكم</a>
+        <a href="team_members.php?team=<?= urlencode($team) ?>&download_csv=1" class="btn">تحميل CSV</a>
     </div>
 
     <table>
