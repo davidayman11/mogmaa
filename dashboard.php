@@ -53,35 +53,142 @@ if(isset($_GET['export']) && $_GET['export'] === 'csv') {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Scout Dashboard</title>
 <style>
-body { font-family:"Segoe UI", Arial, sans-serif; margin:0; background:#f4f4f4; color:#333; }
-.layout { display:grid; grid-template-columns:220px 1fr; min-height:100vh; }
-.main-content { padding:30px; }
-h1 { color:#0f766e; margin-bottom:25px; }
-.cards { display:flex; flex-wrap:wrap; gap:20px; margin-bottom:40px; }
-.card { background:#fff; padding:20px 25px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.06); flex:1; min-width:220px; text-align:center; transition:transform 0.2s, box-shadow 0.2s; }
-.card:hover { transform:translateY(-2px); box-shadow:0 12px 25px rgba(0,0,0,0.1); }
-.card h3 { margin-bottom:15px; font-size:20px; color:#0f766e; }
-.card p { font-size:18px; font-weight:bold; margin:8px 0; }
-.total-card { background:#1abc9c; color:#fff; border-top:5px solid #16a085; }
-.total-card h3, .total-card p { color:#fff; }
-.chart-container { background:#fff; padding:25px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.06); margin-bottom:40px; max-width:600px; margin-left:auto; margin-right:auto; }
-.export-btn { background:#0f766e; color:#fff; padding:10px 20px; border:none; border-radius:6px; text-decoration:none; margin-bottom:20px; display:inline-block; transition:0.3s; }
-.export-btn:hover { background:#0d665b; }
+body { 
+    font-family:"Segoe UI", Arial, sans-serif; 
+    margin:0; 
+    background:#f4f4f4; 
+    color:#333; 
+}
+
+.layout { 
+    display:grid; 
+    grid-template-columns:220px 1fr; 
+    min-height:100vh; 
+}
+
+.main-content { 
+    padding:30px; 
+    margin-left: 0; /* Remove any left margin that might interfere */
+}
+
+h1 { 
+    color:#0f766e; 
+    margin-bottom:25px; 
+}
+
+.cards { 
+    display:flex; 
+    flex-wrap:wrap; 
+    gap:20px; 
+    margin-bottom:40px; 
+}
+
+.card { 
+    background:#fff; 
+    padding:20px 25px; 
+    border-radius:12px; 
+    box-shadow:0 8px 20px rgba(0,0,0,0.06); 
+    flex:1; 
+    min-width:220px; 
+    text-align:center; 
+    transition:transform 0.2s, box-shadow 0.2s; 
+}
+
+.card:hover { 
+    transform:translateY(-2px); 
+    box-shadow:0 12px 25px rgba(0,0,0,0.1); 
+}
+
+.card h3 { 
+    margin-bottom:15px; 
+    font-size:20px; 
+    color:#0f766e; 
+}
+
+.card p { 
+    font-size:18px; 
+    font-weight:bold; 
+    margin:8px 0; 
+}
+
+.total-card { 
+    background:#1abc9c; 
+    color:#fff; 
+    border-top:5px solid #16a085; 
+}
+
+.total-card h3, .total-card p { 
+    color:#fff; 
+}
+
+.chart-container { 
+    background:#fff; 
+    padding:25px; 
+    border-radius:12px; 
+    box-shadow:0 8px 20px rgba(0,0,0,0.06); 
+    margin-bottom:40px; 
+    max-width:600px; 
+    margin-left:auto; 
+    margin-right:auto; 
+}
+
+.export-btn { 
+    background:#0f766e; 
+    color:#fff; 
+    padding:10px 20px; 
+    border:none; 
+    border-radius:6px; 
+    text-decoration:none; 
+    margin-bottom:20px; 
+    display:inline-block; 
+    transition:0.3s; 
+}
+
+.export-btn:hover { 
+    background:#0d665b; 
+}
 
 /* Payment table styling */
-.payment-table { width:100%; max-width:500px; margin:0 auto 40px auto; border-collapse:collapse; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 5px 15px rgba(0,0,0,0.05); }
-.payment-table th, .payment-table td { padding:10px; text-align:center; border-bottom:1px solid #eee; }
-.payment-table th { background:#0f766e; color:#fff; }
-.payment-table tr:last-child td { border-bottom:none; }
+.payment-table { 
+    width:100%; 
+    max-width:500px; 
+    margin:0 auto 40px auto; 
+    border-collapse:collapse; 
+    background:#fff; 
+    border-radius:8px; 
+    overflow:hidden; 
+    box-shadow:0 5px 15px rgba(0,0,0,0.05); 
+}
 
-@media(max-width:768px){ .layout{grid-template-columns:1fr;} .cards{flex-direction:column;} }
+.payment-table th, .payment-table td { 
+    padding:10px; 
+    text-align:center; 
+    border-bottom:1px solid #eee; 
+}
+
+.payment-table th { 
+    background:#0f766e; 
+    color:#fff; 
+}
+
+.payment-table tr:last-child td { 
+    border-bottom:none; 
+}
+
+/* Responsive design */
+@media(max-width:768px){ 
+    .layout {
+        grid-template-columns:60px 1fr; /* Adjust for collapsed sidebar */
+    }
+    .cards {
+        flex-direction:column;
+    }
+}
 </style>
 </head>
 <body>
 <div class="layout">
-    <div class="side-nav">
-        <?php include 'side_nav.php'; ?>
-    </div>
+    <?php include 'side_nav.php'; ?>
 
     <div class="main-content">
         <h1>Scout Dashboard</h1>
@@ -134,3 +241,4 @@ h1 { color:#0f766e; margin-bottom:25px; }
 </div>
 </body>
 </html>
+
