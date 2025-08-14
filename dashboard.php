@@ -213,7 +213,6 @@ if (isset($_GET['team_export'])) {
         </div>
 
         <h2>توزيع الفرق</h2>
-        <h2>توزيع الفرق</h2>
         <div class="cards">
             <?php foreach ($teams as $team): ?>
             <?php $count = $conn->query("SELECT COUNT(*) as c FROM employees WHERE team='$team'")->fetch_assoc()['c']; ?>
@@ -226,7 +225,6 @@ if (isset($_GET['team_export'])) {
             <?php endforeach; ?>
         </div>
 
-        <h2>توزيع المدفوعات</h2>
         <h2>توزيع المدفوعات</h2>
         <table class="payment-table">
             <thead>
