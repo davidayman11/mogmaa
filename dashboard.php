@@ -53,10 +53,11 @@ body {
 }
 
 .main-content {
-    margin:0 auto;
+    margin:0;
     padding:30px;
-    width:80%;
+    width:calc(100% - 240px); /* ترك مساحة للـ sidebar */
     max-width:1200px;
+    box-sizing:border-box;
 }
 
 @media(max-width:768px){
@@ -131,6 +132,7 @@ body {
     top:0;
     height:100%;
     padding-top:30px;
+    box-sizing:border-box;
 }
 
 .sidenav a {
