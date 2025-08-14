@@ -51,7 +51,7 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
 <style>
     body { font-family: Arial, sans-serif; margin: 0; background: #f4f4f4; }
     .container { display: flex; min-height: 100vh; }
-    .sidenav { width: 220px; background: #333; padding: 20px; color: white; }
+    .sidenav { width: 220px; background: #333; padding: 20px; color: white; box-sizing: border-box; flex-shrink: 0; }
     .sidenav a { display: block; color: white; text-decoration: none; margin: 10px 0; }
     .sidenav a:hover { background: #444; padding-left: 5px; }
     .content { flex: 1; padding: 20px; }
