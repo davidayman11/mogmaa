@@ -1,7 +1,9 @@
 <?php
+// send_whatsapp.php
 session_start();
 
-if (!isset($_SESSION['name'], $_SESSION['phone'], $_SESSION['serialNumber'], $_SESSION['qrCodeFileName'])) {
+// Check session
+if (!isset($_SESSION['name'], $_SESSION['phone'], $_SESSION['serialNumber'], $_SESSION['qrCodeImageUrl'])) {
     echo "No data available to send.";
     exit();
 }
@@ -9,19 +11,16 @@ if (!isset($_SESSION['name'], $_SESSION['phone'], $_SESSION['serialNumber'], $_S
 $name = $_SESSION['name'];
 $phone = $_SESSION['phone'];
 $serialNumber = $_SESSION['serialNumber'];
-$qrCodeFileName = $_SESSION['qrCodeFileName'];
+$qrCodeImageUrl = $_SESSION['qrCodeImageUrl'];
 
-// Download link for the QR code (forces download)
-$qrDownloadUrl = "http://mogamaaa.shamandorascout.com/download_qr.php?file=" . urlencode($qrCodeFileName);
+// WhatsApp message
+$whatsappMessage = "Hello $name,\n\nThank you for registering with Shamandora Scout. Your Serial Number is: $serialNumber. You can access your ticket here: $qrCodeImageUrl.";
 
-// WhatsApp message with the download link
-$whatsappMessage = "Hello $name,\n\nThank you for registering with Shamandora Scout. Your Serial Number is: $serialNumber. You can download your ticket here: $qrDownloadUrl\n\n" .
-                   "مرحباً $name،\n\nشكراً لتسجيلك في Shamandora Scout. رقم التسلسل الخاص بك هو: $serialNumber. يمكنك تحميل تذكرتك من هنا: $qrDownloadUrl";
+// WhatsApp URL
+$whatsappUrl = "https://wa.me/" . urlencode($phone) . "?text=" . urlencode($whatsappMessage);
 
-$whatsappUrl = "https://api.whatsapp.com/send?phone=" . urlencode($phone) . "&text=" . urlencode($whatsappMessage);
-
-// Clear session data
-unset($_SESSION['name'], $_SESSION['phone'], $_SESSION['serialNumber'], $_SESSION['qrCodeFileName']);
+// Clear session
+unset($_SESSION['name'], $_SESSION['phone'], $_SESSION['serialNumber'], $_SESSION['qrCodeImageUrl']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -30,40 +29,38 @@ unset($_SESSION['name'], $_SESSION['phone'], $_SESSION['serialNumber'], $_SESSIO
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Send WhatsApp Message</title>
 <style>
-body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background-color: #f4f4f4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-.demo-page {
-    background-color: #fff;
-    padding: 30px 50px;
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    max-width: 450px;
-}
-.demo-page a.button {
-    background-color: #0f766e;
-    color: #fff;
-    padding: 12px 22px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 600;
-}
-.demo-page a.button:hover {
-    background-color: #115e59;
-}
+body { font-family:'Segoe UI', Arial, sans-serif; background:#f4f4f4; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; }
+.container { background:#fff; padding:30px 50px; border-radius:12px; box-shadow:0 8px 25px rgba(0,0,0,0.1); text-align:center; max-width:450px; width:100%; }
+.container h2 { color:#0f766e; margin-bottom:20px; }
+.container p { color:#555; margin-bottom:30px; }
+.button-container { display:flex; justify-content:center; gap:15px; flex-wrap:wrap; }
+.button { background:#0f766e; color:#fff; padding:12px 22px; border-radius:8px; text-decoration:none; font-size:16px; font-weight:600; transition:0.2s; }
+.button:hover { background:#115e59; transform:translateY(-2px); }
+.back-button { background:#f44336; }
+.back-button:hover { background:#e53935; }
 </style>
 </head>
 <body>
-    <div class="demo-page">
-        <h2>Message Ready to Send</h2>
-        <p>Your message is ready to be sent via WhatsApp. Click below to proceed.</p>
-        <a href="<?php echo $whatsappUrl; ?>" class="button" target="_blank">Send WhatsApp Message</a>
+<div class="container">
+    <h2>Message Ready to Send</h2>
+    <p>Your message will open in WhatsApp and also download automatically as a text file.</p>
+    <div class="button-container">
+        <a href="<?php echo $whatsappUrl; ?>" onclick="downloadMessage('<?php echo addslashes($whatsappMessage); ?>', '<?php echo addslashes($name); ?>')" target="_self" class="button">Send WhatsApp & Download</a>
+        <a href="index.php" class="button back-button">Back</a>
     </div>
+</div>
+
+<script>
+function downloadMessage(message, name) {
+    // Create a text blob
+    const blob = new Blob([message], { type: "text/plain" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = name + "_message.txt"; // Use member name for file
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+</script>
 </body>
 </html>
