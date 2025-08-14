@@ -52,12 +52,36 @@ body {
     flex-direction: row-reverse; /* Sidebar على اليمين */
 }
 
-.main-content {
-    margin:0;
-    padding:30px;
-    width:calc(100% - 240px); /* ترك مساحة للـ sidebar */
-    max-width:1200px;
+/* Sidebar على اليمين */
+.sidenav {
+    width:220px;
+    background:#0f766e;
+    color:#fff;
+    position:fixed;
+    right:0;
+    top:0;
+    height:100%;
+    padding-top:30px;
     box-sizing:border-box;
+}
+
+.sidenav a {
+    display:block;
+    padding:10px 20px;
+    color:#fff;
+    text-decoration:none;
+}
+
+.sidenav a:hover { background:#0d665b; }
+
+/* المحتوى الرئيسي مركزي */
+.main-content {
+    margin:0 auto;
+    padding:30px;
+    max-width:1000px;
+    width:100%;
+    box-sizing:border-box;
+    text-align:center;
 }
 
 @media(max-width:768px){
@@ -80,6 +104,7 @@ body {
     box-shadow:0 8px 20px rgba(0,0,0,0.06);
     flex:1;
     min-width:220px;
+    max-width:250px;
     text-align:center;
 }
 
@@ -121,28 +146,6 @@ body {
 
 .payment-table th { background:#0f766e; color:#fff; }
 .payment-table tr:last-child td { border-bottom:none; }
-
-/* Sidebar على اليمين */
-.sidenav {
-    width:220px;
-    background:#0f766e;
-    color:#fff;
-    position:fixed;
-    right:0;
-    top:0;
-    height:100%;
-    padding-top:30px;
-    box-sizing:border-box;
-}
-
-.sidenav a {
-    display:block;
-    padding:10px 20px;
-    color:#fff;
-    text-decoration:none;
-}
-
-.sidenav a:hover { background:#0d665b; }
 </style>
 </head>
 <body>
