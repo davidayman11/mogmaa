@@ -1,26 +1,14 @@
 <?php
-session_start(); // Start the session
+require_once 'config.php';
+require_once 'auth.php';
+require_once 'utils.php';
 
-// Unset all of the session variables
-$_SESSION = array();
+$auth = new Auth();
 
-// If it's desired to kill the session, also delete the session cookie.
-if (ini_get("session.use_cookies")) {
-    $params = session_get_cookie_params();
-    setcookie(session_name(), '', time() - 42000,
-        $params["path"], $params["domain"],
-        $params["secure"], $params["httponly"]
-    );
-}
+// Perform logout
+$auth->logout();
 
-// Destroy the session
-session_destroy();
-
-// Start a new session to store the logout message
-session_start();
-$_SESSION['logout_msg'] = "You have logged out successfully.";
-
-// Redirect back to the main page or any page you want
-header("Location: index.php");
-exit();
+// Redirect to login page with success message
+Utils::redirect('login.php', 'You have been successfully logged out.', 'success');
 ?>
+

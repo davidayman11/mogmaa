@@ -1,213 +1,345 @@
 <?php
-session_start(); // Start the session
+require_once 'config.php';
+require_once 'auth.php';
+require_once 'utils.php';
+require_once 'database.php';
 
-// Check if user is logged in
-if (!isset($_SESSION['user_logged_in']) || $_SESSION['user_logged_in'] !== true) {
-    // If not logged in, redirect to the login page
-    header("Location: login.php");
-    exit;
+$auth = new Auth();
+$pageTitle = 'Registration Form';
+$pageDescription = 'MOGMAA 2024 Event Registration System';
+
+// Handle form submission
+$errors = [];
+$success = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        // Validate CSRF token
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        if (!$auth->validateCSRFToken($csrfToken)) {
+            throw new Exception('Invalid request. Please refresh the page and try again.');
+        }
+        
+        // Get and sanitize form data
+        $formData = [
+            'name' => Utils::sanitizeInput($_POST['name'] ?? ''),
+            'phone' => Utils::sanitizeInput($_POST['phone'] ?? ''),
+            'team' => Utils::sanitizeInput($_POST['team'] ?? ''),
+            'grade' => Utils::sanitizeInput($_POST['grade'] ?? ''),
+            'payment' => Utils::sanitizeInput($_POST['payment'] ?? '')
+        ];
+        
+        // Validate required fields
+        $requiredFields = ['name', 'phone', 'team', 'grade', 'payment'];
+        $validationErrors = Utils::validateRequired($requiredFields, $formData);
+        
+        if (!empty($validationErrors)) {
+            $errors = $validationErrors;
+        } else {
+            // Additional validations
+            if (!Utils::validatePhone($formData['phone'])) {
+                $errors[] = 'Please enter a valid Egyptian phone number.';
+            }
+            
+            if (!is_numeric($formData['payment']) || $formData['payment'] <= 0) {
+                $errors[] = 'Please enter a valid payment amount.';
+            }
+            
+            if (empty($errors)) {
+                // Generate unique ID
+                $formData['id'] = Utils::generateUniqueId('REG_');
+                
+                // Store registration in database
+                $db = Database::getInstance();
+                $sql = "INSERT INTO registrations (id, name, phone, team, grade, payment, created_at) 
+                        VALUES (?, ?, ?, ?, ?, ?, NOW())";
+                
+                $db->execute($sql, [
+                    $formData['id'],
+                    $formData['name'],
+                    $formData['phone'],
+                    $formData['team'],
+                    $formData['grade'],
+                    $formData['payment']
+                ]);
+                
+                // Store data in session for QR generation
+                $_SESSION['registration_data'] = $formData;
+                
+                // Redirect to QR generation
+                Utils::redirect('generate_qr.php', 'Registration successful! Generating your QR code...', 'success');
+            }
+        }
+    } catch (Exception $e) {
+        $errors[] = $e->getMessage();
+        Utils::logError('Registration form error', ['error' => $e->getMessage()]);
+    }
 }
+
+// Generate CSRF token
+$csrfToken = $auth->generateCSRFToken();
+
+// Include header
+require_once 'includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOGAM3'24</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
 
-        .demo-page {
-            display: flex;
-            height: 100vh;
-        }
-
-        .demo-page-navigation {
-            width: 250px;
-            background-color: #333;
-            padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .demo-page-navigation nav ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .demo-page-navigation nav ul li {
-            margin-bottom: 20px;
-        }
-
-        .demo-page-navigation nav ul li a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-        }
-
-        .demo-page-navigation nav ul li a svg {
-            margin-right: 10px;
-        }
-
-        .demo-page-content {
-            flex-grow: 1;
-            padding: 40px;
-        }
-
-        .demo-page-content h1 {
-            margin-top: 0;
-            color: #4CAF50;
-        }
-
-        .nice-form-group {
-            margin-bottom: 15px;
-        }
-
-        .nice-form-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: #333;
-        }
-
-        .nice-form-group input[type="text"],
-        .nice-form-group input[type="tel"] {
-            width: 100%;
-            padding: 10px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        input[type="submit"] {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-
-        .logout-message {
-            background-color: #dff0d8;
-            color: #3c763d;
-            padding: 10px;
-            border: 1px solid #d6e9c6;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-    </style>
-</head>
-<body>
-<div class="demo-page">
-    <div class="demo-page-navigation">
-        <nav>
-            <ul>
-                <li>
-                    <a href="./index.php">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tool">
-                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-                        </svg>
-                        MOGAM3'24</a>
-                </li>
-                <li>
-                    <a href="./show.php">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers">
-                            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-                            <polyline points="2 17 12 22 22 17"/>
-                            <polyline points="2 12 12 17 22 12"/>
-                        </svg>
-                        Details</a>
-                </li>
-                <li>
-    <a href="./ahaly.php">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2V12H8v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9z"></path>
-        </svg>
-        Ahaly</a>
-</li>
-
-                <!-- Admin link -->
-                <li>
-                    <a href="./login.php">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                            <circle cx="12" cy="7" r="4"/>
-                        </svg>
-                        Admin</a>
-                </li>
-                <!-- Logout link -->
-                <li>
-                    <a href="./logout.php">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out">
-                            <path d="M9 12l-4-4m0 0l4-4m-4 4h12M5 17v2h14v-2"/>
-                        </svg>
-                        Logout</a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-    <main class="demo-page-content">
-
-        <!-- Display logout message if it exists -->
-        <?php if (isset($_SESSION['logout_msg'])): ?>
-            <div class="logout-message">
-                <?php 
-                echo $_SESSION['logout_msg']; 
-                unset($_SESSION['logout_msg']); // Remove the message after displaying it
-                ?>
+<div class="container">
+    <?php require_once 'includes/navigation.php'; ?>
+    
+    <div class="demo-page-content">
+        <div class="text-center mb-4">
+            <h1>Welcome to <?php echo APP_NAME; ?></h1>
+            <p class="text-secondary">Register for our exciting event and get your digital ticket!</p>
+        </div>
+        
+        <?php if (!empty($errors)): ?>
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="alert alert-danger">
+                        <h5>Please correct the following errors:</h5>
+                        <ul class="mb-0">
+                            <?php foreach ($errors as $error): ?>
+                                <li><?php echo htmlspecialchars($error); ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                </div>
             </div>
         <?php endif; ?>
-
-        <section>
-            <h1>Enter Details</h1>
-            <form action="submit.php" method="post">
-                <div class="nice-form-group">
-                    <label>Name:</label>
-                    <input type="text" name="name" placeholder="Your name" required/>
+        
+        <div class="row">
+            <div class="col-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Registration Form</h3>
+                        <p class="mb-0">Please fill in all the required information below.</p>
+                    </div>
+                    
+                    <div class="card-body">
+                        <form method="POST" action="index.php" data-validate>
+                            <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
+                            
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="nice-form-group">
+                                        <label for="name">Full Name *</label>
+                                        <input type="text" 
+                                               id="name" 
+                                               name="name" 
+                                               required 
+                                               placeholder="Enter your full name"
+                                               value="<?php echo isset($_POST['name']) ? htmlspecialchars($_POST['name']) : ''; ?>"
+                                               data-tooltip="Please enter your full name as it appears on your ID">
+                                        <small>Enter your complete name for the certificate</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-6">
+                                    <div class="nice-form-group">
+                                        <label for="phone">Phone Number *</label>
+                                        <input type="tel" 
+                                               id="phone" 
+                                               name="phone" 
+                                               required 
+                                               placeholder="01xxxxxxxxx"
+                                               value="<?php echo isset($_POST['phone']) ? htmlspecialchars($_POST['phone']) : ''; ?>"
+                                               data-tooltip="Enter your Egyptian mobile number">
+                                        <small>Egyptian mobile number (e.g., 01012345678)</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="nice-form-group">
+                                        <label for="team">Team/Group *</label>
+                                        <select id="team" name="team" required>
+                                            <option value="">Select your team</option>
+                                            <option value="Scouts" <?php echo (isset($_POST['team']) && $_POST['team'] === 'Scouts') ? 'selected' : ''; ?>>Scouts</option>
+                                            <option value="Guides" <?php echo (isset($_POST['team']) && $_POST['team'] === 'Guides') ? 'selected' : ''; ?>>Guides</option>
+                                            <option value="Rangers" <?php echo (isset($_POST['team']) && $_POST['team'] === 'Rangers') ? 'selected' : ''; ?>>Rangers</option>
+                                            <option value="Rovers" <?php echo (isset($_POST['team']) && $_POST['team'] === 'Rovers') ? 'selected' : ''; ?>>Rovers</option>
+                                            <option value="Leaders" <?php echo (isset($_POST['team']) && $_POST['team'] === 'Leaders') ? 'selected' : ''; ?>>Leaders</option>
+                                        </select>
+                                        <small>Choose the team you belong to</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-6">
+                                    <div class="nice-form-group">
+                                        <label for="grade">Grade/Level *</label>
+                                        <select id="grade" name="grade" required>
+                                            <option value="">Select your grade</option>
+                                            <option value="Beginner" <?php echo (isset($_POST['grade']) && $_POST['grade'] === 'Beginner') ? 'selected' : ''; ?>>Beginner</option>
+                                            <option value="Intermediate" <?php echo (isset($_POST['grade']) && $_POST['grade'] === 'Intermediate') ? 'selected' : ''; ?>>Intermediate</option>
+                                            <option value="Advanced" <?php echo (isset($_POST['grade']) && $_POST['grade'] === 'Advanced') ? 'selected' : ''; ?>>Advanced</option>
+                                            <option value="Expert" <?php echo (isset($_POST['grade']) && $_POST['grade'] === 'Expert') ? 'selected' : ''; ?>>Expert</option>
+                                        </select>
+                                        <small>Select your current skill level</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="nice-form-group">
+                                <label for="payment">Payment Amount (EGP) *</label>
+                                <input type="number" 
+                                       id="payment" 
+                                       name="payment" 
+                                       required 
+                                       min="1" 
+                                       step="0.01"
+                                       placeholder="Enter payment amount"
+                                       value="<?php echo isset($_POST['payment']) ? htmlspecialchars($_POST['payment']) : ''; ?>"
+                                       data-tooltip="Enter the registration fee amount">
+                                <small>Registration fee in Egyptian Pounds</small>
+                            </div>
+                            
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                        <polyline points="17,21 17,13 7,13 7,21"/>
+                                        <polyline points="7,3 7,8 15,8"/>
+                                    </svg>
+                                    Register Now
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div class="nice-form-group">
-                    <label>Phone:</label>
-                    <input type="tel" name="phone" placeholder="Your Phone" value="+2" required/>
+            </div>
+            
+            <div class="col-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Event Information</h4>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h6>📅 Event Date</h6>
+                            <p class="text-secondary">Coming Soon</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6>📍 Location</h6>
+                            <p class="text-secondary">To be announced</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6>💰 Registration Fee</h6>
+                            <p class="text-secondary">Varies by category</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6>🎯 What's Included</h6>
+                            <ul class="text-secondary">
+                                <li>Event participation</li>
+                                <li>Digital certificate</li>
+                                <li>QR code ticket</li>
+                                <li>WhatsApp notifications</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <strong>Note:</strong> After registration, you'll receive a QR code ticket via WhatsApp. Please save the sender's number to access your ticket.
+                        </div>
+                    </div>
                 </div>
-                <div class="nice-form-group">
-                    <label>Team:</label>
-                    <select name="team" required>
-                        <option value="" disabled selected>Select your team</option>
-                        <option value="bra3em">bra3em</option>
-                        <option value="ashbal">ashbal</option>
-                        <option value="zahrat">zahrat</option>
-                        <option value="kshafa">kshafa</option>
-                        <option value="morshdat">morshdat</option>
-                        <option value="motkadem">motkadem</option>
-                        <option value="ra2edat">ra2edat</option>
-                        <option value="gwala">gwala</option>
-                        <option value="kada">kada</option>
-                    </select>
-                </div>
-                <div class="nice-form-group">
-                    <label>Grade:</label>
-                    <input type="text" name="grade" placeholder="Grade" required/>
-                </div>
-                <div class="nice-form-group">
-                    <label>Payment:</label>
-                    <input type="text" name="payment" placeholder="Payment" required/>
-                </div>
-                <input type="submit" value="Submit">
-            </form>
-        </section>
+            </div>
+        </div>
+    </div>
+    
     </main>
 </div>
-</body>
-</html>
+
+<style>
+.alert {
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+}
+
+.alert-danger {
+    background-color: #ffebee;
+    color: #c62828;
+    border-left: 4px solid #f44336;
+}
+
+.alert-info {
+    background-color: #e3f2fd;
+    color: #1565c0;
+    border-left: 4px solid #2196f3;
+}
+
+.alert ul {
+    margin: 0.5rem 0 0 1rem;
+}
+
+.field-error {
+    color: var(--error-color);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+input.error,
+select.error {
+    border-color: var(--error-color);
+}
+
+.tooltip {
+    position: absolute;
+    background: var(--bg-dark);
+    color: var(--text-white);
+    padding: 0.5rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.875rem;
+    z-index: 1000;
+    max-width: 200px;
+    word-wrap: break-word;
+}
+</style>
+
+<script>
+// Phone number formatting
+document.getElementById('phone').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length > 11) {
+        value = value.substring(0, 11);
+    }
+    e.target.value = value;
+});
+
+// Payment validation
+document.getElementById('payment').addEventListener('input', function(e) {
+    const value = parseFloat(e.target.value);
+    if (value < 0) {
+        e.target.value = '';
+    }
+});
+
+// Form preview
+function updatePreview() {
+    const formData = {
+        name: document.getElementById('name').value,
+        phone: document.getElementById('phone').value,
+        team: document.getElementById('team').value,
+        grade: document.getElementById('grade').value,
+        payment: document.getElementById('payment').value
+    };
+    
+    // You can add preview functionality here
+    console.log('Form data:', formData);
+}
+
+// Add event listeners for preview
+['name', 'phone', 'team', 'grade', 'payment'].forEach(function(fieldName) {
+    const field = document.getElementById(fieldName);
+    if (field) {
+        field.addEventListener('input', MOGMAA.debounce(updatePreview, 300));
+    }
+});
+</script>
+
+<?php require_once 'includes/footer.php'; ?>
+
