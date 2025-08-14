@@ -27,6 +27,13 @@ foreach ($teams as $team) {
     $total_payment_all += $total_payment_team;
 }
 
+// --- Payment distribution ---
+$payment_dist = [];
+$payment_query = $conn->query("SELECT payment, COUNT(*) as count FROM employees GROUP BY payment ORDER BY payment ASC");
+while($row = $payment_query->fetch_assoc()){
+    $payment_dist[$row['payment']] = $row['count'];
+}
+
 // --- Handle CSV Export ---
 if(isset($_GET['export']) && $_GET['export'] === 'csv') {
     header('Content-Type: text/csv');
@@ -46,7 +53,6 @@ if(isset($_GET['export']) && $_GET['export'] === 'csv') {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Scout Dashboard</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 body { font-family:"Segoe UI", Arial, sans-serif; margin:0; background:#f4f4f4; color:#333; }
 .layout { display:grid; grid-template-columns:220px 1fr; min-height:100vh; }
@@ -62,6 +68,13 @@ h1 { color:#0f766e; margin-bottom:25px; }
 .chart-container { background:#fff; padding:25px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.06); margin-bottom:40px; max-width:600px; margin-left:auto; margin-right:auto; }
 .export-btn { background:#0f766e; color:#fff; padding:10px 20px; border:none; border-radius:6px; text-decoration:none; margin-bottom:20px; display:inline-block; transition:0.3s; }
 .export-btn:hover { background:#0d665b; }
+
+/* Payment table styling */
+.payment-table { width:100%; max-width:500px; margin:0 auto 40px auto; border-collapse:collapse; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 5px 15px rgba(0,0,0,0.05); }
+.payment-table th, .payment-table td { padding:10px; text-align:center; border-bottom:1px solid #eee; }
+.payment-table th { background:#0f766e; color:#fff; }
+.payment-table tr:last-child td { border-bottom:none; }
+
 @media(max-width:768px){ .layout{grid-template-columns:1fr;} .cards{flex-direction:column;} }
 </style>
 </head>
@@ -98,47 +111,28 @@ h1 { color:#0f766e; margin-bottom:25px; }
             <?php endforeach; ?>
         </div>
 
-        <!-- Pie Chart -->
+        <!-- Payment Distribution Table -->
         <div class="chart-container">
-            <canvas id="teamPieChart"></canvas>
+            <h3 style="text-align:center; margin-bottom:15px;">Payment Distribution</h3>
+            <table class="payment-table">
+                <thead>
+                    <tr>
+                        <th>Payment</th>
+                        <th>Number of Members</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach($payment_dist as $amount => $count): ?>
+                    <tr>
+                        <td>$<?php echo number_format($amount,2); ?></td>
+                        <td><?php echo $count; ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         </div>
+
     </div>
 </div>
-
-<script>
-const ctx = document.getElementById('teamPieChart').getContext('2d');
-const teamLabels = <?php echo json_encode(array_keys($team_data)); ?>;
-const teamCounts = <?php echo json_encode(array_map(function($t){ return $t['total_scouts']; }, $team_data)); ?>;
-
-// Generate dynamic colors
-const bgColors = teamLabels.map((t,i)=>`hsl(${i*45 % 360},70%,50%)`);
-
-new Chart(ctx, {
-    type: 'pie',
-    data: {
-        labels: teamLabels,
-        datasets: [{
-            data: teamCounts,
-            backgroundColor: bgColors,
-            borderColor:'#fff',
-            borderWidth:2
-        }]
-    },
-    options:{
-        responsive:true,
-        plugins:{
-            legend:{ position:'bottom' },
-            tooltip:{ callbacks:{
-                label: function(context){
-                    let total = context.dataset.data.reduce((a,b)=>a+b,0);
-                    let val = context.raw;
-                    let percent = ((val/total)*100).toFixed(1);
-                    return context.label + ': ' + val + ' (' + percent + '%)';
-                }
-            }}
-        }
-    }
-});
-</script>
 </body>
 </html>
