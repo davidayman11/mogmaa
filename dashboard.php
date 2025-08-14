@@ -18,32 +18,61 @@ $payment_query = $conn->query("SELECT ROUND(payment,2) as pay, COUNT(*) as count
 while ($row = $payment_query->fetch_assoc()) {
     $payment_dist[$row['pay']] = $row['count'];
 }
+
+// --- CSV export per team ---
+if (isset($_GET['team_export'])) {
+    $team_name = $conn->real_escape_string($_GET['team_export']);
+    header('Content-Type:text/csv');
+    header('Content-Disposition:attachment;filename="'.$team_name.'_members.csv"');
+    $output = fopen('php://output', 'w');
+
+    // get columns dynamically
+    $res = $conn->query("SHOW COLUMNS FROM employees");
+    $cols = [];
+    while($c = $res->fetch_assoc()) $cols[] = $c['Field'];
+    fputcsv($output, $cols);
+
+    $members = $conn->query("SELECT * FROM employees WHERE team='$team_name'");
+    while($row = $members->fetch_assoc()) fputcsv($output, $row);
+
+    fclose($output);
+    exit();
+}
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Scout Dashboard</title>
-    <style>
-        body { font-family: Arial, sans-serif; background:#f4f6f9; margin:0; padding:0; }
-        .container { width: 95%; margin:auto; padding:20px; }
-        .cards { display:flex; gap:20px; flex-wrap:wrap; margin-bottom:40px; }
-        .card { background:white; padding:20px; border-radius:10px; box-shadow:0 4px 15px rgba(0,0,0,0.1); flex:1; min-width:220px; text-align:center; }
-        .card h3 { color:#007bff; margin-bottom:10px; }
-        .card p { font-size:18px; font-weight:bold; margin:0; }
-        .btn { display:inline-block; padding:6px 12px; margin-top:10px; background:#28a745; color:white; text-decoration:none; border-radius:4px; }
-        .btn:hover { background:#218838; }
-        table { width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
-        table th, table td { padding:12px; text-align:center; border-bottom:1px solid #ddd; }
-        table th { background:#007bff; color:white; }
-        tr:hover { background:#f1f1f1; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scout Dashboard</title>
+<style>
+body { font-family:"Segoe UI", Arial, sans-serif; margin:0; background:#f4f4f4; color:#333; display:flex; }
+.main-content { margin-left:220px; padding:30px; width:100%; }
+@media(max-width:768px){ .main-content{ margin-left:60px; } .cards{ flex-direction: column; } }
+.cards { display:flex; flex-wrap:wrap; gap:20px; margin-bottom:40px; }
+.card { background:#fff; padding:20px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.06); flex:1; min-width:220px; text-align:center; }
+.card h3 { margin-bottom:15px; color:#0f766e; }
+.card p { font-size:18px; font-weight:bold; margin:8px 0; }
+.total-card { background:#1abc9c; color:#fff; border-top:5px solid #16a085; }
+.total-card h3, .total-card p { color:#fff; }
+.export-btn { background:#0f766e; color:#fff; padding:10px 20px; border:none; border-radius:6px; text-decoration:none; margin-bottom:20px; display:inline-block; }
+.export-btn:hover { background:#0d665b; }
+.payment-table { width:100%; max-width:500px; margin:0 auto 40px auto; border-collapse:collapse; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 5px 15px rgba(0,0,0,0.05); }
+.payment-table th, .payment-table td { padding:10px; text-align:center; border-bottom:1px solid #eee; }
+.payment-table th { background:#0f766e; color:#fff; }
+.payment-table tr:last-child td { border-bottom:none; }
+</style>
 </head>
 <body>
-<div class="container">
+
+<?php include 'sidenav.php'; ?>
+
+<div class="main-content">
     <h1>Scout Dashboard</h1>
+    <a href="?export=csv" class="export-btn">Export Team Report</a>
 
     <div class="cards">
-        <div class="card">
+        <div class="card total-card">
             <h3>Total Scouts</h3>
             <p><?= $total_scouts_all ?></p>
         </div>
@@ -52,20 +81,18 @@ while ($row = $payment_query->fetch_assoc()) {
     <h2>Team Distribution</h2>
     <div class="cards">
         <?php foreach ($teams as $team): ?>
-            <?php
-            $count = $conn->query("SELECT COUNT(*) as c FROM employees WHERE team='$team'")->fetch_assoc()['c'];
-            ?>
-            <div class="card">
+            <?php $count = $conn->query("SELECT COUNT(*) as c FROM employees WHERE team='$team'")->fetch_assoc()['c']; ?>
+            <div class="card" style="border-top:5px solid #<?= substr(md5($team),0,6) ?>">
                 <h3><?= htmlspecialchars($team) ?></h3>
                 <p>Total Scouts: <?= $count ?></p>
-                <a class="btn" href="team_members.php?team=<?= urlencode($team) ?>">View Members</a>
-                <a class="btn" href="dashboard.php?team_export=<?= urlencode($team) ?>">Download CSV</a>
+                <a href="team_members.php?team=<?= urlencode($team) ?>" class="export-btn">View Members</a>
+                <a href="dashboard.php?team_export=<?= urlencode($team) ?>" class="export-btn" style="background:#0f766e;">Download CSV</a>
             </div>
         <?php endforeach; ?>
     </div>
 
     <h2>Payment Distribution</h2>
-    <table>
+    <table class="payment-table">
         <thead>
             <tr><th>Payment</th><th>Number of Members</th></tr>
         </thead>
@@ -79,28 +106,5 @@ while ($row = $payment_query->fetch_assoc()) {
         </tbody>
     </table>
 </div>
-
-<?php
-// CSV export per team
-if (isset($_GET['team_export'])) {
-    $team_name = $conn->real_escape_string($_GET['team_export']);
-    header('Content-Type:text/csv');
-    header('Content-Disposition:attachment;filename="'.$team_name.'_members.csv"');
-    $output = fopen('php://output', 'w');
-
-    // Get all columns
-    $res = $conn->query("SHOW COLUMNS FROM employees");
-    $cols = [];
-    while($c = $res->fetch_assoc()) $cols[] = $c['Field'];
-    fputcsv($output, $cols);
-
-    $members = $conn->query("SELECT * FROM employees WHERE team='$team_name'");
-    while($row = $members->fetch_assoc()) {
-        fputcsv($output, $row);
-    }
-    fclose($output);
-    exit();
-}
-?>
 </body>
 </html>
