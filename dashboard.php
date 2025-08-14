@@ -49,10 +49,10 @@ body {
     background:#f4f4f4;
     color:#333;
     display:flex;
-    flex-direction: row-reverse; /* Sidebar على اليمين */
+    flex-direction: row-reverse; /* sidebar على اليمين */
 }
 
-/* Sidebar على اليمين */
+/* Sidebar */
 .sidenav {
     width:220px;
     background:#0f766e;
@@ -63,6 +63,7 @@ body {
     height:100%;
     padding-top:30px;
     box-sizing:border-box;
+    transition: all 0.3s ease;
 }
 
 .sidenav a {
@@ -74,17 +75,12 @@ body {
 
 .sidenav a:hover { background:#0d665b; }
 
-/* المحتوى الرئيسي يملأ الصفحة باستثناء مساحة sidebar */
+/* Main content */
 .main-content {
     margin-right:220px; /* ترك مساحة للـ sidebar */
     padding:30px;
     flex:1;
     box-sizing:border-box;
-}
-
-@media(max-width:768px){
-    .main-content{ margin-right:0; width:100%; padding:20px; }
-    .cards{ flex-direction: column; }
 }
 
 .cards {
@@ -100,7 +96,7 @@ body {
     padding:20px;
     border-radius:12px;
     box-shadow:0 8px 20px rgba(0,0,0,0.06);
-    flex:1;
+    flex:1 1 220px; /* responsive flex */
     min-width:220px;
     max-width:250px;
     text-align:center;
@@ -144,6 +140,28 @@ body {
 
 .payment-table th { background:#0f766e; color:#fff; }
 .payment-table tr:last-child td { border-bottom:none; }
+
+/* Responsive */
+@media(max-width:1024px){
+    .main-content { margin-right:180px; }
+    .sidenav { width:180px; }
+}
+
+@media(max-width:768px){
+    body { flex-direction: column; }
+    .sidenav {
+        position:relative;
+        width:100%;
+        height:auto;
+    }
+    .main-content { margin-right:0; width:100%; padding:20px; }
+    .cards { justify-content:center; }
+    .card { max-width:90%; }
+}
+
+@media(max-width:480px){
+    .card { max-width:100%; }
+}
 </style>
 </head>
 <body>
