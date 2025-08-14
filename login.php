@@ -1,118 +1,71 @@
-
-
-
 <?php
-session_start();
+declare(strict_types=1);
+require __DIR__ . '/includes/functions.php';
+require __DIR__ . '/includes/db.php';
 
-// Check if the user is already logged in, redirect them to index if true
-if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true) {
-    header("Location: index.php");
-    exit;
-}
+check_csrf();
 
-// Handle the login form submission
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $next = $_POST['next'] ?? 'index.php';
 
-    // Hardcoded username and password (you can change this to fetch from a database)
-    $valid_username = 'admin';
-    $valid_password = 'password'; // Note: Use secure methods for production
-
-    if ($username == $valid_username && $password == $valid_password) {
-        // Set session to mark user as logged in
-        $_SESSION['user_logged_in'] = true;
-        header("Location: index.php");
-        exit;
-    } else {
-        $error_message = "Invalid username or password.";
+    if (!$email || !$password) {
+        flash('error', 'Email and password are required.');
+        redirect('login.php?next=' . urlencode($next));
     }
+
+    try {
+        $stmt = $pdo->prepare("SELECT id, name, email, password FROM users WHERE email = ? LIMIT 1");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch();
+        if ($user) {
+            $hash = $user['password'] ?? '';
+            $ok = false;
+            if ($hash && password_get_info((string)$hash)['algo'] !== 0) {
+                $ok = password_verify($password, (string)$hash);
+            } else {
+                // Fallback: support legacy plaintext passwords (will rehash on next login)
+                $ok = hash_equals((string)$hash, $password);
+            }
+            if ($ok) {
+                login_user((int)$user['id'], (string)($user['name'] ?? 'User'));
+                // If legacy, upgrade hash
+                if ($hash && password_get_info((string)$hash)['algo'] === 0) {
+                    $newHash = password_hash($password, PASSWORD_DEFAULT);
+                    $up = $pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
+                    $up->execute([$newHash, (int)$user['id']]);
+                }
+                flash('success', 'Welcome back!');
+                redirect($next ?: 'index.php');
+            }
+        }
+        flash('error', 'Invalid credentials.');
+    } catch (Throwable $e) {
+        error_log('[LOGIN] ' . $e->getMessage());
+        flash('error', 'Something went wrong.');
+    }
+    redirect('login.php?next=' . urlencode($next));
 }
+
+$title = 'Login';
+$next = $_GET['next'] ?? 'index.php';
+require __DIR__ . '/includes/header.php';
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - MOGAM3'24</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f7fc;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .login-container {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            width: 300px;
-            text-align: center;
-        }
-        h2 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        .error-message {
-            color: red;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin: 10px 0 5px;
-            text-align: left;
-            font-size: 14px;
-        }
-        input[type="text"],
-        input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-    </style>
-</head>
-<body>
-    <div class="login-container">
-        <h2>Login</h2>
-
-        <?php if (isset($error_message)): ?>
-            <div class="error-message"><?php echo $error_message; ?></div>
-        <?php endif; ?>
-
-        <form action="login.php" method="POST">
-            <div>
-                <label for="username">Username:</label>
-                <input type="text" name="username" id="username" required>
-            </div>
-            <div>
-                <label for="password">Password:</label>
-                <input type="password" name="password" id="password" required>
-            </div>
-            <button type="submit">Login</button>
-        </form>
-    </div>
-</body>
-</html>
+<h1>Login</h1>
+<form method="post" action="login.php" autocomplete="off" novalidate>
+  <?php echo csrf_field(); ?>
+  <input type="hidden" name="next" value="<?php echo e($next); ?>">
+  <div class="field">
+    <label>Email</label>
+    <input type="email" name="email" required>
+  </div>
+  <div class="field">
+    <label>Password</label>
+    <input type="password" name="password" required>
+  </div>
+  <div class="right">
+    <button class="btn btn-primary" type="submit">Sign in</button>
+  </div>
+</form>
+<?php require __DIR__ . '/includes/footer.php'; ?>

@@ -1,102 +1,23 @@
 <?php
-session_start();
+declare(strict_types=1);
+require __DIR__ . '/includes/functions.php';
+check_csrf();
 
-// Check if session variables are set
-if (!isset($_SESSION['name']) || !isset($_SESSION['phone']) || !isset($_SESSION['serialNumber']) || !isset($_SESSION['qrCodeImageUrl'])) {
-    echo "No data available to send.";
-    exit();
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    exit('Method Not Allowed');
 }
 
-$name = $_SESSION['name'];
-$phone = $_SESSION['phone'];
-$serialNumber = $_SESSION['serialNumber'];
-$qrCodeImageUrl = $_SESSION['qrCodeImageUrl'];
+$phone = preg_replace('/[^0-9]/', '', $_POST['phone'] ?? '');
+$message = trim($_POST['message'] ?? '');
 
-// Create the WhatsApp message in both English and Arabic
-$whatsappMessage = "Hello $name,\n\nThank you for registering with Shamandora Scout. Your Serial Number is: $serialNumber. You can access your ticket here: $qrCodeImageUrl. Please save this number to view your ticket.\n\n" .
-                   "مرحباً $name،\n\nشكراً لتسجيلك في Shamandora Scout. رقم التسلسل الخاص بك هو: $serialNumber. يمكنك الوصول إلى تذكرتك هنا: $qrCodeImageUrl. برجاء تسجيل رقم الهاتف المرسل منه الرساله حتي يمكنكم فتح اللينك     .";
+if (!$phone || !$message || strlen($message) > 2000) {
+    flash('error', 'Invalid phone or message.');
+    redirect('whatsapp.php');
+}
 
-$whatsappUrl = "https://api.whatsapp.com/send?phone=" . urlencode($phone) . "&text=" . urlencode($whatsappMessage);
-
-// Clear session data
-unset($_SESSION['name']);
-unset($_SESSION['phone']);
-unset($_SESSION['serialNumber']);
-unset($_SESSION['qrCodeImageUrl']);
-?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Send WhatsApp Message</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .demo-page {
-            background-color: #fff;
-            padding: 20px 40px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .demo-page h2 {
-            color: #4CAF50;
-            margin-bottom: 20px;
-        }
-
-        .demo-page p {
-            margin-bottom: 30px;
-            color: #555;
-        }
-
-        .button-container {
-            margin-top: 20px;
-        }
-
-        .demo-page a.button {
-            background-color: #4CAF50;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-            margin: 0 10px;
-        }
-
-        .demo-page a.button:hover {
-            background-color: #45a049;
-        }
-
-        .demo-page a.back-button {
-            background-color: #f44336;
-        }
-
-        .demo-page a.back-button:hover {
-            background-color: #e53935;
-        }
-    </style>
-</head>
-<body>
-    <div class="demo-page">
-        <h2>Message Ready to Send</h2>
-        <p>Your message is ready to be sent via WhatsApp.</p>
-        <div class="button-container">
-            <a href="<?php echo $whatsappUrl; ?>" class="button" target="_blank">Send WhatsApp Message</a>
-            <a href="index.php" class="button back-button">Back</a>
-        </div>
-    </div>
-</body>
-</html>
+// Here you can integrate with your gateway or use wa.me deep link redirect
+$waUrl = 'https://wa.me/' . rawurlencode($phone) . '?text=' . rawurlencode($message);
+flash('success', 'Opening WhatsApp to send your message...');
+header('Location: ' . $waUrl);
+exit;
