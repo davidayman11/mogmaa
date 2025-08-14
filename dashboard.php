@@ -9,32 +9,29 @@ while ($row = $teams_result->fetch_assoc()) {
     $teams[] = $row['team'];
 }
 
-// --- Summary by team ---
+// --- Summary by team (employees table only) ---
 $team_data = [];
 foreach ($teams as $team) {
     $total_scouts_team = $conn->query("SELECT COUNT(*) as cnt FROM employees WHERE team='$team'")->fetch_assoc()['cnt'];
-    $attendance_today_team = $conn->query("SELECT COUNT(*) as cnt FROM attendance a JOIN employees e ON a.scout_id = e.id WHERE e.team='$team' AND DATE(a.check_in) = CURDATE()")->fetch_assoc()['cnt'];
+    $registered_today_team = $conn->query("SELECT COUNT(*) as cnt FROM employees WHERE team='$team' AND DATE(Timestamp)=CURDATE()")->fetch_assoc()['cnt'];
     $total_payment_team = $conn->query("SELECT SUM(payment) as sum_pay FROM employees WHERE team='$team'")->fetch_assoc()['sum_pay'];
 
     $team_data[$team] = [
         'total_scouts' => $total_scouts_team,
-        'attendance_today' => $attendance_today_team,
+        'registered_today' => $registered_today_team,
         'total_payment' => $total_payment_team
     ];
 }
 
-// --- Attendance trend (last 7 days, team-wise) ---
+// --- Registrations trend (last 7 days per team) ---
 $dates_array = [];
-$attendance_chart = []; // [team => [counts]]
+$registration_chart = [];
 for ($i = 6; $i >= 0; $i--) {
     $date = date('Y-m-d', strtotime("-$i days"));
     $dates_array[] = $date;
     foreach ($teams as $team) {
-        $count = $conn->query("SELECT COUNT(*) as cnt 
-            FROM attendance a 
-            JOIN employees e ON a.scout_id = e.id 
-            WHERE e.team='$team' AND DATE(a.check_in)='$date'")->fetch_assoc()['cnt'];
-        $attendance_chart[$team][] = intval($count);
+        $count = $conn->query("SELECT COUNT(*) as cnt FROM employees WHERE team='$team' AND DATE(Timestamp)='$date'")->fetch_assoc()['cnt'];
+        $registration_chart[$team][] = intval($count);
     }
 }
 
@@ -43,15 +40,14 @@ if(isset($_GET['export']) && $_GET['export'] == 'csv') {
     header('Content-Type: text/csv');
     header('Content-Disposition: attachment; filename="team_report.csv"');
     $output = fopen('php://output', 'w');
-    fputcsv($output, ['Team', 'Total Scouts', 'Attendance Today', 'Total Payment']);
+    fputcsv($output, ['Team', 'Total Scouts', 'Registered Today', 'Total Payment']);
     foreach($team_data as $team => $stats) {
-        fputcsv($output, [$team, $stats['total_scouts'], $stats['attendance_today'], $stats['total_payment']]);
+        fputcsv($output, [$team, $stats['total_scouts'], $stats['registered_today'], $stats['total_payment']]);
     }
     fclose($output);
     exit();
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -70,7 +66,7 @@ h1 { color:#0f766e; margin-bottom:25px; }
 .card { background:#fff; padding:20px 25px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.06); flex:1; min-width:200px; text-align:center; transition:transform 0.2s, box-shadow 0.2s; }
 .card:hover { transform:translateY(-2px); box-shadow:0 12px 25px rgba(0,0,0,0.1); }
 .card h3 { margin-bottom:10px; font-size:18px; color:#0f766e; }
-.card p { font-size:20px; font-weight:bold; }
+.card p { font-size:18px; font-weight:bold; margin:5px 0; }
 .chart-container { background:#fff; padding:25px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.06); margin-bottom:40px; }
 @media(max-width:768px){ .layout{grid-template-columns:1fr;} .cards{flex-direction:column;} }
 </style>
@@ -80,7 +76,6 @@ h1 { color:#0f766e; margin-bottom:25px; }
     <div class="side-nav">
         <?php include 'side_nav.php'; ?>
     </div>
-
     <div class="main-content">
         <h1>Scout Dashboard</h1>
         <a href="?export=csv" class="export-btn">Export Team Report</a>
@@ -89,31 +84,31 @@ h1 { color:#0f766e; margin-bottom:25px; }
             <?php foreach($team_data as $team => $stats): ?>
             <div class="card" style="border-top: 5px solid #<?php echo substr(md5($team),0,6); ?>">
                 <h3><?php echo htmlspecialchars($team); ?></h3>
-                <p>Scouts: <?php echo $stats['total_scouts']; ?></p>
-                <p>Check-ins Today: <?php echo $stats['attendance_today']; ?></p>
+                <p>Total Scouts: <?php echo $stats['total_scouts']; ?></p>
+                <p>Registered Today: <?php echo $stats['registered_today']; ?></p>
                 <p>Total Payment: $<?php echo number_format($stats['total_payment'],2); ?></p>
             </div>
             <?php endforeach; ?>
         </div>
 
         <div class="chart-container">
-            <canvas id="teamAttendanceChart"></canvas>
+            <canvas id="teamRegistrationChart"></canvas>
         </div>
     </div>
 </div>
 
 <script>
-const ctx = document.getElementById('teamAttendanceChart').getContext('2d');
+const ctx = document.getElementById('teamRegistrationChart').getContext('2d');
 new Chart(ctx, {
     type: 'line',
     data: {
         labels: <?php echo json_encode($dates_array); ?>,
         datasets: [
-            <?php foreach($attendance_chart as $team => $counts): ?>
+            <?php foreach($registration_chart as $team => $counts): ?>
             {
                 label: '<?php echo $team; ?>',
                 data: <?php echo json_encode($counts); ?>,
-                borderColor: '<?php echo '#' . substr(md5($team), 0, 6); ?>',
+                borderColor: '<?php echo '#' . substr(md5($team),0,6); ?>',
                 backgroundColor: 'rgba(0,0,0,0)',
                 tension: 0.3,
                 pointRadius:5,
