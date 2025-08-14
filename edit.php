@@ -116,7 +116,7 @@ a.cancel:hover {
 </head>
 <body>
 <div class="form-box">
-  <h3>Edit Employee ID: <?php echo htmlspecialchars($row['id']); ?></h3>
+  <h3>Edit ID: <?php echo htmlspecialchars($row['id']); ?></h3>
   <?php if (!empty($error)): ?>
     <div class="error"><?php echo htmlspecialchars($error); ?></div>
   <?php endif; ?>

@@ -25,26 +25,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Admin Login</title>
-  <style>
-    body{font-family:Arial; background:#f4f4f4; margin:0; padding:0}
-    .box{width:320px;margin:80px auto;padding:20px;background:#fff;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
-    input{width:100%;padding:8px;margin:8px 0;border:1px solid #ccc;border-radius:4px}
-    button{width:100%;padding:10px;background:#4CAF50;color:#fff;border:0;border-radius:4px;cursor:pointer}
-    .error{color:#c00;margin-bottom:8px}
-  </style>
+<meta charset="utf-8">
+<title>Admin Login</title>
+<style>
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.box {
+    width: 360px;
+    padding: 30px 25px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.08);
+    text-align: center;
+}
+h3 {
+    margin-bottom: 20px;
+    color: #0f766e;
+}
+input {
+    width: 100%;
+    padding: 12px 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+button {
+    width: 100%;
+    padding: 12px 0;
+    margin-top: 10px;
+    background: #0f766e;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background 0.2s;
+}
+button:hover {
+    background: #115e59;
+}
+.error {
+    color: #b91c1c;
+    background: #fee2e2;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+.info {
+    font-size: 13px;
+    color: #555;
+    margin-top: 12px;
+}
+.info strong {
+    color: #0f766e;
+}
+</style>
 </head>
 <body>
-  <div class="box">
-    <h3 style="margin:0 0 10px">Admin Login</h3>
-    <?php if ($error): ?><div class="error"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
+<div class="box">
+    <h3>Admin Login</h3>
+    <?php if ($error): ?>
+        <div class="error"><?php echo htmlspecialchars($error); ?></div>
+    <?php endif; ?>
     <form method="post">
-      <input name="username" placeholder="Username" required autofocus>
-      <input type="password" name="password" placeholder="Password" required>
-      <button type="submit">Login</button>
+        <input name="username" placeholder="Username" required autofocus>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Login</button>
     </form>
-    <p style="font-size:12px;color:#666;margin-top:10px">User: <strong>admin</strong> / Pass: <strong>password</strong></p>
-  </div>
+    <p class="info">User: <strong>admin</strong> / Pass: <strong>password</strong></p>
+</div>
 </body>
 </html>
