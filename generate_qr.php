@@ -1,39 +1,47 @@
 <?php
-// auto_download_qr.php
+// generate_qrcode.php
 
 // Retrieve parameters
-$id = $_GET['id'] ?? '';
-$name = $_GET['name'] ?? '';
-$team = $_GET['team'] ?? '';
-$payment = $_GET['payment'] ?? '';
+$id = $_GET['id'];
+$name = $_GET['name'];
+$phone = $_GET['phone'];
+$team = $_GET['team'];
+$grade = $_GET['grade'];
+$payment = $_GET['payment'];
 
-if (!$id || !$name) {
-    die("Missing required parameters.");
-}
-
-// Prepare QR code data
+// Prepare the data string for the QR code
 $data = "Name: $name\nPayment Amount: $payment\nTeam: $team";
+
+// Encode the data for the QR code URL
 $encodedData = urlencode($data);
+
+// Generate the QR code URL
 $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=" . $encodedData;
 
-// Fetch QR code image
+// Get the QR code image data
 $qrCodeImageData = file_get_contents($qrCodeUrl);
-if ($qrCodeImageData === false) {
-    die("Failed to generate QR code.");
+
+// Define the directory to save the QR code image
+$uploadDir = 'qrcodes/';
+if (!is_dir($uploadDir)) {
+    mkdir($uploadDir, 0755, true);
 }
 
-// Sanitize team name for filename
-$safeTeam = preg_replace('/[^A-Za-z0-9_\-]/', '_', $team);
+// Create the file path
+$qrCodeFileName = $id . '.png';
+$qrCodeFilePath = $uploadDir . $qrCodeFileName;
 
-// Set headers to force download automatically
-header('Content-Description: File Transfer');
-header('Content-Type: image/png');
-header('Content-Disposition: attachment; filename="'.$safeTeam.'_'.$id.'.png"');
-header('Content-Length: ' . strlen($qrCodeImageData));
-header('Cache-Control: must-revalidate');
-header('Pragma: public');
+// Save QR code image
+if (file_put_contents($qrCodeFilePath, $qrCodeImageData)) {
+    session_start();
+    $_SESSION['qrCodeFileName'] = $qrCodeFileName;
+    $_SESSION['name'] = $name;
+    $_SESSION['phone'] = $phone;
+    $_SESSION['serialNumber'] = $id;
 
-// Output the image
-echo $qrCodeImageData;
-exit();
-?>
+    // Redirect to send WhatsApp
+    header("Location: send_whatsapp.php");
+    exit();
+} else {
+    echo "Failed to save QR code image.";
+}
