@@ -43,21 +43,104 @@ if (isset($_GET['team_export'])) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>لوحة تحكم الكشافة</title>
 <style>
-body { font-family:"Segoe UI", Arial, sans-serif; margin:0; background:#f4f4f4; color:#333; display:flex; direction:rtl; }
-.main-content { margin-left:220px; padding:30px; width:100%; }
-@media(max-width:768px){ .main-content{ margin-left:60px; } .cards{ flex-direction: column; } }
-.cards { display:flex; flex-wrap:wrap; gap:20px; margin-bottom:40px; }
-.card { background:#fff; padding:20px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.06); flex:1; min-width:220px; text-align:center; }
+body {
+    font-family:"Segoe UI", Arial, sans-serif;
+    margin:0;
+    background:#f4f4f4;
+    color:#333;
+    display:flex;
+    flex-direction: row-reverse; /* Sidebar على اليمين */
+}
+
+.main-content {
+    margin:0 auto;
+    padding:30px;
+    width:80%;
+    max-width:1200px;
+}
+
+@media(max-width:768px){
+    .main-content{ width:95%; padding:20px; }
+    .cards{ flex-direction: column; }
+}
+
+.cards {
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
+    margin-bottom:40px;
+    justify-content:center; /* لتوسيط الكروت */
+}
+
+.card {
+    background:#fff;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.06);
+    flex:1;
+    min-width:220px;
+    text-align:center;
+}
+
 .card h3 { margin-bottom:15px; color:#0f766e; }
 .card p { font-size:18px; font-weight:bold; margin:8px 0; }
+
 .total-card { background:#1abc9c; color:#fff; border-top:5px solid #16a085; }
 .total-card h3, .total-card p { color:#fff; }
-.export-btn { background:#0f766e; color:#fff; padding:10px 20px; border:none; border-radius:6px; text-decoration:none; margin-bottom:20px; display:inline-block; }
+
+.export-btn {
+    background:#0f766e;
+    color:#fff;
+    padding:10px 20px;
+    border:none;
+    border-radius:6px;
+    text-decoration:none;
+    margin:5px;
+    display:inline-block;
+}
+
 .export-btn:hover { background:#0d665b; }
-.payment-table { width:100%; max-width:500px; margin:0 auto 40px auto; border-collapse:collapse; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 5px 15px rgba(0,0,0,0.05); }
-.payment-table th, .payment-table td { padding:10px; text-align:center; border-bottom:1px solid #eee; }
+
+.payment-table {
+    width:100%;
+    max-width:500px;
+    margin:0 auto 40px auto;
+    border-collapse:collapse;
+    background:#fff;
+    border-radius:8px;
+    overflow:hidden;
+    box-shadow:0 5px 15px rgba(0,0,0,0.05);
+}
+
+.payment-table th, .payment-table td {
+    padding:10px;
+    text-align:center;
+    border-bottom:1px solid #eee;
+}
+
 .payment-table th { background:#0f766e; color:#fff; }
 .payment-table tr:last-child td { border-bottom:none; }
+
+/* Sidebar على اليمين */
+.sidenav {
+    width:220px;
+    background:#0f766e;
+    color:#fff;
+    position:fixed;
+    right:0;
+    top:0;
+    height:100%;
+    padding-top:30px;
+}
+
+.sidenav a {
+    display:block;
+    padding:10px 20px;
+    color:#fff;
+    text-decoration:none;
+}
+
+.sidenav a:hover { background:#0d665b; }
 </style>
 </head>
 <body>
