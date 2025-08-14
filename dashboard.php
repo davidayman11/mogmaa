@@ -2,6 +2,9 @@
 session_start();
 require_once 'db.php';
 
+// --- Set current page for sidebar highlighting ---
+$current_page = basename($_SERVER['PHP_SELF']); // For side_nav.php active link
+
 // --- Get all teams ---
 $teams_result = $conn->query("SELECT DISTINCT team FROM employees");
 $teams = [];
@@ -26,11 +29,11 @@ foreach ($teams as $team) {
     $total_payment_all += $total_payment_team;
 }
 
-// --- Payment distribution ---
+// --- Payment distribution (normalized and grouped) ---
 $payment_dist = [];
-$payment_query = $conn->query("SELECT payment, COUNT(*) as count FROM employees GROUP BY payment ORDER BY payment ASC");
+$payment_query = $conn->query("SELECT ROUND(payment,2) as pay, COUNT(*) as count FROM employees GROUP BY pay ORDER BY pay ASC");
 while($row = $payment_query->fetch_assoc()){
-    $payment_dist[$row['payment']] = $row['count'];
+    $payment_dist[$row['pay']] = $row['count'];
 }
 
 // --- Handle CSV Export ---
@@ -45,6 +48,9 @@ if(isset($_GET['export']) && $_GET['export'] === 'csv') {
     fclose($output);
     exit();
 }
+
+// --- Include the sidebar at the top ---
+include 'side_nav.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -115,13 +121,9 @@ body { font-family:"Segoe UI", Arial, sans-serif; margin:0; background:#f4f4f4; 
 .payment-table th, .payment-table td { padding:10px; text-align:center; border-bottom:1px solid #eee; }
 .payment-table th { background:#0f766e; color:#fff; }
 .payment-table tr:last-child td { border-bottom:none; }
-
 </style>
 </head>
 <body>
-    <!-- Include the side navigation -->
-    <?php include 'side_nav.php'; ?>
-
     <div class="main-content">
         <h1>Scout Dashboard</h1>
         <a href="?export=csv" class="export-btn">Export Team Report</a>
