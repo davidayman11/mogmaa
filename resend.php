@@ -23,7 +23,7 @@ if (isset($_GET['id'])) {
 
         // Generate QR code image URL based on the serial number
         $serialNumber = $row['id'];
-        $qrCodeImageUrl = "http://mogamaa.shamandorascout.com/qrcodes/" . $id . ".png";
+        $qrCodeImageUrl = "http://mogamaaa.shamandorascout.com/qrcodes/" . $id . ".png";
 
         // Create the WhatsApp message with the Arabic name and serial number
         $whatsappMessage = "Hello $name,\n\nThank you for registering with Shamandora Scout. Your Serial Number is: $serialNumber. You can access your ticket here: $qrCodeImageUrl. Please save this number to view your ticket.\n\n" .
