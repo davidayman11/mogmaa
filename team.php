@@ -1,85 +1,75 @@
 <?php
 session_start();
 require_once 'db.php';
-require 'vendor/autoload.php'; // PhpSpreadsheet
 
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+$current_page = basename($_SERVER['PHP_SELF']);
 
-$team = isset($_GET['team']) ? $conn->real_escape_string($_GET['team']) : '';
-if (!$team) {
-    die("No team selected.");
+// --- Get teams ---
+$teams_result = $conn->query("SELECT DISTINCT team FROM employees");
+$teams = [];
+while ($row = $teams_result->fetch_assoc()) {
+    $teams[] = $row['team'];
 }
 
-// --- Get team members ---
-$result = $conn->query("SELECT name, payment, phone, email FROM employees WHERE team='$team'");
+// --- CSV Download ---
+if (isset($_GET['download_csv'])) {
+    header('Content-Type: text/csv');
+    header('Content-Disposition: attachment;filename=teams.csv');
 
-// --- Export to Excel ---
-if (isset($_GET['export_excel'])) {
-    $spreadsheet = new Spreadsheet();
-    $sheet = $spreadsheet->getActiveSheet();
-    $sheet->setTitle("Team $team");
+    $output = fopen('php://output', 'w');
+    fputcsv($output, ['Team', 'Member Count']);
 
-    // Header
-    $sheet->fromArray(['Name', 'Payment', 'Phone', 'Email'], NULL, 'A1');
-
-    // Data
-    $rowNum = 2;
-    while ($row = $result->fetch_assoc()) {
-        $sheet->setCellValue("A$rowNum", $row['name']);
-        $sheet->setCellValue("B$rowNum", $row['payment']);
-        $sheet->setCellValue("C$rowNum", $row['phone']);
-        $sheet->setCellValue("D$rowNum", $row['email']);
-        $rowNum++;
+    foreach ($teams as $team) {
+        $count = $conn->query("SELECT COUNT(*) as c FROM employees WHERE team='$team'")->fetch_assoc()['c'];
+        fputcsv($output, [$team, $count]);
     }
-
-    // Output
-    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header("Content-Disposition: attachment;filename=\"{$team}_members.xlsx\"");
-    header('Cache-Control: max-age=0');
-
-    $writer = new Xlsx($spreadsheet);
-    $writer->save('php://output');
-    exit();
+    fclose($output);
+    exit;
 }
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-<title>Team <?php echo htmlspecialchars($team); ?> Members</title>
-<style>
-body { font-family:"Segoe UI", Arial, sans-serif; background:#f4f4f4; padding:20px; }
-table { width:100%; border-collapse:collapse; background:#fff; border-radius:8px; overflow:hidden; }
-th, td { padding:10px; border-bottom:1px solid #ddd; text-align:left; }
-th { background:#0f766e; color:#fff; }
-.export-btn { background:#0f766e; color:#fff; padding:8px 15px; border-radius:6px; text-decoration:none; }
-.export-btn:hover { background:#0d665b; }
-</style>
+    <title>Teams Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 0; }
+        .container { width: 90%; margin: auto; padding-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 8px; overflow: hidden; }
+        table th, table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        table th { background: #007bff; color: white; }
+        tr:hover { background: #f1f1f1; }
+        .btn { text-decoration: none; padding: 6px 12px; color: white; border-radius: 4px; }
+        .btn-view { background: #28a745; }
+        .btn-download { background: #17a2b8; float: right; margin-bottom: 10px; }
+        h2 { margin: 0; padding: 10px 0; }
+    </style>
 </head>
 <body>
+<div class="container">
+    <h2>Teams Dashboard</h2>
+    <a href="?download_csv=1" class="btn btn-download">Download CSV</a>
 
-<h1>Team: <?php echo htmlspecialchars($team); ?></h1>
-<a href="?team=<?php echo urlencode($team); ?>&export_excel=1" class="export-btn">Download Excel</a>
-<table>
-<thead>
-<tr>
-    <th>Name</th>
-    <th>Payment</th>
-    <th>Phone</th>
-    <th>Email</th>
-</tr>
-</thead>
-<tbody>
-<?php while ($row = $result->fetch_assoc()): ?>
-<tr>
-    <td><?php echo htmlspecialchars($row['name']); ?></td>
-    <td>$<?php echo number_format($row['payment'], 2); ?></td>
-    <td><?php echo htmlspecialchars($row['phone']); ?></td>
-    <td><?php echo htmlspecialchars($row['email']); ?></td>
-</tr>
-<?php endwhile; ?>
-</tbody>
-</table>
-
+    <table>
+        <thead>
+            <tr>
+                <th>Team</th>
+                <th>Members</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($teams as $team): ?>
+                <?php
+                $count = $conn->query("SELECT COUNT(*) as c FROM employees WHERE team='$team'")->fetch_assoc()['c'];
+                ?>
+                <tr>
+                    <td><?= htmlspecialchars($team) ?></td>
+                    <td><?= $count ?></td>
+                    <td><a class="btn btn-view" href="team_members.php?team=<?= urlencode($team) ?>">View</a></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
 </body>
 </html>
