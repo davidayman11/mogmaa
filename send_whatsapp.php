@@ -11,7 +11,7 @@ $name = $_SESSION['name'];
 $id = $_SESSION['id'];
 
 // WhatsApp message
-$phone = '201234567890'; // User phone (international format)
+$phone = $phone ; // User phone (international format)
 $message = "Hello $name,\nHere is your QR code: $qrCodeImageUrl";
 $whatsappUrl = "https://api.whatsapp.com/send?phone={$phone}&text=" . urlencode($message);
 
