@@ -5,62 +5,87 @@
 <meta charset="UTF-8">
 <title>Register</title>
 <style>
+/* General body and font */
 body {
     margin: 0;
     font-family: "Segoe UI", Arial, sans-serif;
-    background-color: #f4f6f8;
+    background: linear-gradient(135deg, #e0f7fa, #f4f6f8);
     color: #333;
 }
+
+/* Main container */
 .main {
     margin-left: 220px;
-    padding: 30px;
+    padding: 40px 30px;
+    min-height: 100vh;
 }
+
+/* Heading style */
 h1 {
     color: #0f766e;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    font-size: 28px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
+
+/* Form card */
 form {
-    background: #fff;
-    padding: 25px 30px;
-    max-width: 450px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    background: #ffffff;
+    padding: 30px 35px;
+    max-width: 500px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
+form:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+}
+
+/* Form groups */
 .nice-form-group {
-    margin-bottom: 18px;
+    margin-bottom: 20px;
 }
 label {
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     font-weight: 600;
     color: #0f766e;
+    font-size: 15px;
 }
+
+/* Inputs and selects */
 input, select {
     width: 100%;
-    padding: 10px 12px;
+    padding: 12px 14px;
     border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
+    border-radius: 8px;
+    font-size: 15px;
     transition: border 0.2s, box-shadow 0.2s;
 }
 input:focus, select:focus {
     border-color: #0f766e;
-    box-shadow: 0 0 5px rgba(15,118,110,0.3);
+    box-shadow: 0 0 8px rgba(15,118,110,0.3);
     outline: none;
 }
+
+/* Submit button */
 input[type="submit"] {
-    background-color: #0f766e;
-    color: white;
+    background: #0f766e;
+    color: #fff;
     border: none;
-    padding: 12px 20px;
+    padding: 14px 22px;
     font-size: 16px;
-    border-radius: 6px;
+    font-weight: 600;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.3s, transform 0.2s;
 }
 input[type="submit"]:hover {
-    background-color: #115e59;
+    background: #115e59;
+    transform: translateY(-2px);
 }
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .main {
@@ -69,6 +94,7 @@ input[type="submit"]:hover {
     }
     form {
         max-width: 100%;
+        padding: 25px;
     }
 }
 </style>
@@ -78,20 +104,20 @@ input[type="submit"]:hover {
 <?php include 'sidenav.php'; ?>
 
 <div class="main">
-    <h1>Enter Details</h1>
+    <h1>Register Employee</h1>
     <form action="submit.php" method="post">
         <div class="nice-form-group">
-            <label>Name:</label>
-            <input type="text" name="name" placeholder="Your name" required/>
+            <label>Name</label>
+            <input type="text" name="name" placeholder="Enter full name" required/>
         </div>
         <div class="nice-form-group">
-            <label>Phone:</label>
-            <input type="tel" name="phone" placeholder="Your Phone" value="+2" required/>
+            <label>Phone</label>
+            <input type="tel" name="phone" placeholder="+20XXXXXXXXXX" value="+2" required/>
         </div>
         <div class="nice-form-group">
-            <label>Team:</label>
+            <label>Team</label>
             <select name="team" required>
-                <option value="" disabled selected>Select your team</option>
+                <option value="" disabled selected>Select team</option>
                 <option value="bra3em">bra3em</option>
                 <option value="ashbal">ashbal</option>
                 <option value="zahrat">zahrat</option>
@@ -104,12 +130,12 @@ input[type="submit"]:hover {
             </select>
         </div>
         <div class="nice-form-group">
-            <label>Grade:</label>
-            <input type="text" name="grade" placeholder="Grade" required/>
+            <label>Grade</label>
+            <input type="text" name="grade" placeholder="Enter grade" required/>
         </div>
         <div class="nice-form-group">
-            <label>Payment:</label>
-            <input type="text" name="payment" placeholder="Payment" required/>
+            <label>Payment</label>
+            <input type="text" name="payment" placeholder="Enter payment amount" required/>
         </div>
         <input type="submit" value="Submit">
     </form>
