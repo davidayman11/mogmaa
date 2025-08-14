@@ -45,11 +45,7 @@ while ($row = $result->fetch_assoc()) {
 <meta charset="utf-8">
 <title>Employee Details</title>
 <style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+* 
 body {
     font-family: "Segoe UI", Arial, sans-serif;
     background: #f4f6f9;
