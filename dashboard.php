@@ -197,6 +197,7 @@ if (isset($_GET['team_export'])) {
 
 <body>
 
+    <?php include 'sidenav.php'; ?>
 
     <div class="main-content">
         <h1>لوحة التحكم - الكشافة</h1>
@@ -227,7 +228,6 @@ if (isset($_GET['team_export'])) {
         <h2>توزيع المدفوعات</h2>
         <table class="payment-table">
             <thead>
-
                 <tr>
                     <th>المبلغ المدفوع</th>
                     <th>عدد الأعضاء</th>
