@@ -26,6 +26,19 @@ foreach ($teams as $team) {
     $total_scouts_all += $total_scouts_team;
     $total_payment_all += $total_payment_team;
 }
+
+// --- Handle CSV Export ---
+if(isset($_GET['export']) && $_GET['export'] === 'csv') {
+    header('Content-Type: text/csv');
+    header('Content-Disposition: attachment; filename="team_report.csv"');
+    $output = fopen('php://output', 'w');
+    fputcsv($output, ['Team','Total Scouts','Total Payment']);
+    foreach($team_data as $team => $stats){
+        fputcsv($output, [$team,$stats['total_scouts'],$stats['total_payment']]);
+    }
+    fclose($output);
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -47,6 +60,8 @@ h1 { color:#0f766e; margin-bottom:25px; }
 .total-card { background:#1abc9c; color:#fff; border-top:5px solid #16a085; }
 .total-card h3, .total-card p { color:#fff; }
 .chart-container { background:#fff; padding:25px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.06); margin-bottom:40px; max-width:600px; margin-left:auto; margin-right:auto; }
+.export-btn { background:#0f766e; color:#fff; padding:10px 20px; border:none; border-radius:6px; text-decoration:none; margin-bottom:20px; display:inline-block; transition:0.3s; }
+.export-btn:hover { background:#0d665b; }
 @media(max-width:768px){ .layout{grid-template-columns:1fr;} .cards{flex-direction:column;} }
 </style>
 </head>
@@ -55,8 +70,10 @@ h1 { color:#0f766e; margin-bottom:25px; }
     <div class="side-nav">
         <?php include 'side_nav.php'; ?>
     </div>
+
     <div class="main-content">
         <h1>Scout Dashboard</h1>
+        <a href="?export=csv" class="export-btn">Export Team Report</a>
 
         <div class="cards">
             <!-- Total Summary Cards -->
@@ -90,23 +107,29 @@ h1 { color:#0f766e; margin-bottom:25px; }
 
 <script>
 const ctx = document.getElementById('teamPieChart').getContext('2d');
+const teamLabels = <?php echo json_encode(array_keys($team_data)); ?>;
+const teamCounts = <?php echo json_encode(array_map(function($t){ return $t['total_scouts']; }, $team_data)); ?>;
+
+// Generate dynamic colors
+const bgColors = teamLabels.map((t,i)=>`hsl(${i*45 % 360},70%,50%)`);
+
 new Chart(ctx, {
     type: 'pie',
     data: {
-        labels: <?php echo json_encode(array_keys($team_data)); ?>,
+        labels: teamLabels,
         datasets: [{
-            data: <?php echo json_encode(array_map(function($t){ return $t['total_scouts']; }, $team_data)); ?>,
-            backgroundColor: <?php echo json_encode(array_map(function($t){ return '#' . substr(md5($t['total_scouts']),0,6); }, $team_data)); ?>,
-            borderColor: '#fff',
-            borderWidth: 2
+            data: teamCounts,
+            backgroundColor: bgColors,
+            borderColor:'#fff',
+            borderWidth:2
         }]
     },
-    options: {
+    options:{
         responsive:true,
-        plugins: {
-            legend: { position: 'bottom' },
-            tooltip: { callbacks: {
-                label: function(context) {
+        plugins:{
+            legend:{ position:'bottom' },
+            tooltip:{ callbacks:{
+                label: function(context){
                     let total = context.dataset.data.reduce((a,b)=>a+b,0);
                     let val = context.raw;
                     let percent = ((val/total)*100).toFixed(1);
