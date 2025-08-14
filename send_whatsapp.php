@@ -12,9 +12,9 @@ $phone = $_SESSION['phone'];
 $serialNumber = $_SESSION['serialNumber'];
 $qrCodeImageUrl = $_SESSION['qrCodeImageUrl'];
 
-// WhatsApp message
+// Prepare WhatsApp message
 $whatsappMessage = "Hello $name,\n\nThank you for registering with Shamandora Scout. Your Serial Number is: $serialNumber. You can access your ticket here: $qrCodeImageUrl. Please save this number to view your ticket.\n\n" .
-                   "مرحباً $name،\n\nشكراً لتسجيلك في Shamandora Scout. رقم التسلسل الخاص بك هو: $serialNumber. يمكنك الوصول إلى تذكرتك هنا: $qrCodeImageUrl. برجاء تسجيل رقم الهاتف المرسل منه الرساله حتي يمكنكم فتح اللينك     .";
+                   "مرحباً $name،\n\nشكراً لتسجيلك في Shamandora Scout. رقم التسلسل الخاص بك هو: $serialNumber. يمكنك الوصول إلى تذكرتك هنا: $qrCodeImageUrl.";
 
 $whatsappUrl = "https://api.whatsapp.com/send?phone=" . urlencode($phone) . "&text=" . urlencode($whatsappMessage);
 

@@ -1,51 +1,49 @@
 <?php
-// generate_qrcode.php
+session_start();
 
 // Retrieve parameters
-$id = $_GET['id'];
-$name = $_GET['name'];
-$phone = $_GET['phone'];
-$team = $_GET['team'];
-$grade = $_GET['grade'];
-$payment = $_GET['payment'];
+$id = $_GET['id'] ?? '';
+$name = $_GET['name'] ?? '';
+$phone = $_GET['phone'] ?? '';
+$team = $_GET['team'] ?? '';
+$payment = $_GET['payment'] ?? '';
 
-// Prepare the data string for the QR code with only name and payment
-$data = "Name: $name\nPayment Amount: $payment\nTeam: $team ";
+if (!$id || !$name || !$phone) {
+    die("Missing required parameters.");
+}
 
-// Encode the data for the QR code URL
+// Prepare QR code data
+$data = "Name: $name\nPayment Amount: $payment\nTeam: $team";
 $encodedData = urlencode($data);
-
-// Generate the QR code URL
 $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=" . $encodedData;
 
-// Get the QR code image data
+// Fetch QR code image
 $qrCodeImageData = file_get_contents($qrCodeUrl);
+if ($qrCodeImageData === false) {
+    die("Failed to generate QR code.");
+}
 
-// Define the directory to save the QR code image
+// Save temporary file
 $uploadDir = 'qrcodes/';
-if (!is_dir($uploadDir)) {
-    mkdir($uploadDir, 0755, true); // Create the directory if it doesn't exist
-}
+if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+$safeTeam = preg_replace('/[^A-Za-z0-9_\-]/', '_', $team);
+$qrFile = $uploadDir . $safeTeam . '_' . $id . '.png';
+file_put_contents($qrFile, $qrCodeImageData);
 
-// Sanitize and create the file name using the serial number
-$qrCodeFileName = $uploadDir . $id . '.png';
+// Store in session for WhatsApp page
+$_SESSION['name'] = $name;
+$_SESSION['phone'] = $phone;
+$_SESSION['serialNumber'] = $id;
+$_SESSION['qrCodeImageUrl'] = 'http://mogamaaa.shamandorascout.com/' . $qrFile;
 
-// Save the QR code image to the server
-if (file_put_contents($qrCodeFileName, $qrCodeImageData)) {
-    // Create the URL to access the QR code image
-    $qrCodeImageUrl = 'http://mogamaaa.shamandorascout.com/' . $qrCodeFileName;
+// Auto-download QR
+header('Content-Description: File Transfer');
+header('Content-Type: image/png');
+header('Content-Disposition: attachment; filename="'.$safeTeam.'_'.$id.'.png"');
+header('Content-Length: ' . strlen($qrCodeImageData));
+header('Cache-Control: must-revalidate');
+header('Pragma: public');
 
-    // Store the image URL in the session for later use
-    session_start();
-    $_SESSION['qrCodeImageUrl'] = $qrCodeImageUrl;
-    $_SESSION['name'] = $name;
-    $_SESSION['phone'] = $phone;
-    $_SESSION['serialNumber'] = $id;
-
-    // Redirect to the page to send the WhatsApp message
-    header("Location: send_whatsapp.php");
-    exit();
-} else {
-    echo "Failed to save QR code image.";
-}
+echo $qrCodeImageData;
+exit();
 ?>
