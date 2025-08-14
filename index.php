@@ -1,10 +1,18 @@
-<?php
-require 'db.php';
-include 'sidenav.php';
-?>
-<main style="margin-left:200px; padding:20px;">
-    <h2>Dashboard</h2>
-    <p>Welcome to the dashboard!</p>
-</main>
-</body>
-</html>
+<?php include 'side_nav.php'; ?>
+<link rel="stylesheet" href="style.css">
+
+<div class="main">
+    <h2>Simple Form</h2>
+    <form method="post" action="">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" rows="4"></textarea>
+
+        <button type="submit">Submit</button>
+    </form>
+</div>
