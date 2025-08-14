@@ -38,38 +38,138 @@ while ($row = $result->fetch_assoc()) {
     $total_payment += floatval($row["payment"]);
     $data[] = $row;
 }
-
-// Check login (compat with older code using 'logged_in')
-$is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Details</title>
+<title>Employee Details</title>
 <style>
-/* copy your CSS or keep concise */
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial;background:#f4f4f4}
-.layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
-.main-content{padding:20px}
-h1{color:#4CAF50;margin-bottom:20px}
-.filter-form{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;padding:12px;background:#fff;border-radius:6px}
-.filter-form input, .filter-form select{padding:8px;border:1px solid #ccc;border-radius:4px}
-.filter-form input[type=submit]{background:#4CAF50;color:#fff;border:0;padding:8px 16px;cursor:pointer}
-.table-container{background:#fff;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:auto}
-table{width:100%;border-collapse:collapse}
-th,td{padding:12px;border-bottom:1px solid #eee;text-align:left}
-th{background:#f8f8f8}
-tr:nth-child(even){background:#fbfbfb}
-tr:hover{background:#eef7ee}
-tfoot td{font-weight:bold;background:#4CAF50;color:#fff;padding:12px}
-.action-links a{margin-right:8px;color:#007bff;text-decoration:none}
-.action-links a.delete{color:#dc3545}
-.no-records{background:#fff;padding:30px;border-radius:6px;text-align:center}
-.sidebar { background:#333; color:#fff; padding:20px; }
-.sidebar a{color:#fff;display:block;padding:8px 0;text-decoration:none}
-.sidebar a:hover{opacity:.9}
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f4f6f9;
+    color: #333;
+}
+.layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+}
+.sidebar {
+    background: #1e293b;
+    color: #fff;
+    padding: 20px;
+}
+.sidebar a {
+    color: #e2e8f0;
+    display: block;
+    padding: 10px 0;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+.sidebar a:hover {
+    background: rgba(255,255,255,0.1);
+}
+.main-content {
+    padding: 20px;
+}
+h1 {
+    color: #0f766e;
+    margin-bottom: 20px;
+}
+.filter-form {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.filter-form input,
+.filter-form select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+.filter-form input[type=submit] {
+    background: #0f766e;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.filter-form input[type=submit]:hover {
+    background: #115e59;
+}
+.table-container {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    overflow: auto;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+}
+th {
+    background: #f8fafc;
+    font-weight: 600;
+}
+tr:nth-child(even) {
+    background: #fafafa;
+}
+tr:hover {
+    background: #f1f5f9;
+}
+tfoot td {
+    font-weight: bold;
+    background: #0f766e;
+    color: #fff;
+}
+.action-links a {
+    margin-right: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+.action-links a:hover {
+    opacity: 0.9;
+}
+.action-links a.edit {
+    background: #3b82f6;
+    color: #fff;
+}
+.action-links a.delete {
+    background: #ef4444;
+    color: #fff;
+}
+.action-links a.resend {
+    background: #f59e0b;
+    color: #fff;
+}
+.no-records {
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
 </style>
 </head>
 <body>
@@ -77,10 +177,8 @@ tfoot td{font-weight:bold;background:#4CAF50;color:#fff;padding:12px}
     <div class="sidebar">
         <?php include 'sidenav.php'; ?>
     </div>
-
     <div class="main-content">
         <h1>Employee Details</h1>
-
         <form method="GET" class="filter-form">
             <input type="text" name="name" placeholder="Filter by Name" value="<?php echo htmlspecialchars($name_filter); ?>">
             <select name="date">
@@ -91,7 +189,6 @@ tfoot td{font-weight:bold;background:#4CAF50;color:#fff;padding:12px}
                     </option>
                 <?php endforeach; ?>
             </select>
-
             <select name="team">
                 <option value="">Filter by Team</option>
                 <?php foreach ($teams as $team): ?>
@@ -100,10 +197,8 @@ tfoot td{font-weight:bold;background:#4CAF50;color:#fff;padding:12px}
                     </option>
                 <?php endforeach; ?>
             </select>
-
             <input type="submit" value="Apply Filters">
         </form>
-
         <?php if (count($data) > 0): ?>
             <div class="table-container">
                 <table>
@@ -124,12 +219,11 @@ tfoot td{font-weight:bold;background:#4CAF50;color:#fff;padding:12px}
                                 <td><?php echo htmlspecialchars($row["grade"]); ?></td>
                                 <td><?php echo number_format($row["payment"], 2); ?></td>
                                 <td><?php echo date("Y-m-d", strtotime($row["Timestamp"])); ?></td>
-
                                 <?php if (is_admin()): ?>
                                 <td class="action-links">
-                                    <a href="edit.php?id=<?php echo urlencode($row['id']); ?>">Edit</a>
+                                    <a href="edit.php?id=<?php echo urlencode($row['id']); ?>" class="edit">Edit</a>
                                     <a href="delete.php?id=<?php echo urlencode($row['id']); ?>" class="delete" onclick="return confirm('Delete this record?')">Delete</a>
-                                    <a href="resend.php?id=<?php echo urlencode($row['id']); ?>">Resend</a>
+                                    <a href="resend.php?id=<?php echo urlencode($row['id']); ?>" class="resend">Resend</a>
                                 </td>
                                 <?php endif; ?>
                             </tr>
@@ -143,7 +237,10 @@ tfoot td{font-weight:bold;background:#4CAF50;color:#fff;padding:12px}
                 </table>
             </div>
         <?php else: ?>
-            <div class="no-records"><h3>No Records Found</h3><p>Try adjusting your filters.</p></div>
+            <div class="no-records">
+                <h3>No Records Found</h3>
+                <p>Try adjusting your filters.</p>
+            </div>
         <?php endif; ?>
     </div>
 </div>
