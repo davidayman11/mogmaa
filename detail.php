@@ -71,12 +71,7 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
 </head>
 <body>
 <div class="container">
-    <div class="sidenav">
-        <h2>Menu</h2>
-        <a href="index.php">Home</a>
-        <a href="detail.php">Details</a>
-        <a href="admin.php">Admin</a>
-    </div>
+    <?php include 'sidenav.php'; ?>
     <div class="content">
         <h1>Details</h1>
         <form method="GET">
