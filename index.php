@@ -1,4 +1,6 @@
-<?php include 'db.php'; ?>
+<?php include 'db.php'; 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);?>
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">
 
