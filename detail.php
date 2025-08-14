@@ -4,7 +4,7 @@ require_once 'db_connection.php';
 $id = $_GET['id'] ?? null;
 
 if ($id) {
-    $stmt = $conn->prepare("SELECT * FROM your_table WHERE id = ?");
+    $stmt = $conn->prepare("SELECT * FROM employees WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $result = $stmt->get_result();
