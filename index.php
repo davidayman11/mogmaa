@@ -2,18 +2,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Register</title>
-    <style>
-        body { margin: 0; font-family: Arial, sans-serif; background-color: #f4f6f8; }
-        .main { margin-left: 200px; padding: 20px; }
-        form { background: white; padding: 20px; max-width: 400px; border-radius: 8px; box-shadow: 0px 2px 5px rgba(0,0,0,0.1); }
-        .nice-form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select { width: 100%; padding: 10px; }
-        input[type="submit"] { background-color: #27ae60; color: white; border: none; cursor: pointer; }
-        input[type="submit"]:hover { background-color: #219150; }
-    </style>
+<meta charset="UTF-8">
+<title>Register</title>
+<style>
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background-color: #f4f6f8;
+    color: #333;
+}
+.main {
+    margin-left: 220px;
+    padding: 30px;
+}
+h1 {
+    color: #0f766e;
+    margin-bottom: 20px;
+}
+form {
+    background: #fff;
+    padding: 25px 30px;
+    max-width: 450px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+.nice-form-group {
+    margin-bottom: 18px;
+}
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #0f766e;
+}
+input, select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border 0.2s, box-shadow 0.2s;
+}
+input:focus, select:focus {
+    border-color: #0f766e;
+    box-shadow: 0 0 5px rgba(15,118,110,0.3);
+    outline: none;
+}
+input[type="submit"] {
+    background-color: #0f766e;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+input[type="submit"]:hover {
+    background-color: #115e59;
+}
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .main {
+        margin-left: 0;
+        padding: 20px;
+    }
+    form {
+        max-width: 100%;
+    }
+}
+</style>
 </head>
 <body>
 
