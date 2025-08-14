@@ -54,7 +54,9 @@ if(isset($_GET['export']) && $_GET['export'] === 'csv') {
 <title>Scout Dashboard</title>
 <style>
 body { font-family:"Segoe UI", Arial, sans-serif; margin:0; background:#f4f4f4; color:#333; }
-.layout { display:grid; grid-template-columns:220px 1fr; min-height:100vh; }
+
+.main-content { padding:30px; }
+
 .main-content { padding:30px; }
 h1 { color:#0f766e; margin-bottom:25px; }
 .cards { display:flex; flex-wrap:wrap; gap:20px; margin-bottom:40px; }
@@ -74,14 +76,14 @@ h1 { color:#0f766e; margin-bottom:25px; }
 .payment-table th { background:#0f766e; color:#fff; }
 .payment-table tr:last-child td { border-bottom:none; }
 
-@media(max-width:768px){ .layout{grid-template-columns:1fr;} .cards{flex-direction:column;} }
+@media(max-width:768px){ 
+    .main-content { margin-left: 60px; } /* Adjust for collapsed sidebar */
+    .cards{flex-direction:column;} 
+}
 </style>
 </head>
 <body>
-<div class="layout">
-    <div class="side-nav">
-        <?php include 'side_nav.php'; ?>
-    </div>
+    <?php include 'side_nav.php'; ?>
 
     <div class="main-content">
         <h1>Scout Dashboard</h1>
@@ -131,6 +133,5 @@ h1 { color:#0f766e; margin-bottom:25px; }
         </div>
 
     </div>
-</div>
 </body>
 </html>
