@@ -45,7 +45,11 @@ while ($row = $result->fetch_assoc()) {
 <meta charset="utf-8">
 <title>Employee Details</title>
 <style>
-* 
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 body {
     font-family: "Segoe UI", Arial, sans-serif;
     background: #f4f6f9;
@@ -55,22 +59,6 @@ body {
     display: grid;
     grid-template-columns: 240px 1fr;
     min-height: 100vh;
-}
-.sidebar {
-    background: #1e293b;
-    color: #fff;
-    padding: 20px;
-}
-.sidebar a {
-    color: #e2e8f0;
-    display: block;
-    padding: 10px 0;
-    text-decoration: none;
-    border-radius: 4px;
-    transition: background 0.2s;
-}
-.sidebar a:hover {
-    background: rgba(255,255,255,0.1);
 }
 .main-content {
     padding: 20px;
