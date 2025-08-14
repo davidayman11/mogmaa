@@ -104,7 +104,7 @@ h1 { color:#0f766e; margin-bottom:25px; }
             <?php foreach($team_data as $team => $stats): ?>
             <div class="card" style="border-top:5px solid #<?php echo substr(md5($team),0,6); ?>">
                 <h3><?php echo htmlspecialchars($team); ?></h3>
-                <p>Total Scouts: <?php echo $stats['total_scouts']; ?></p>
+                <p>Total: <?php echo $stats['total_scouts']; ?></p>
             </div>
             <?php endforeach; ?>
         </div>
