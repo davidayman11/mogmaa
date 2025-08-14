@@ -232,10 +232,6 @@ if (isset($_GET['team_export'])) {
                     <th>المبلغ المدفوع</th>
                     <th>عدد الأعضاء</th>
                 </tr>
-                <tr>
-                    <th>المبلغ المدفوع</th>
-                    <th>عدد الأعضاء</th>
-                </tr>
             </thead>
             <tbody>
                 <?php foreach ($payment_dist as $amount => $count): ?>
