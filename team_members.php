@@ -9,29 +9,20 @@ if (!$team) die("No team specified.");
 if (isset($_GET['download_csv'])) {
     header('Content-Type:text/csv');
     header('Content-Disposition:attachment;filename="'.$team.'_members.csv"');
-
     $output = fopen('php://output', 'w');
-
-    // Get columns dynamically
     $res = $conn->query("SHOW COLUMNS FROM employees");
     $cols = [];
     while($c = $res->fetch_assoc()) $cols[] = $c['Field'];
     fputcsv($output, array_merge(['#'], $cols));
-
-    // Fetch members
     $members = $conn->query("SELECT * FROM employees WHERE team='$team'");
     $counter = 1;
-    while($row = $members->fetch_assoc()) {
-        fputcsv($output, array_merge([$counter++], $row));
-    }
+    while($row = $members->fetch_assoc()) fputcsv($output, array_merge([$counter++], $row));
     fclose($output);
     exit();
 }
 
 // Fetch members for display
 $members = $conn->query("SELECT * FROM employees WHERE team='$team'");
-
-// Get column names dynamically
 $res = $conn->query("SHOW COLUMNS FROM employees");
 $cols = [];
 while($c = $res->fetch_assoc()) $cols[] = $c['Field'];
@@ -58,6 +49,7 @@ tr:hover { background:#f1f1f1; }
 </style>
 </head>
 <body>
+<?php include 'sidenav.php'; ?>
 <div class="main-content">
     <h1>Members of <?= htmlspecialchars($team) ?></h1>
     <div class="cards">
