@@ -1,12 +1,16 @@
+<?php
+// header.php
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mogamaa Fun Day</title>
+    <title>My Simple App</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header class="header">
-    <h1>Mogamaa Fun Day</h1>
+
+<header>
+    <h1>My Simple App</h1>
 </header>

@@ -1,42 +1,31 @@
 body {
-    margin: 0;
     font-family: Arial, sans-serif;
-    background: #f5f5f5;
+    margin: 0;
+    padding: 0;
 }
 
-.header {
-    background: #1e3a8a;
+header {
+    background: #007bff;
     color: white;
-    padding: 15px;
+    padding: 10px;
     text-align: center;
 }
 
 .sidenav {
     width: 200px;
-    background: #2563eb;
+    background: #f4f4f4;
     height: 100vh;
-    position: fixed;
-    top: 0;
-    left: 0;
-    padding-top: 60px;
+    padding-top: 20px;
+    float: left;
 }
 
-.sidenav ul {
-    list-style: none;
-    padding: 0;
-}
-
-.sidenav ul li {
-    margin: 10px 0;
-}
-
-.sidenav ul li a {
+.sidenav a {
     display: block;
-    color: white;
     padding: 10px;
+    color: #333;
     text-decoration: none;
 }
 
-.sidenav ul li a:hover {
-    background: #1d4ed8;
+.sidenav a:hover {
+    background: #ddd;
 }
