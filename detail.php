@@ -3,7 +3,7 @@
 require_once 'db.php'; // DB connection
 
 // Fetch data from your table (example: `users`)
-$sql = "SELECT * FROM users ORDER BY id DESC";
+$sql = "SELECT * FROM employees ORDER BY id DESC";
 $result = $conn->query($sql);
 ?>
 <!DOCTYPE html>
