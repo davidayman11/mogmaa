@@ -51,10 +51,24 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
 <style>
     body { font-family: Arial, sans-serif; margin: 0; background: #f4f4f4; }
     .container { display: flex; min-height: 100vh; }
-    .sidenav { width: 220px; background: #333; padding: 20px; color: white; box-sizing: border-box; flex-shrink: 0; }
+    .sidenav { 
+        width: 220px; 
+        background: #333; 
+        padding: 20px; 
+        color: white; 
+        box-sizing: border-box; 
+        flex-shrink: 0;
+        position: relative;
+        z-index: 1;
+    }
     .sidenav a { display: block; color: white; text-decoration: none; margin: 10px 0; }
     .sidenav a:hover { background: #444; padding-left: 5px; }
-    .content { flex: 1; padding: 20px; }
+    .content { 
+        flex: 1; 
+        padding: 20px; 
+        min-width: 0;
+        overflow-x: auto;
+    }
     h1 { color: #4CAF50; margin-top: 0; }
     form { display: flex; gap: 10px; flex-wrap: wrap; }
     form input, form select { padding: 8px; border: 1px solid #ccc; border-radius: 5px; }
