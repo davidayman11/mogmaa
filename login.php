@@ -101,7 +101,6 @@ button:hover {
         <input type="password" name="password" placeholder="Password" required>
         <button type="submit">Login</button>
     </form>
-    <p class="info">User: <strong>admin</strong> / Pass: <strong>password</strong></p>
 </div>
 </body>
 </html>
