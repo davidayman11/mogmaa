@@ -97,8 +97,8 @@ body {
     border-radius:12px;
     box-shadow:0 8px 20px rgba(0,0,0,0.06);
     flex:1 1 220px; /* responsive flex */
-    min-width:220px;
-    max-width:250px;
+    min-width:500px;
+    max-width:700px;
     text-align:center;
 }
 
