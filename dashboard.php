@@ -197,7 +197,6 @@ if (isset($_GET['team_export'])) {
 
 <body>
 
-    <?php include 'sidenav.php'; ?>
 
     <div class="main-content">
         <h1>لوحة التحكم - الكشافة</h1>
