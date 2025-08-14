@@ -2,25 +2,25 @@
 session_start();
 require_once 'db.php';
 
-// --- Get teams ---
+// --- الحصول على الفرق ---
 $teams_result = $conn->query("SELECT DISTINCT team FROM employees");
 $teams = [];
 while ($row = $teams_result->fetch_assoc()) {
     $teams[] = $row['team'];
 }
 
-// --- Summary ---
+// --- الملخص ---
 $total_scouts_all = $conn->query("SELECT COUNT(*) as c FROM employees")->fetch_assoc()['c'];
 $total_payment_all = $conn->query("SELECT SUM(payment) as sum_pay FROM employees")->fetch_assoc()['sum_pay'];
 
-// --- Payment distribution ---
+// --- توزيع المدفوعات ---
 $payment_dist = [];
 $payment_query = $conn->query("SELECT ROUND(payment,2) as pay, COUNT(*) as count FROM employees GROUP BY pay ORDER BY pay ASC");
 while ($row = $payment_query->fetch_assoc()) {
     $payment_dist[$row['pay']] = $row['count'];
 }
 
-// --- CSV export per team ---
+// --- تصدير CSV لكل فريق ---
 if (isset($_GET['team_export'])) {
     $team_name = $conn->real_escape_string($_GET['team_export']);
     header('Content-Type:text/csv');
@@ -37,13 +37,13 @@ if (isset($_GET['team_export'])) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Scout Dashboard</title>
+<title>لوحة تحكم الكشافة</title>
 <style>
-body { font-family:"Segoe UI", Arial, sans-serif; margin:0; background:#f4f4f4; color:#333; display:flex; }
+body { font-family:"Segoe UI", Arial, sans-serif; margin:0; background:#f4f4f4; color:#333; display:flex; direction:rtl; }
 .main-content { margin-left:220px; padding:30px; width:100%; }
 @media(max-width:768px){ .main-content{ margin-left:60px; } .cards{ flex-direction: column; } }
 .cards { display:flex; flex-wrap:wrap; gap:20px; margin-bottom:40px; }
@@ -65,35 +65,35 @@ body { font-family:"Segoe UI", Arial, sans-serif; margin:0; background:#f4f4f4; 
 <?php include 'sidenav.php'; ?>
 
 <div class="main-content">
-    <h1>Scout Dashboard</h1>
+    <h1>لوحة تحكم الكشافة</h1>
     <div class="cards">
         <div class="card total-card">
-            <h3>Total Scouts</h3>
+            <h3>إجمالي عدد الكشافة</h3>
             <p><?= $total_scouts_all ?></p>
         </div>
         <div class="card total-card">
-            <h3>Total Payment</h3>
+            <h3>إجمالي المدفوعات</h3>
             <p>$<?= number_format($total_payment_all,2) ?></p>
         </div>
     </div>
 
-    <h2>Team Distribution</h2>
+    <h2>توزيع الفرق</h2>
     <div class="cards">
         <?php foreach ($teams as $team): ?>
             <?php $count = $conn->query("SELECT COUNT(*) as c FROM employees WHERE team='$team'")->fetch_assoc()['c']; ?>
             <div class="card" style="border-top:5px solid #<?= substr(md5($team),0,6) ?>">
                 <h3><?= htmlspecialchars($team) ?></h3>
-                <p>Total Scouts: <?= $count ?></p>
-                <a href="team_members.php?team=<?= urlencode($team) ?>" class="export-btn">View Members</a>
-                <a href="dashboard.php?team_export=<?= urlencode($team) ?>" class="export-btn">Download CSV</a>
+                <p>إجمالي الكشافة: <?= $count ?></p>
+                <a href="team_members.php?team=<?= urlencode($team) ?>" class="export-btn">عرض الأعضاء</a>
+                <a href="dashboard.php?team_export=<?= urlencode($team) ?>" class="export-btn">تحميل CSV</a>
             </div>
         <?php endforeach; ?>
     </div>
 
-    <h2>Payment Distribution</h2>
+    <h2>توزيع المدفوعات</h2>
     <table class="payment-table">
         <thead>
-            <tr><th>Payment</th><th>Number of Members</th></tr>
+            <tr><th>المبلغ المدفوع</th><th>عدد الأعضاء</th></tr>
         </thead>
         <tbody>
             <?php foreach ($payment_dist as $amount => $count): ?>
