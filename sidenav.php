@@ -1,6 +1,40 @@
-<div style="width: 200px; height: 100vh; background-color: #2c3e50; color: white; position: fixed; padding-top: 20px;">
-    <h2 style="text-align: center; margin-bottom: 30px;">Menu</h2>
-    <a href="index.php" style="display: block; padding: 12px; color: white; text-decoration: none;">🏠 Home</a>
-    <a href="detail.php" style="display: block; padding: 12px; color: white; text-decoration: none;">📄 Detail</a>
-    <a href="admin.php" style="display: block; padding: 12px; color: white; text-decoration: none;">⚙️ Admin</a>
+<!-- sidenav.php -->
+<div class="sidebar">
+    <h2>Menu</h2>
+    <ul>
+        <li><a href="index.php">Home</a></li>
+        <li><a href="detail.php">Detail</a></li>
+        <li><a href="admin.php">Admin</a></li>
+    </ul>
 </div>
+
+<style>
+    .sidebar {
+        width: 200px;
+        background-color: #333;
+        color: #fff;
+        height: 100vh;
+        padding-top: 20px;
+        position: fixed;
+    }
+    .sidebar h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .sidebar ul {
+        list-style-type: none;
+        padding: 0;
+    }
+    .sidebar ul li {
+        padding: 10px;
+        text-align: center;
+    }
+    .sidebar ul li a {
+        color: white;
+        text-decoration: none;
+        display: block;
+    }
+    .sidebar ul li a:hover {
+        background-color: #575757;
+    }
+</style>
