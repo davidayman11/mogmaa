@@ -8,14 +8,6 @@ $name_filter = isset($_GET['name']) ? $conn->real_escape_string($_GET['name']) :
 $date_filter = isset($_GET['date']) ? $conn->real_escape_string($_GET['date']) : '';
 $team_filter = isset($_GET['team']) ? $conn->real_escape_string($_GET['team']) : '';
 
-// Limit options
-$limit_options = [20, 40, 100];
-$limit = isset($_GET['limit']) && in_array((int)$_GET['limit'], $limit_options) ? (int)$_GET['limit'] : 20;
-
-// Pagination
-$page = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0 ? (int)$_GET['page'] : 1;
-$offset = ($page - 1) * $limit;
-
 // Get distinct dates
 $dates_result = $conn->query("SELECT DISTINCT DATE(Timestamp) as date FROM employees ORDER BY date ASC");
 $dates = [];
@@ -30,25 +22,16 @@ while ($row = $teams_result->fetch_assoc()) {
     $teams[] = $row['team'];
 }
 
-// Count total rows for pagination
-$count_sql = "SELECT COUNT(*) as total FROM employees WHERE 1=1";
-if ($name_filter) $count_sql .= " AND name LIKE '%$name_filter%'";
-if ($date_filter) $count_sql .= " AND DATE(Timestamp) = '$date_filter'";
-if ($team_filter) $count_sql .= " AND team = '$team_filter'";
-$total_result = $conn->query($count_sql);
-$total_rows = $total_result->fetch_assoc()['total'];
-$total_pages = ceil($total_rows / $limit);
-
-// Build query with filters & limit
+// Build query with filters
 $sql = "SELECT * FROM employees WHERE 1=1";
 if ($name_filter) $sql .= " AND name LIKE '%$name_filter%'";
 if ($date_filter) $sql .= " AND DATE(Timestamp) = '$date_filter'";
 if ($team_filter) $sql .= " AND team = '$team_filter'";
-$sql .= " ORDER BY Timestamp DESC LIMIT $limit OFFSET $offset";
+$sql .= " ORDER BY Timestamp DESC";
 
 $result = $conn->query($sql);
 
-// Calculate total payment for displayed results
+// Calculate total
 $total_payment = 0;
 $data = [];
 while ($row = $result->fetch_assoc()) {
@@ -62,34 +45,131 @@ while ($row = $result->fetch_assoc()) {
 <meta charset="utf-8">
 <title>Employee Details</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"Segoe UI",Arial,sans-serif;background:#f4f6f9;color:#333}
-.layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
-.sidebar{background:#1e293b;color:#fff;padding:20px}
-.sidebar a{color:#e2e8f0;display:block;padding:10px 0;text-decoration:none;border-radius:4px;transition:background 0.2s}
-.sidebar a:hover{background:rgba(255,255,255,0.1)}
-.main-content{padding:20px}
-h1{color:#0f766e;margin-bottom:20px}
-.filter-form{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;padding:15px;background:#fff;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.05)}
-.filter-form input,.filter-form select{padding:8px 12px;border:1px solid #ccc;border-radius:6px;font-size:14px}
-.filter-form input[type=submit]{background:#0f766e;color:#fff;border:none;cursor:pointer;transition:background 0.2s}
-.filter-form input[type=submit]:hover{background:#115e59}
-.table-container{background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);overflow:auto}
-table{width:100%;border-collapse:collapse}
-th,td{padding:12px;text-align:left;border-bottom:1px solid #f0f0f0}
-th{background:#f8fafc;font-weight:600}
-tr:nth-child(even){background:#fafafa}
-tr:hover{background:#f1f5f9}
-tfoot td{font-weight:bold;background:#0f766e;color:#fff}
-.action-links a{margin-right:8px;padding:6px 10px;font-size:13px;border-radius:4px;text-decoration:none;transition:background 0.2s}
-.action-links a:hover{opacity:0.9}
-.action-links a.edit{background:#3b82f6;color:#fff}
-.action-links a.delete{background:#ef4444;color:#fff}
-.action-links a.resend{background:#f59e0b;color:#fff}
-.no-records{background:#fff;padding:30px;border-radius:8px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
-.pagination{margin-top:15px;display:flex;gap:8px}
-.pagination a{padding:6px 12px;background:#0f766e;color:#fff;text-decoration:none;border-radius:4px;font-size:14px}
-.pagination a.disabled{background:#94a3b8;pointer-events:none}
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f4f6f9;
+    color: #333;
+}
+.layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+}
+.sidebar {
+    background: #1e293b;
+    color: #fff;
+    padding: 20px;
+}
+.sidebar a {
+    color: #e2e8f0;
+    display: block;
+    padding: 10px 0;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+.sidebar a:hover {
+    background: rgba(255,255,255,0.1);
+}
+.main-content {
+    padding: 20px;
+}
+h1 {
+    color: #0f766e;
+    margin-bottom: 20px;
+}
+.filter-form {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.filter-form input,
+.filter-form select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+.filter-form input[type=submit] {
+    background: #0f766e;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.filter-form input[type=submit]:hover {
+    background: #115e59;
+}
+.table-container {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    overflow: auto;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+}
+th {
+    background: #f8fafc;
+    font-weight: 600;
+}
+tr:nth-child(even) {
+    background: #fafafa;
+}
+tr:hover {
+    background: #f1f5f9;
+}
+tfoot td {
+    font-weight: bold;
+    background: #0f766e;
+    color: #fff;
+}
+.action-links a {
+    margin-right: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+.action-links a:hover {
+    opacity: 0.9;
+}
+.action-links a.edit {
+    background: #3b82f6;
+    color: #fff;
+}
+.action-links a.delete {
+    background: #ef4444;
+    color: #fff;
+}
+.action-links a.resend {
+    background: #f59e0b;
+    color: #fff;
+}
+.no-records {
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
 </style>
 </head>
 <body>
@@ -117,13 +197,6 @@ tfoot td{font-weight:bold;background:#0f766e;color:#fff}
                     </option>
                 <?php endforeach; ?>
             </select>
-            <select name="limit">
-                <?php foreach ($limit_options as $opt): ?>
-                    <option value="<?php echo $opt; ?>" <?php if ($limit == $opt) echo 'selected'; ?>>
-                        Show <?php echo $opt; ?> entries
-                    </option>
-                <?php endforeach; ?>
-            </select>
             <input type="submit" value="Apply Filters">
         </form>
         <?php if (count($data) > 0): ?>
@@ -138,7 +211,7 @@ tfoot td{font-weight:bold;background:#0f766e;color:#fff}
                     <tbody>
                         <?php foreach ($data as $i => $row): ?>
                             <tr>
-                                <td><?php echo $offset + $i + 1; ?></td>
+                                <td><?php echo $i + 1; ?></td>
                                 <td><?php echo htmlspecialchars($row["id"]); ?></td>
                                 <td><?php echo htmlspecialchars($row["name"]); ?></td>
                                 <td><?php echo htmlspecialchars($row["phone"]); ?></td>
@@ -158,16 +231,10 @@ tfoot td{font-weight:bold;background:#0f766e;color:#fff}
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="<?php echo is_admin() ? 9 : 8; ?>">Total Payment (this page): <?php echo number_format($total_payment, 2); ?></td>
+                            <td colspan="<?php echo is_admin() ? 9 : 8; ?>">Total Payment: <?php echo number_format($total_payment, 2); ?></td>
                         </tr>
                     </tfoot>
                 </table>
-            </div>
-            <div class="pagination">
-                <a class="<?php echo ($page <= 1) ? 'disabled' : ''; ?>" 
-                   href="<?php echo ($page > 1) ? '?' . http_build_query(array_merge($_GET, ['page' => $page - 1])) : '#'; ?>">&laquo; Prev</a>
-                <a class="<?php echo ($page >= $total_pages) ? 'disabled' : ''; ?>" 
-                   href="<?php echo ($page < $total_pages) ? '?' . http_build_query(array_merge($_GET, ['page' => $page + 1])) : '#'; ?>">Next &raquo;</a>
             </div>
         <?php else: ?>
             <div class="no-records">
