@@ -55,10 +55,49 @@ if(isset($_GET['export']) && $_GET['export'] === 'csv') {
 <style>
 body { font-family:"Segoe UI", Arial, sans-serif; margin:0; background:#f4f4f4; color:#333; }
 
-.main-content { padding:30px; }
+/* Sidebar container */
+.side-nav {
+    width: 220px;
+    background-color: #2c3e50;
+    height: 100vh;
+    padding-top: 20px;
+    position: fixed;
+    transition: width 0.3s;
+    z-index: 1000;
+}
+.side-nav ul { list-style-type: none; padding: 0; margin: 0; }
+.side-nav ul li { margin-bottom: 5px; }
+.side-nav ul li a {
+    color: #ecf0f1;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: background 0.3s, padding-left 0.3s;
+}
+.side-nav ul li a:hover { background-color: #34495e; padding-left: 25px; }
+.side-nav ul li a.active { background-color: #1abc9c; color: #fff; }
+.side-nav ul li a .icon { margin-right: 10px; font-size: 18px; }
+@media (max-width: 768px) {
+    .side-nav { width: 60px; padding-top: 10px; }
+    .side-nav ul li a { padding: 10px 12px; justify-content: center; }
+    .side-nav ul li a .label { display: none; }
+    .side-nav ul li a .icon { margin: 0; font-size: 20px; }
+}
 
-.main-content { padding:30px; }
-h1 { color:#0f766e; margin-bottom:25px; }
+/* Main content */
+.main-content {
+    margin-left: 220px; /* Matches sidebar width */
+    padding: 30px;
+}
+@media(max-width:768px){ 
+    .main-content { margin-left: 60px; } 
+    .cards { flex-direction: column; } 
+}
+
+/* Cards */
 .cards { display:flex; flex-wrap:wrap; gap:20px; margin-bottom:40px; }
 .card { background:#fff; padding:20px 25px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.06); flex:1; min-width:220px; text-align:center; transition:transform 0.2s, box-shadow 0.2s; }
 .card:hover { transform:translateY(-2px); box-shadow:0 12px 25px rgba(0,0,0,0.1); }
@@ -66,20 +105,17 @@ h1 { color:#0f766e; margin-bottom:25px; }
 .card p { font-size:18px; font-weight:bold; margin:8px 0; }
 .total-card { background:#1abc9c; color:#fff; border-top:5px solid #16a085; }
 .total-card h3, .total-card p { color:#fff; }
-.chart-container { background:#fff; padding:25px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.06); margin-bottom:40px; max-width:600px; margin-left:auto; margin-right:auto; }
+
+/* Export button */
 .export-btn { background:#0f766e; color:#fff; padding:10px 20px; border:none; border-radius:6px; text-decoration:none; margin-bottom:20px; display:inline-block; transition:0.3s; }
 .export-btn:hover { background:#0d665b; }
 
-/* Payment table styling */
+/* Payment table */
 .payment-table { width:100%; max-width:500px; margin:0 auto 40px auto; border-collapse:collapse; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 5px 15px rgba(0,0,0,0.05); }
 .payment-table th, .payment-table td { padding:10px; text-align:center; border-bottom:1px solid #eee; }
 .payment-table th { background:#0f766e; color:#fff; }
 .payment-table tr:last-child td { border-bottom:none; }
 
-@media(max-width:768px){ 
-    .main-content { margin-left: 60px; } /* Adjust for collapsed sidebar */
-    .cards{flex-direction:column;} 
-}
 </style>
 </head>
 <body>
@@ -112,26 +148,27 @@ h1 { color:#0f766e; margin-bottom:25px; }
         </div>
 
         <!-- Payment Distribution Table -->
-        <div class="chart-container">
-            <h3 style="text-align:center; margin-bottom:15px;">Payment Distribution</h3>
-            <table class="payment-table">
-                <thead>
-                    <tr>
-                        <th>Payment</th>
-                        <th>Number of Members</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach($payment_dist as $amount => $count): ?>
-                    <tr>
-                        <td>$<?php echo number_format($amount,2); ?></td>
-                        <td><?php echo $count; ?></td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+        <div class="cards">
+            <div class="card" style="flex:1 1 100%;">
+                <h3 style="text-align:center; margin-bottom:15px;">Payment Distribution</h3>
+                <table class="payment-table">
+                    <thead>
+                        <tr>
+                            <th>Payment</th>
+                            <th>Number of Members</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach($payment_dist as $amount => $count): ?>
+                        <tr>
+                            <td>$<?php echo number_format($amount,2); ?></td>
+                            <td><?php echo $count; ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
-
     </div>
 </body>
 </html>
