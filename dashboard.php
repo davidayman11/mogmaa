@@ -78,7 +78,7 @@ body { font-family:"Segoe UI", Arial, sans-serif; margin:0; background:#f4f4f4; 
     transition: background 0.3s, padding-left 0.3s;
 }
 .side-nav ul li a:hover { background-color: #34495e; padding-left: 25px; }
-.side-nav ul li a.active { background-color: #1abc9c; color: #fff; }
+.side-nav ul li a.active { background-color: #1abc9c; color:#fff; }
 .side-nav ul li a .icon { margin-right: 10px; font-size: 18px; }
 @media (max-width: 768px) {
     .side-nav { width: 60px; padding-top: 10px; }
@@ -119,6 +119,7 @@ body { font-family:"Segoe UI", Arial, sans-serif; margin:0; background:#f4f4f4; 
 </style>
 </head>
 <body>
+    <!-- Include the side navigation -->
     <?php include 'side_nav.php'; ?>
 
     <div class="main-content">
