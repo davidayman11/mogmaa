@@ -74,18 +74,16 @@ body {
 
 .sidenav a:hover { background:#0d665b; }
 
-/* المحتوى الرئيسي مركزي */
+/* المحتوى الرئيسي يملأ الصفحة باستثناء مساحة sidebar */
 .main-content {
-    margin:0 auto;
+    margin-right:220px; /* ترك مساحة للـ sidebar */
     padding:30px;
-    max-width:1000px;
-    width:100%;
+    flex:1;
     box-sizing:border-box;
-    text-align:center;
 }
 
 @media(max-width:768px){
-    .main-content{ width:95%; padding:20px; }
+    .main-content{ margin-right:0; width:100%; padding:20px; }
     .cards{ flex-direction: column; }
 }
 
@@ -94,7 +92,7 @@ body {
     flex-wrap:wrap;
     gap:20px;
     margin-bottom:40px;
-    justify-content:center; /* لتوسيط الكروت */
+    justify-content:flex-start;
 }
 
 .card {
