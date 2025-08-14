@@ -1,11 +1,10 @@
 <?php
 require 'db.php';
-include 'header.php';
 include 'sidenav.php';
 ?>
-<div style="margin-left:220px; padding:20px;">
+<main style="margin-left:200px; padding:20px;">
     <h2>Dashboard</h2>
-    <p>Welcome to the Mogamaa Fun Day admin panel!</p>
-</div>
+    <p>Welcome to the dashboard!</p>
+</main>
 </body>
 </html>
