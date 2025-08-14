@@ -9,7 +9,7 @@ $date_filter = isset($_GET['date']) ? $conn->real_escape_string($_GET['date']) :
 $team_filter = isset($_GET['team']) ? $conn->real_escape_string($_GET['team']) : '';
 
 // Get distinct dates
-$dates_result = $conn->query("SELECT DISTINCT DATE(Timestamp) as date FROM employees ORDER BY date DESC");
+$dates_result = $conn->query("SELECT DISTINCT DATE(Timestamp) as date FROM employees ORDER BY date ASC");
 $dates = [];
 while ($row = $dates_result->fetch_assoc()) {
     $dates[] = $row['date'];
