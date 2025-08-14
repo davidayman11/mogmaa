@@ -19,8 +19,7 @@ foreach ($teams as $team) {
     $total_payment_team = $conn->query("SELECT SUM(payment) as sum_pay FROM employees WHERE team='$team'")->fetch_assoc()['sum_pay'];
 
     $team_data[$team] = [
-        'total_scouts' => $total_scouts_team,
-        'total_payment' => $total_payment_team
+        'total_scouts' => $total_scouts_team
     ];
 
     $total_scouts_all += $total_scouts_team;
@@ -39,9 +38,9 @@ if(isset($_GET['export']) && $_GET['export'] === 'csv') {
     header('Content-Type: text/csv');
     header('Content-Disposition: attachment; filename="team_report.csv"');
     $output = fopen('php://output', 'w');
-    fputcsv($output, ['Team','Total Scouts','Total Payment']);
+    fputcsv($output, ['Team','Total Scouts']);
     foreach($team_data as $team => $stats){
-        fputcsv($output, [$team,$stats['total_scouts'],$stats['total_payment']]);
+        fputcsv($output, [$team,$stats['total_scouts']]);
     }
     fclose($output);
     exit();
@@ -106,7 +105,6 @@ h1 { color:#0f766e; margin-bottom:25px; }
             <div class="card" style="border-top:5px solid #<?php echo substr(md5($team),0,6); ?>">
                 <h3><?php echo htmlspecialchars($team); ?></h3>
                 <p>Total Scouts: <?php echo $stats['total_scouts']; ?></p>
-                <p>Total Payment: $<?php echo number_format($stats['total_payment'],2); ?></p>
             </div>
             <?php endforeach; ?>
         </div>
