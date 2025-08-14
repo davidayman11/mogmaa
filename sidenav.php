@@ -5,6 +5,7 @@ $menu_items = [
     'index.php' => ['label' => 'Home', 'icon' => '🏠'],
     'detail.php' => ['label' => 'Details', 'icon' => '📋'],
     'edit.php' => ['label' => 'Edit', 'icon' => '✏️'],
+    'dashboard.php' => ['label' => 'Dashboard', 'icon' => '📊'], // Added dashboard
     'logout.php' => ['label' => 'Logout', 'icon' => '🚪'],
 ];
 ?>
