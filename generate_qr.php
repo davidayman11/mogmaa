@@ -1,14 +1,13 @@
 <?php
-session_start();
+// auto_download_qr.php
 
 // Retrieve parameters
 $id = $_GET['id'] ?? '';
 $name = $_GET['name'] ?? '';
-$phone = $_GET['phone'] ?? '';
 $team = $_GET['team'] ?? '';
 $payment = $_GET['payment'] ?? '';
 
-if (!$id || !$name || !$phone) {
+if (!$id || !$name) {
     die("Missing required parameters.");
 }
 
@@ -23,20 +22,10 @@ if ($qrCodeImageData === false) {
     die("Failed to generate QR code.");
 }
 
-// Save temporary file
-$uploadDir = 'qrcodes/';
-if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+// Sanitize team name for filename
 $safeTeam = preg_replace('/[^A-Za-z0-9_\-]/', '_', $team);
-$qrFile = $uploadDir . $safeTeam . '_' . $id . '.png';
-file_put_contents($qrFile, $qrCodeImageData);
 
-// Store in session for WhatsApp page
-$_SESSION['name'] = $name;
-$_SESSION['phone'] = $phone;
-$_SESSION['serialNumber'] = $id;
-$_SESSION['qrCodeImageUrl'] = 'http://mogamaaa.shamandorascout.com/' . $qrFile;
-
-// Auto-download QR
+// Set headers to force download automatically
 header('Content-Description: File Transfer');
 header('Content-Type: image/png');
 header('Content-Disposition: attachment; filename="'.$safeTeam.'_'.$id.'.png"');
@@ -44,6 +33,7 @@ header('Content-Length: ' . strlen($qrCodeImageData));
 header('Cache-Control: must-revalidate');
 header('Pragma: public');
 
+// Output the image
 echo $qrCodeImageData;
 exit();
 ?>
