@@ -1,24 +1,13 @@
 <?php
-session_start();
-
-// DB connection
-require_once 'db.php';
+// generate_qrcode.php
 
 // Retrieve parameters
-$id = $_GET['id'] ?? '';
-$name = $_GET['name'] ?? '';
-$phone = $_GET['phone'] ?? '';
-$team = $_GET['team'] ?? '';
-$grade = $_GET['grade'] ?? '';
-$payment = $_GET['payment'] ?? '';
-
-// Increment scan_count for the given ID
-if (!empty($id)) {
-    $stmt = $conn->prepare("UPDATE employees SET scan_count = scan_count + 1 WHERE id = ?");
-    $stmt->bind_param("s", $id);
-    $stmt->execute();
-    $stmt->close();
-}
+$id = $_GET['id'];
+$name = $_GET['name'];
+$phone = $_GET['phone'];
+$team = $_GET['team'];
+$grade = $_GET['grade'];
+$payment = $_GET['payment'];
 
 // Prepare the data string for the QR code with only name and payment
 $data = "Name: $name\nPayment Amount: $payment\nTeam: $team ";
@@ -35,7 +24,7 @@ $qrCodeImageData = file_get_contents($qrCodeUrl);
 // Define the directory to save the QR code image
 $uploadDir = 'qrcodes/';
 if (!is_dir($uploadDir)) {
-    mkdir($uploadDir, 0755, true); // Create the directory if it doesn\'t exist
+    mkdir($uploadDir, 0755, true); // Create the directory if it doesn't exist
 }
 
 // Sanitize and create the file name using the serial number
@@ -47,6 +36,7 @@ if (file_put_contents($qrCodeFileName, $qrCodeImageData)) {
     $qrCodeImageUrl = 'http://mogamaaa.shamandorascout.com/' . $qrCodeFileName;
 
     // Store the image URL in the session for later use
+    session_start();
     $_SESSION['qrCodeImageUrl'] = $qrCodeImageUrl;
     $_SESSION['name'] = $name;
     $_SESSION['phone'] = $phone;
