@@ -7,7 +7,10 @@ require_once 'db.php'; // your existing DB file ($conn)
 $name_filter = isset($_GET['name']) ? $conn->real_escape_string($_GET['name']) : '';
 $date_filter = isset($_GET['date']) ? $conn->real_escape_string($_GET['date']) : '';
 $team_filter = isset($_GET['team']) ? $conn->real_escape_string($_GET['team']) : '';
-
+$is_case_filter = '';
+if (isset($_GET['is_case']) && $_GET['is_case'] !== '') {
+    $is_case_filter = $conn->real_escape_string($_GET['is_case']);
+}
 // Get distinct dates
 $dates_result = $conn->query("SELECT DISTINCT DATE(Timestamp) as date FROM employees ORDER BY date ASC");
 $dates = [];
@@ -27,6 +30,7 @@ $sql = "SELECT * FROM employees WHERE 1=1";
 if ($name_filter) $sql .= " AND name LIKE '%$name_filter%'";
 if ($date_filter) $sql .= " AND DATE(Timestamp) = '$date_filter'";
 if ($team_filter) $sql .= " AND team = '$team_filter'";
+if ($is_case_filter !== '') $sql .= " AND IsCase = '$is_case_filter'";
 $sql .= " ORDER BY Timestamp DESC";
 
 $result = $conn->query($sql);
@@ -238,7 +242,7 @@ while ($row = $result->fetch_assoc()) {
         </div>
         <div class="main-content">
             <div class="content-wrapper">
-                <h1>تفاصيل الموظفين</h1>
+                <h1>تفاصيل الملتحقين</h1>
                 <form method="GET" class="filter-form">
                     <input type="text" name="name" placeholder="البحث بالاسم"
                         value="<?php echo htmlspecialchars($name_filter); ?>">
@@ -260,6 +264,13 @@ while ($row = $result->fetch_assoc()) {
                         </option>
                         <?php endforeach; ?>
                     </select>
+                    
+                    
+                <select name="is_case">
+                    <option value="">Filter by Case</option>
+                    <option value="1" <?php if ($is_case_filter === '1') echo 'selected'; ?>>نعم</option>
+                    <option value="0" <?php if ($is_case_filter === '0') echo 'selected'; ?>>لا</option>
+                </select>
                     <input type="submit" value="تطبيق الفلاتر">
                 </form>
                 <?php if (count($data) > 0): ?>
@@ -274,6 +285,7 @@ while ($row = $result->fetch_assoc()) {
                                 <th>الفريق</th>
                                 <th>الصف الدراسي</th>
                                 <th>المبلغ المدفوع</th>
+                                    <th>هل حاله</th>
                                 <th>التاريخ</th>
                                 <?php if (is_admin()): ?><th>الإجراءات</th><?php endif; ?>
                             </tr>
@@ -288,6 +300,9 @@ while ($row = $result->fetch_assoc()) {
                                 <td><?php echo htmlspecialchars($row["team"]); ?></td>
                                 <td><?php echo htmlspecialchars($row["grade"]); ?></td>
                                 <td><?php echo number_format($row["payment"], 2); ?></td>
+                                       <td>
+                                <?php echo $row["IsCase"] == 1 ? "نعم" : "لا"; ?>
+                            </td>
                                 <td><?php echo date("Y-m-d", strtotime($row["Timestamp"])); ?></td>
                                 <?php if (is_admin()): ?>
                                 <td class="action-links">
@@ -302,10 +317,11 @@ while ($row = $result->fetch_assoc()) {
                             <?php endforeach; ?>
                         </tbody>
                         <tfoot>
-                            <tr>
-                                <td colspan="<?php echo is_admin() ? 9 : 8; ?>">إجمالي المبلغ المدفوع:
-                                    <?php echo number_format($total_payment, 2); ?></td>
-                            </tr>
+                          <tr>
+                              
+                            <td colspan="<?php echo is_admin() ? 10 : 9; ?>"> total:
+                                <?php echo number_format($total_payment, 2); ?></td>
+                        </tr>
                         </tfoot>
                     </table>
                 </div>

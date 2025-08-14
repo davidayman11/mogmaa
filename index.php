@@ -1,6 +1,4 @@
-<?php include 'db.php'; 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);?>
+<?php include 'db.php'; ?>
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">
 
@@ -8,6 +6,7 @@ ini_set('display_errors', 1);?>
     <meta charset="UTF-8">
     <title>تسجيل</title>
     <style>
+    /* Changed from margin-left to margin-right */
     body {
         margin: 0;
         font-family: "Segoe UI", "Tahoma", "Arial", sans-serif;
@@ -158,6 +157,16 @@ ini_set('display_errors', 1);?>
                     <option value="" disabled selected>اختر الصف الدراسي</option>
                 </select>
             </div>
+
+  
+            <div class="nice-form-group" style="display: flex; align-items: center; gap: 6px;">
+
+                <label for="isCase" style="margin: 0; cursor: pointer; font-weight: bold;">حالة خاصة (IsCase)</label>
+                <input type="checkbox" id="isCase" name="isCase" value="1"
+                    style="width: 18px; height: 18px; cursor: pointer;">
+            </div>
+
+
             <div class="nice-form-group">
                 <label>المبلغ المدفوع</label>
                 <input type="text" name="payment" placeholder="ادخل المبلغ المدفوع" required />
@@ -177,15 +186,14 @@ document.getElementById('team').addEventListener('change', function() {
 
     let grades = [];
 
-
     switch (team) {
         case 'براعم':
             grades = [{
-                    value: 'اولي_ابتدائي',
+                    value: 'اولي ابتدائي',
                     text: 'أولي ابتدائي'
                 },
                 {
-                    value: 'ثانيه_ابتدائي',
+                    value: 'ثانيه ابتدائي',
                     text: 'ثانية ابتدائي'
                 }
             ];
@@ -193,19 +201,19 @@ document.getElementById('team').addEventListener('change', function() {
         case 'أشبال':
         case 'زهرات':
             grades = [{
-                    value: 'تالته_ابتدائي',
+                    value: 'ثالثة ابتدائي',
                     text: 'ثالثة ابتدائي'
                 },
                 {
-                    value: 'رابعه_ابتدائي',
+                    value: 'رابعه ابتدائي',
                     text: 'رابعة ابتدائي'
                 },
                 {
-                    value: 'خامسه_ابتدائي',
+                    value: 'خامسه ابتدائي',
                     text: 'خامسة ابتدائي'
                 },
                 {
-                    value: 'سادسه_ابتدائي',
+                    value: 'سادسه ابتدائي',
                     text: 'سادسة ابتدائي'
                 }
             ];
@@ -213,15 +221,15 @@ document.getElementById('team').addEventListener('change', function() {
         case 'كشافة':
         case 'مرشدات':
             grades = [{
-                    value: 'اولي_اعدادي',
+                    value: 'اولي اعدادي',
                     text: 'أولي إعدادي'
                 },
                 {
-                    value: 'ثانيه_اعدادي',
+                    value: 'ثانيه اعدادي',
                     text: 'ثانية إعدادي'
                 },
                 {
-                    value: 'تالته_اعدادي',
+                    value: 'ثالثة اعدادي',
                     text: 'ثالثة إعدادي'
                 }
             ];
@@ -230,15 +238,15 @@ document.getElementById('team').addEventListener('change', function() {
         case 'رائدات':
 
             grades = [{
-                    value: 'اولي_ثانوي',
+                    value: 'اولي ثانوي',
                     text: 'أولي ثانوي'
                 },
                 {
-                    value: 'ثانيه_ثانوي',
+                    value: 'ثانيه ثانوي',
                     text: 'ثانية ثانوي'
                 },
                 {
-                    value: 'تالته_ثانوي',
+                    value: 'ثالثة ثانوي',
                     text: 'ثالثة ثانوي'
                 }
             ];
@@ -248,15 +256,15 @@ document.getElementById('team').addEventListener('change', function() {
         case 'رائدات':
 
             grades = [{
-                    value: 'اولي_ثانوي',
+                    value: 'اولي ثانوي',
                     text: 'أولي ثانوي'
                 },
                 {
-                    value: 'ثانيه_ثانوي',
+                    value: 'ثانيه ثانوي',
                     text: 'ثانية ثانوي'
                 },
                 {
-                    value: 'ثالثة_ثانوي',
+                    value: 'ثالثة ثانوي',
                     text: 'ثالثة ثانوي'
                 }
             ];
@@ -292,6 +300,16 @@ document.getElementById('team').addEventListener('change', function() {
         option.value = grade.value;
         option.textContent = grade.text;
         gradeSelect.appendChild(option);
+    });
+
+    document.getElementById('isCase').addEventListener('change', function() {
+        const paymentField = document.getElementById('payment');
+        if (this.checked) {
+            paymentField.value = '0';
+            paymentField.disabled = true;
+        } else {
+            paymentField.disabled = false;
+        }
     });
 });
 </script>
