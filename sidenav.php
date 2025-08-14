@@ -1,36 +1,34 @@
-<h2>Menu</h2>
-<a href="index.php">Home</a>
-<a href="detail.php">Details</a>
-<a href="admin.php">Admin</a>
+<!-- side_nav.php -->
+<div class="side-nav">
+    <ul>
+        <li><a href="index.php">Home</a></li>
+        <li><a href="detail.php">Details</a></li>
+        <li><a href="edit.php">Edit</a></li>
+        <li><a href="logout.php">Logout</a></li>
+    </ul>
+</div>
 
 <style>
-.sidebar {
-    background: #333;
-    color: white;
-    padding: 20px;
+.side-nav {
+    width: 200px;
+    background-color: #2c3e50;
+    height: 100vh;
+    padding-top: 20px;
+    position: fixed;
 }
-
-.sidebar h2 {
-    margin-bottom: 20px;
-    color: white;
-    font-size: 1.5em;
+.side-nav ul {
+    list-style-type: none;
+    padding: 0;
 }
-
-.sidebar a {
-    display: block;
+.side-nav ul li {
+    padding: 10px;
+}
+.side-nav ul li a {
     color: white;
     text-decoration: none;
-    padding: 10px 0;
-    border-bottom: 1px solid #444;
-    transition: all 0.3s ease;
+    display: block;
 }
-
-.sidebar a:hover {
-    background: #444;
-    padding-left: 10px;
-}
-
-.sidebar a:last-child {
-    border-bottom: none;
+.side-nav ul li a:hover {
+    background-color: #34495e;
 }
 </style>
