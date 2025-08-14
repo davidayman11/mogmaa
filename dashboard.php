@@ -11,6 +11,7 @@ while ($row = $teams_result->fetch_assoc()) {
 
 // --- Summary ---
 $total_scouts_all = $conn->query("SELECT COUNT(*) as c FROM employees")->fetch_assoc()['c'];
+$total_payment_all = $conn->query("SELECT SUM(payment) as sum_pay FROM employees")->fetch_assoc()['sum_pay'];
 
 // --- Payment distribution ---
 $payment_dist = [];
@@ -25,16 +26,12 @@ if (isset($_GET['team_export'])) {
     header('Content-Type:text/csv');
     header('Content-Disposition:attachment;filename="'.$team_name.'_members.csv"');
     $output = fopen('php://output', 'w');
-
-    // get columns dynamically
     $res = $conn->query("SHOW COLUMNS FROM employees");
     $cols = [];
     while($c = $res->fetch_assoc()) $cols[] = $c['Field'];
     fputcsv($output, $cols);
-
     $members = $conn->query("SELECT * FROM employees WHERE team='$team_name'");
     while($row = $members->fetch_assoc()) fputcsv($output, $row);
-
     fclose($output);
     exit();
 }
@@ -69,12 +66,14 @@ body { font-family:"Segoe UI", Arial, sans-serif; margin:0; background:#f4f4f4; 
 
 <div class="main-content">
     <h1>Scout Dashboard</h1>
-    <a href="?export=csv" class="export-btn">Export Team Report</a>
-
     <div class="cards">
         <div class="card total-card">
             <h3>Total Scouts</h3>
             <p><?= $total_scouts_all ?></p>
+        </div>
+        <div class="card total-card">
+            <h3>Total Payment</h3>
+            <p>$<?= number_format($total_payment_all,2) ?></p>
         </div>
     </div>
 
@@ -86,7 +85,7 @@ body { font-family:"Segoe UI", Arial, sans-serif; margin:0; background:#f4f4f4; 
                 <h3><?= htmlspecialchars($team) ?></h3>
                 <p>Total Scouts: <?= $count ?></p>
                 <a href="team_members.php?team=<?= urlencode($team) ?>" class="export-btn">View Members</a>
-                <a href="dashboard.php?team_export=<?= urlencode($team) ?>" class="export-btn" style="background:#0f766e;">Download CSV</a>
+                <a href="dashboard.php?team_export=<?= urlencode($team) ?>" class="export-btn">Download CSV</a>
             </div>
         <?php endforeach; ?>
     </div>
