@@ -177,6 +177,7 @@ document.getElementById('team').addEventListener('change', function() {
 
     let grades = [];
 
+
     switch (team) {
         case 'براعم':
             grades = [{
