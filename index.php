@@ -100,7 +100,7 @@ input[type="submit"]:hover {
 <?php include 'sidenav.php'; ?>
 
 <div class="main">
-    <h1>Register Employee</h1>
+    <h1>Register</h1>
     <form action="submit.php" method="post">
         <div class="nice-form-group">
             <label>Name</label>
