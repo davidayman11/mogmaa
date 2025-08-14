@@ -33,6 +33,7 @@ foreach ($teams as $team) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Scout Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 body { font-family:"Segoe UI", Arial, sans-serif; margin:0; background:#f4f4f4; color:#333; }
 .layout { display:grid; grid-template-columns:220px 1fr; min-height:100vh; }
@@ -45,6 +46,7 @@ h1 { color:#0f766e; margin-bottom:25px; }
 .card p { font-size:18px; font-weight:bold; margin:8px 0; }
 .total-card { background:#1abc9c; color:#fff; border-top:5px solid #16a085; }
 .total-card h3, .total-card p { color:#fff; }
+.chart-container { background:#fff; padding:25px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.06); margin-bottom:40px; max-width:600px; margin-left:auto; margin-right:auto; }
 @media(max-width:768px){ .layout{grid-template-columns:1fr;} .cards{flex-direction:column;} }
 </style>
 </head>
@@ -78,7 +80,42 @@ h1 { color:#0f766e; margin-bottom:25px; }
             </div>
             <?php endforeach; ?>
         </div>
+
+        <!-- Pie Chart -->
+        <div class="chart-container">
+            <canvas id="teamPieChart"></canvas>
+        </div>
     </div>
 </div>
+
+<script>
+const ctx = document.getElementById('teamPieChart').getContext('2d');
+new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: <?php echo json_encode(array_keys($team_data)); ?>,
+        datasets: [{
+            data: <?php echo json_encode(array_map(function($t){ return $t['total_scouts']; }, $team_data)); ?>,
+            backgroundColor: <?php echo json_encode(array_map(function($t){ return '#' . substr(md5($t['total_scouts']),0,6); }, $team_data)); ?>,
+            borderColor: '#fff',
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive:true,
+        plugins: {
+            legend: { position: 'bottom' },
+            tooltip: { callbacks: {
+                label: function(context) {
+                    let total = context.dataset.data.reduce((a,b)=>a+b,0);
+                    let val = context.raw;
+                    let percent = ((val/total)*100).toFixed(1);
+                    return context.label + ': ' + val + ' (' + percent + '%)';
+                }
+            }}
+        }
+    }
+});
+</script>
 </body>
 </html>
