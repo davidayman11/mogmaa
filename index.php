@@ -5,27 +5,23 @@
 <meta charset="UTF-8">
 <title>Register</title>
 <style>
-/* General body and font */
 body {
     margin: 0;
     font-family: "Segoe UI", Arial, sans-serif;
-    background: linear-gradient(135deg, #e0f7fa, #f4f6f8);
+    background-color: #f4f6f8; /* keep existing background */
     color: #333;
 }
-
-/* Main container */
 .main {
     margin-left: 220px;
     padding: 40px 30px;
     min-height: 100vh;
 }
 
-/* Heading style */
+/* Heading */
 h1 {
     color: #0f766e;
     margin-bottom: 25px;
     font-size: 28px;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 /* Form card */
@@ -34,12 +30,12 @@ form {
     padding: 30px 35px;
     max-width: 500px;
     border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
     transition: transform 0.2s, box-shadow 0.2s;
 }
 form:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.12);
 }
 
 /* Form groups */
@@ -48,7 +44,7 @@ form:hover {
 }
 label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     font-weight: 600;
     color: #0f766e;
     font-size: 15px;
@@ -65,16 +61,16 @@ input, select {
 }
 input:focus, select:focus {
     border-color: #0f766e;
-    box-shadow: 0 0 8px rgba(15,118,110,0.3);
+    box-shadow: 0 0 6px rgba(15,118,110,0.25);
     outline: none;
 }
 
 /* Submit button */
 input[type="submit"] {
-    background: #0f766e;
+    background-color: #0f766e;
     color: #fff;
     border: none;
-    padding: 14px 22px;
+    padding: 14px 20px;
     font-size: 16px;
     font-weight: 600;
     border-radius: 8px;
@@ -82,7 +78,7 @@ input[type="submit"] {
     transition: background 0.3s, transform 0.2s;
 }
 input[type="submit"]:hover {
-    background: #115e59;
+    background-color: #115e59;
     transform: translateY(-2px);
 }
 
