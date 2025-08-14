@@ -2,7 +2,6 @@
 session_start();
 require_once 'db.php'; // Database connection
 
-// --- Set current page for sidebar ---
 $current_page = basename($_SERVER['PHP_SELF']);
 
 // --- Get teams ---
@@ -25,21 +24,24 @@ foreach ($teams as $team) {
     $total_payment_all += $total_payment;
 }
 
-// --- Payment distribution ---
+// --- Payment distribution (still used for table) ---
 $payment_dist = [];
 $payment_query = $conn->query("SELECT ROUND(payment,2) as pay, COUNT(*) as count FROM employees GROUP BY pay ORDER BY pay ASC");
 while ($row = $payment_query->fetch_assoc()) {
     $payment_dist[$row['pay']] = $row['count'];
 }
 
-// --- CSV export ---
-if (isset($_GET['export']) && $_GET['export'] == 'csv') {
+// --- CSV export for a single team ---
+if (isset($_GET['export_team'])) {
+    $team = $conn->real_escape_string($_GET['export_team']);
+    $result = $conn->query("SELECT name FROM employees WHERE team='$team'");
+
     header('Content-Type:text/csv');
-    header('Content-Disposition:attachment;filename="team_report.csv"');
+    header('Content-Disposition:attachment;filename="'.$team.'_members.csv"');
     $output = fopen('php://output', 'w');
-    fputcsv($output, ['Team', 'Total Scouts']);
-    foreach ($team_data as $team => $stats) {
-        fputcsv($output, [$team, $stats['total_scouts']]);
+    fputcsv($output, ['Member Name']);
+    while ($row = $result->fetch_assoc()) {
+        fputcsv($output, [$row['name']]);
     }
     fclose($output);
     exit();
@@ -51,15 +53,16 @@ if (isset($_GET['export']) && $_GET['export'] == 'csv') {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Scout Dashboard</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 body { font-family:"Segoe UI", Arial, sans-serif; margin:0; background:#f4f4f4; color:#333; display:flex; }
 .main-content { margin-left:220px; padding:30px; width:100%; }
 @media(max-width:768px){ .main-content{ margin-left:60px; } .cards{ flex-direction: column; } }
 .cards { display:flex; flex-wrap:wrap; gap:20px; margin-bottom:40px; }
-.card { background:#fff; padding:20px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.06); flex:1; min-width:220px; text-align:center; }
+.card { background:#fff; padding:20px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.06); flex:1; min-width:220px; text-align:center; cursor:pointer; position:relative; }
 .card h3 { margin-bottom:15px; color:#0f766e; }
 .card p { font-size:18px; font-weight:bold; margin:8px 0; }
+.download-btn { display:none; margin-top:10px; background:#0f766e; color:white; padding:6px 10px; border-radius:6px; text-decoration:none; }
+.download-btn:hover { background:#0d665b; }
 .total-card { background:#1abc9c; color:#fff; border-top:5px solid #16a085; }
 .total-card h3, .total-card p { color:#fff; }
 .export-btn { background:#0f766e; color:#fff; padding:10px 20px; border:none; border-radius:6px; text-decoration:none; margin-bottom:20px; display:inline-block; }
@@ -68,7 +71,6 @@ body { font-family:"Segoe UI", Arial, sans-serif; margin:0; background:#f4f4f4; 
 .payment-table th, .payment-table td { padding:10px; text-align:center; border-bottom:1px solid #eee; }
 .payment-table th { background:#0f766e; color:#fff; }
 .payment-table tr:last-child td { border-bottom:none; }
-.chart-container { width:100%; max-width:500px; margin:20px auto; }
 </style>
 </head>
 <body>
@@ -77,7 +79,7 @@ body { font-family:"Segoe UI", Arial, sans-serif; margin:0; background:#f4f4f4; 
 
 <div class="main-content">
     <h1>Scout Dashboard</h1>
-    <a href="?export=csv" class="export-btn">Export Team Report</a>
+    <a href="?export=csv" class="export-btn">Export All Teams Report</a>
 
     <div class="cards">
         <div class="card total-card">
@@ -92,9 +94,11 @@ body { font-family:"Segoe UI", Arial, sans-serif; margin:0; background:#f4f4f4; 
 
     <div class="cards">
         <?php foreach ($team_data as $team => $stats): ?>
-        <div class="card" style="border-top:5px solid #<?php echo substr(md5($team),0,6); ?>">
+        <div class="card" onclick="showTeam('<?php echo htmlspecialchars($team); ?>')"
+             style="border-top:5px solid #<?php echo substr(md5($team),0,6); ?>">
             <h3><?php echo htmlspecialchars($team); ?></h3>
             <p>Total: <?php echo $stats['total_scouts']; ?></p>
+            <a id="btn-<?php echo htmlspecialchars($team); ?>" class="download-btn" href="?export_team=<?php echo urlencode($team); ?>">Download Members</a>
         </div>
         <?php endforeach; ?>
     </div>
@@ -115,35 +119,16 @@ body { font-family:"Segoe UI", Arial, sans-serif; margin:0; background:#f4f4f4; 
                     <?php endforeach; ?>
                 </tbody>
             </table>
-
-            <!-- Pie Chart -->
-            <div class="chart-container">
-                <canvas id="paymentPie"></canvas>
-            </div>
         </div>
     </div>
 </div>
 
 <script>
-const ctx = document.getElementById('paymentPie').getContext('2d');
-const paymentData = <?php echo json_encode($payment_dist); ?>;
-new Chart(ctx, {
-    type: 'pie',
-    data: {
-        labels: Object.keys(paymentData).map(amount => '$' + parseFloat(amount).toFixed(2)),
-        datasets: [{
-            data: Object.values(paymentData),
-            backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#ff6384', '#9966ff', '#ff9f40'],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: { position: 'bottom' }
-        }
-    }
-});
+function showTeam(teamName) {
+    alert("Team: " + teamName);
+    document.querySelectorAll('.download-btn').forEach(btn => btn.style.display = 'none');
+    document.getElementById('btn-' + teamName).style.display = 'inline-block';
+}
 </script>
 
 </body>
