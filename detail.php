@@ -67,31 +67,6 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             min-height: 100vh;
         }
         
-        .sidebar {
-            background: #333;
-            color: white;
-            padding: 20px;
-        }
-        
-        .sidebar h2 {
-            margin-bottom: 20px;
-            color: white;
-        }
-        
-        .sidebar a {
-            display: block;
-            color: white;
-            text-decoration: none;
-            padding: 10px 0;
-            border-bottom: 1px solid #444;
-            transition: all 0.3s ease;
-        }
-        
-        .sidebar a:hover {
-            background: #444;
-            padding-left: 10px;
-        }
-        
         .main-content {
             padding: 20px;
             overflow: hidden;
@@ -202,10 +177,6 @@ $is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
             .layout {
                 grid-template-columns: 1fr;
                 grid-template-rows: auto 1fr;
-            }
-            
-            .sidebar {
-                padding: 15px;
             }
             
             .filter-form {
